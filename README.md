@@ -1,4 +1,4 @@
-[<img src="https://camo.githubusercontent.com/9693e5936d33d830a02cf336dc95874a20958efc/68747470733a2f2f646576666f72756d2e6f6b74612e636f6d2f75706c6f6164732f6f6b74616465762f6f726967696e616c2f31582f626635346131366235666461313839653461643237303666623537636262376131653562386465622e706e67" align="right" width="256px"/>](https://devforum.okta.com/)
+[<img src="https://devforum.okta.com/uploads/oktadev/original/1X/bf54a16b5fda189e4ad2706fb57cbb7a1e5b8deb.png" align="right" width="256px"/>](https://devforum.okta.com/)
 
 # Okta Xamarin OIDC Library
 
@@ -44,17 +44,16 @@ Before using this SDK you have to create a new object of  `Okta.Oidc.OidcClient`
 
 ```csharp
 
-// Use the default Okta.Oidc.Config configuration
+// Use the default configuration from Okta.json
 var oidcClient = new Okta.Oidc.OidcClient()
 
 // Use configuration from a file
 var config = new Okta.Oidc.Config(/* path to .json file */)
 
-// Specify config manually (it is not recommended to include your ClientSecret directly in source control) 
+// Specify config manually
 var config = new Okta.Oidc.Config(
-    Issuer = "https://{yourOktaDomain}/oauth2/default",
+    OktaDomain = "https://{yourOktaDomain}",
     ClientId = "{clientId}",
-    ClientSecret = "{clientSecret}",
     RedirectUri = "{redirectUri}",
     LogoutRedirectUri = "{logoutRedirectUri}",
     Scopes = "openid profile offline_access"
@@ -76,15 +75,16 @@ The easiest way is to create a config file in your solution.  By default, this l
 
 ```json
 {
-    "issuer": "https://{yourOktaDomain}.com/oauth2/default",
-    "clientId": "{clientId}",
-    "redirectUri": "{redirectUri}",
-    "logoutRedirectUri": "{logoutRedirectUri}",
-    "scopes": "openid profile offline_access"
+    "Okta":
+    {
+        "OktaDomain": "https://{yourOktaDomain}",
+        "ClientId": "{clientId}",
+        "RedirectUri": "{redirectUri}",
+        "LogoutRedirectUri": "{logoutRedirectUri}",
+        "Scopes": "openid profile offline_access"
+    }
 }
 ```
-
-***TODO: ensure all possible key/values are accounted for, and that they are consistant across examples (this is currently a direct port of the iOS readme)***
 
 ### Configuration object
 
@@ -92,16 +92,13 @@ Alternatively, you can create a configuration object ( `Okta.Oidc.Config`) with 
 
 ```csharp
 var config = new Okta.Oidc.Config(
-    Issuer = "https://{yourOktaDomain}/oauth2/default",
+    OktaDomain = "https://{yourOktaDomain}",
     ClientId = "{clientId}",
-    ClientSecret = "{clientSecret}",
     RedirectUri = "{redirectUri}",
     LogoutRedirectUri = "{logoutRedirectUri}",
     Scopes = "openid profile offline_access"
 )
 ```
-
-**Note**: This can be useful for testing, but it is not recommended to include your ClientSecret directly in source control.
 
 ## API Reference
 
@@ -109,19 +106,19 @@ var config = new Okta.Oidc.Config(
 
 The `Okta.Oidc.OidcClient` class contains methods for signing in, signing out, and authenticating sessions.
 
-#### SignIn()
+#### SignInWithBrowserAsync()
 
-Start the authorization flow by simply calling `SignIn()`.  This is an async method and should be awaited.  In case of successful authorization, this operation will return valid `Okta.Oidc.StateManager` object.  Clients are responsible for further storage and maintenance of the manager.
+Start the authorization flow by simply calling `SignInWithBrowserAsync()`.  This is an async method and should be awaited.  In case of successful authorization, this operation will return valid `Okta.Oidc.StateManager` object.  Clients are responsible for further storage and maintenance of the manager.
 
 ```csharp
-Okta.Oidc.StateManager stateManager = await oidcClient.SignIn();
+Okta.Oidc.StateManager stateManager = await oidcClient.SignInWithBrowserAsync();
 
 // stateManager.AccessToken
 // stateManager.IdToken
 // stateManager.RefreshToken
 ```
 
-#### SignOutOfOkta()
+#### SignOutOfOktaAsync()
 
 You can start the sign out flow by simply calling `SignOutFromOkta()` with the appropriate `Okta.Oidc.StateManager` . This method will end the user's Okta session in the browser.
 
@@ -129,21 +126,21 @@ You can start the sign out flow by simply calling `SignOutFromOkta()` with the a
 
 ```csharp
 // Redirects to the configured 'logoutRedirectUri' specified in the config.
-await oidcClient.SignOutOfOkta(stateManager);
+await oidcClient.SignOutOfOktaAsync(stateManager);
 
-// to complete sign out, also call `stateManager.Revoke(accessToken)` and then `stateManager.Clear()` 
-await stateManager.Revoke(stateManager.AccessToken);
+// to complete sign out, also call `stateManager.RevokeAsync(accessToken)` and then `stateManager.Clear()` 
+await stateManager.RevokeAsync(stateManager.AccessToken);
 stateManager.Clear();
 
 ```
 
-#### Authenticate()
+#### AuthenticateAsync()
 
-If you already logged in to Okta and have a valid session token, you can complete authorization by calling `Authenticate(sessionToken)`. In case of successful authorization, this operation will return valid `Okta.Oidc.StateManager` in its callback. Clients are responsible for further storage and maintenance of the manager.
+If you have used the [AuthN SDK](https://github.com/okta/okta-auth-dotnet) to log in to Okta and have a valid session token, you can complete authorization by calling `AuthenticateAsync(sessionToken)`. In case of successful authorization, this operation will return valid `Okta.Oidc.StateManager` in its callback. Clients are responsible for further storage and maintenance of the manager.
 
 ```csharp
-
-Okta.Oidc.StateManager stateManager = await oidcClient.Authenticate(sessionToken);
+// pass the sessionToken obtained from the AuthN SDK
+Okta.Oidc.StateManager stateManager = await oidcClient.AuthenticateAsync(sessionToken);
 
 // stateManager.AccessToken
 // stateManager.IdToken
@@ -153,35 +150,35 @@ Okta.Oidc.StateManager stateManager = await oidcClient.Authenticate(sessionToken
 
 ### StateManager
 
-The `SignIn()` and `Authenticate()` operations return an instance of `Okta.Oidc.StateManager`, which includes the login state and any tokens.
+The `SignInWithBrowserAsync()` and `AuthenticateAsync()` operations return an instance of `Okta.Oidc.StateManager`, which includes the login state and any tokens.
 
 ```csharp
-bool stateManager.LoggedIn;
+bool stateManager.IsAuthenticated;
 string stateManager.AccessToken;
 string stateManager.IdToken;
 string stateManager.RefreshToken;
 ```
 
 
-#### WriteToSecureStorage()
+#### WriteToSecureStorageAsync()
 
-Tokens are securely stored in the iOS Keychain or the Android SecureStore (***TODO: update with real name***) and can be retrieved by accessing the StateManager.  The developer is responsible for storing StateManager returned by `SignIn()` or `Authenticate(token)` operation.  To store the manager call its `WriteToSecureStorage()` method:
+Tokens are securely stored in the iOS Keychain or the Android SecureStore (***TODO: update with real name***) and can be retrieved by accessing the StateManager.  The developer is responsible for storing StateManager returned by `SignInWithBrowserAsync()` or `AuthenticateAsync(token)` operation.  To store the manager call its `WriteToSecureStorageAsync()` method:
 
 ```csharp
-var stateManager = await oidcClient.SignIn();
-if (stateManager.LoggedIn) {
-    stateManager.WriteToSecureStorage()
+var stateManager = await oidcClient.SignInWithBrowserAsync();
+if (stateManager.IsAuthenticated) {
+    stateManager.WriteToSecureStorageAsync()
 }
 ```
 
-#### ReadFromSecureStorage()
+#### ReadFromSecureStorageAsync()
 
-To retrieve a stored manager call `ReadFromSecureStorage(config)` and pass in the Okta configuration that corresponds to a manager you are interested in.
+To retrieve a stored manager call `ReadFromSecureStorageAsync(config)` and pass in the Okta configuration that corresponds to a manager you are interested in.
 
 ```csharp
-var stateManager = await Okta.Oidc.StateManager.ReadFromSecureStorage(config);
+var stateManager = await Okta.Oidc.StateManager.ReadFromSecureStorageAsync(config);
 
-if (stateManager.LoggedIn) {
+if (stateManager.IsAuthenticated) {
     // authenticated 
     // stateManager.AccessToken
     // stateManager.IdToken
@@ -191,47 +188,47 @@ if (stateManager.LoggedIn) {
 }
 ```
 
-**Note:** We support multiple Oauth 2.0 accounts, so a developer can use an Okta endpoint, social endpoint, and others in one application.  The `StateManager` is stored in secure storage seperately based on the specified configuration, which is why the config should be passed into the `ReadFromSecureStorage(config)` method if you have multiple accounts.  If you omit the config parameter it will try to load the default config from an `Okta.json` configuration file.
+**Note:** We support multiple Oauth 2.0 accounts, so a developer can use an Okta endpoint, social endpoint, and others in one application.  The `StateManager` is stored in secure storage seperately based on the specified configuration, which is why the config should be passed into the `ReadFromSecureStorageAsync(config)` method if you have multiple accounts.  If you omit the config parameter it will try to load the default config from an `Okta.json` configuration file.
 
-#### Introspect()
+#### IntrospectAsync()
 
 Calls the introspection endpoint to inspect the validity of the specified token.
 
 ```csharp
-var payload = await stateManager.Introspect(accessToken);
+var payload = await stateManager.IntrospectAsync(accessToken);
 
 System.Diagnostics.Debug.WriteLine($"Is token valid? {payload.Active}");
 ```
 
-#### Renew()
+#### RenewAsync()
 
 Since access tokens are traditionally short-lived, you can renew expired tokens by exchanging a refresh token for new ones. See the [configuration reference](#configuration-reference) to ensure your app is configured properly for this flow.
 
 ```csharp
-var newAccessToken = await stateManager.Renew();
+var newAccessToken = await stateManager.RenewAsync();
 ```
 
-#### Revoke()
+#### RevokeAsync()
 
-Calls the revocation endpoint to revoke the specified token.  A full sign out should consist of calling `SignOutOfOkta()`, then `Revoke()`, and then `Clear()`.
+Calls the revocation endpoint to revoke the specified token.  A full sign out should consist of calling `SignOutOfOktaAsync()`, then `RevokeAsync()`, and then `Clear()`.
 
 ```csharp
-await stateManager.Revoke(accessToken);
+await stateManager.RevokeAsync(accessToken);
 ```
 
-#### GetUser()
+#### GetUserAsync()
 
 Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.
 
 ```csharp
-ClaimsPrincipal user = await stateManager.GetUser();
+ClaimsPrincipal user = await stateManager.GetUserAsync();
 
 System.Diagnostics.Debug.WriteLine($"User's name is {user.Identity.Name}");
 ```
 
 #### Clear()
 
-Removes the local authentication state by removing cached tokens in the keychain.  A full sign out should consist of calling `SignOutOfOkta()`, then `Revoke()`, and then `Clear()`.
+Removes the local authentication state by removing cached tokens in the keychain.  A full sign out should consist of calling `SignOutOfOktaAsync()`, then `RevokeAsync()`, and then `Clear()`.
 
 ```csharp
 stateManager.Clear();
