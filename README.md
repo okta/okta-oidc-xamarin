@@ -120,7 +120,7 @@ Okta.Oidc.StateManager stateManager = await oidcClient.SignInWithBrowserAsync();
 
 #### SignOutOfOktaAsync()
 
-You can start the sign out flow by simply calling `SignOutFromOkta()` with the appropriate `Okta.Oidc.StateManager` . This method will end the user's Okta session in the browser.
+You can start the sign out flow by simply calling `SignOutOfOktaAsync()` with the appropriate `Okta.Oidc.StateManager` . This method will end the user's Okta session in the browser.
 
 **Important**: This method **does not** clear or revoke tokens minted by Okta. Use the [`revoke`](#revoke) and [`clear`](#clear) methods of `Okta.Oidc.StateManager` to terminate the user's local session in your application.
 
