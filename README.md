@@ -40,14 +40,14 @@ You can also browse the full [API reference documentation](#api-reference).
 
 ## Configuration Reference
 
-Before using this SDK you have to create a new object of  `Okta.Oidc.OidcClient`. You can instantiate  `Okta.Oidc.OidcClient` w/o parameters that means that SDK will use `Okta.json` for configuration values. Alternatively you can create `Okta.Oidc.OidcClient` with custom configuration. 
+The entrypoint for the SDK is an instance of `Okta.Oidc.OidcClient`.  If you use the default `OidcClient` constructor without parameters then the SDK will load configuration values from an `Okta.json` file in your project directory.  Alternatively you can create an `OidcClient` with a custom configuration object by passing in a `Okta.Oidc.Config`. 
 
 ```csharp
 
 // Use the default configuration from Okta.json
 var oidcClient = new Okta.Oidc.OidcClient()
 
-// Use configuration from a file
+// Load configuration from a file
 var config = new Okta.Oidc.Config(/* path to .json file */)
 
 // Specify config manually
@@ -59,7 +59,7 @@ var config = new Okta.Oidc.Config(
     Scopes = "openid profile offline_access"
 )
 
-// Instantiate Okta.Oidc.OidcClient with custom configuration object
+// Instantiate Okta.Oidc.OidcClient with a configuration object
 var oidcClient = new Okta.Oidc.OidcClient(config)
 
 ```
@@ -188,7 +188,7 @@ if (stateManager.IsAuthenticated) {
 }
 ```
 
-**Note:** We support multiple Oauth 2.0 accounts, so a developer can use an Okta endpoint, social endpoint, and others in one application.  The `StateManager` is stored in secure storage seperately based on the specified configuration, which is why the config should be passed into the `ReadFromSecureStorageAsync(config)` method if you have multiple accounts.  If you omit the config parameter it will try to load the default config from an `Okta.json` configuration file.
+**Note:** We support multiple Oauth 2.0 accounts, so a developer can use an Okta endpoint, social endpoint, and others in one application.  The `StateManager` is stored in secure storage separately based on the specified configuration, which is why the config should be passed into the `ReadFromSecureStorageAsync(config)` method if you have multiple accounts.  If you omit the config parameter it will try to load the default config from an `Okta.json` configuration file.
 
 #### IntrospectAsync()
 
