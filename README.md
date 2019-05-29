@@ -30,10 +30,10 @@ You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/
 
 ## Getting Started 
 
-Installing the Okta.Xamarin.Oidc SDK into your project is simple. The easiest way to include this library into your project is through [Nuget](https://www.nuget.org/packages/Okta******).  
+Installing the Okta.Xamarin SDK into your project is simple. The easiest way to include this library into your project is through [Nuget](https://www.nuget.org/packages/Okta******).  
 
 ```cmd
-Install-Package Okta.Xamarin.Oidc
+Install-Package Okta.Xamarin
 ```
 
 You'll also need:
@@ -55,24 +55,30 @@ You can also browse the full [API reference documentation](#api-reference).
 
 ## Configuration Reference
 
-The entrypoint for the SDK is an instance of `Okta.Xamarin.OidcClient`.  If you use the default `OidcClient` constructor without parameters then the SDK will load configuration values from an `Okta.json` file in your project directory.  Alternatively you can create an `OidcClient` with a custom configuration object by passing in a `Okta.Xamarin.Config`. 
+The entrypoint for the SDK is an instance of `Okta.Xamarin.OidcClient`.  If you use the default `OidcClient` constructor without parameters then the SDK will load configuration values from an `Okta.json` file in your project directory.  Alternatively you can create an `OidcClient` with a custom configuration object by passing in a `Okta.Xamarin.OktaConfig`. 
 
 ```csharp
 
 // Use the default configuration from Okta.json
 var oidcClient = new Okta.Xamarin.OidcClient()
 
-// Load configuration from a file
-var config = new Okta.Xamarin.Config(/* path to .json file */)
+// Load configuration from a json file
+var config = await new Okta.Xamarin.OktaConfig.LoadfromJsonFileAsync(/* path to .json file */)
+
+// Load configuration from an Android resource xml file
+var config = await new Okta.Xamarin.Android.AndroidConfig.LoadFromXmlResourceAsync(/* xml resource name */)
+
+// Load configuration from an iOS plist file
+// coming soon
 
 // Specify config manually
-var config = new Okta.Xamarin.Config(
+var config = new Okta.Xamarin.OktaConfig() {
     OktaDomain = "https://{yourOktaDomain}",
     ClientId = "{clientId}",
     RedirectUri = "{redirectUri}",
-    LogoutRedirectUri = "{logoutRedirectUri}",
-    Scopes = "openid profile offline_access"
-)
+    PostLogoutRedirectUri = "{postLogoutRedirectUri}",
+    Scope = "openid profile offline_access"
+};
 
 // Instantiate Okta.Xamarin.OidcClient with a configuration object
 var oidcClient = new Okta.Xamarin.OidcClient(config)
@@ -83,38 +89,44 @@ var oidcClient = new Okta.Xamarin.OidcClient(config)
 A refresh token is a special token that is used to generate additional access and ID tokens. Make sure to include the `offline_access` scope in your configuration to silently renew the user's session in your application!
 
 
-### Okta.json
+### Configuration file
 
-***TODO: determine is json is the best option, or if also providing plist (for iOS) and xml (for Android) config files would be more natural***
-
-The easiest way is to create a config file in your solution.  By default, this library checks for the existence of the file `Okta.json`.  However any json file can be used to create configuration object.  Ensure one is created with the following fields:
+The easiest way is to create a config file in your solution.  By default, the library checks for the existence of the file `Okta.json`.  However any json file can be used to create a configuration object.  On Andoid you can also use an xml file or resource.  Here is an example json file:
 
 ```json
 {
-    "Okta":
-    {
-        "OktaDomain": "https://{yourOktaDomain}",
-        "ClientId": "{clientId}",
-        "RedirectUri": "{redirectUri}",
-        "LogoutRedirectUri": "{logoutRedirectUri}",
-        "Scopes": "openid profile offline_access"
-    }
+    "OktaDomain": "https://{yourOktaDomain}",
+    "ClientId": "{clientId}",
+    "RedirectUri": "{yourOktaScheme}:/callback",
+    "PostLogoutRedirectUri": "{yourOktaScheme}:/logout",
+    "Scope": "openid profile offline_access"
 }
+```
+
+And the equivalent Android xml file:
+```xml
+<Okta>
+    <OktaDomain>https://{yourOktaDomain}</OktaDomain>
+    <ClientId>{clientId}<ClientId>
+    <RedirectUri>{yourOktaScheme}:/callback</RedirectUri>
+    <PostLogoutRedirectUri>{yourOktaScheme}:/logout</PostLogoutRedirectUri>
+    <Scope>openid profile offline_access</Scope>
+</Okta>
 ```
 
 
 ### Configuration object
 
-Alternatively, you can create a configuration object ( `Okta.Xamarin.Config`) with the required values:
+Alternatively, you can create a configuration object ( `Okta.Xamarin.OktaConfig`) with the required values:
 
 ```csharp
-var config = new Okta.Xamarin.Config(
+var config = new Okta.Xamarin.OktaConfig() {
     OktaDomain = "https://{yourOktaDomain}",
     ClientId = "{clientId}",
-    RedirectUri = "{redirectUri}",
-    LogoutRedirectUri = "{logoutRedirectUri}",
-    Scopes = "openid profile offline_access"
-)
+    RedirectUri = "{yourOktaScheme}:/callback",
+    PostLogoutRedirectUri = "{yourOktaScheme}:/logout",
+    Scope = "openid profile offline_access"
+}
 ```
 
 
@@ -145,7 +157,7 @@ You can start the sign out flow by simply calling `SignOutOfOktaAsync()` with th
 **Important**: This method **does not** clear or revoke tokens minted by Okta. Use the [`revoke`](#revoke) and [`clear`](#clear) methods of `Okta.Xamarin.StateManager` to terminate the user's local session in your application.
 
 ```csharp
-// Redirects to the configured 'logoutRedirectUri' specified in the config.
+// Redirects to the configured 'postLogoutRedirectUri' specified in the config.
 await oidcClient.SignOutOfOktaAsync(stateManager);
 
 // to complete sign out, also call `stateManager.RevokeAsync(accessToken)` and then `stateManager.Clear()` 
@@ -209,8 +221,6 @@ if (stateManager.IsAuthenticated) {
     //not authenticated
 }
 ```
-
-**Note:** We support multiple Oauth 2.0 accounts, so a developer can use an Okta endpoint, social endpoint, and others in one application.  The `StateManager` is stored in secure storage separately based on the specified configuration, which is why the config should be passed into the `ReadFromSecureStorageAsync(config)` method if you have multiple accounts.  If you omit the config parameter it will try to load the default config from an `Okta.json` configuration file.
 
 
 #### RenewAsync()
