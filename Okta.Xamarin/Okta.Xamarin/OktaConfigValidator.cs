@@ -35,6 +35,28 @@ namespace Okta.Xamarin
 					"Your Okta URL is missing. You can copy your domain from the Okta Developer Console. Follow these instructions to find it: https://bit.ly/finding-okta-domain");
 			}
 
+			if (string.IsNullOrEmpty(config.ClientId))
+			{
+				throw new ArgumentNullException(
+					nameof(config.ClientId),
+					"Your Okta ClientId is missing. You can copy your ClientId from the Okta Developer Console.");
+			}
+
+			if (string.IsNullOrEmpty(config.RedirectUri))
+			{
+				throw new ArgumentNullException(
+					nameof(config.RedirectUri),
+					"Your RedirectUri is missing. This is typically something like \"{ yourOktaScheme }://callback\", and should match your scheme/intent settings for your mobile project.");
+			}
+
+			if (string.IsNullOrEmpty(config.PostLogoutRedirectUri))
+			{
+				throw new ArgumentNullException(
+					nameof(config.PostLogoutRedirectUri),
+					"Your PostLogoutRedirectUri is missing. This is typically something like \"{ yourOktaScheme }://logout\", and should match your scheme/intent settings for your mobile project.");
+			}
+
+
 			if (!config.OktaDomain.StartsWith("https://"))
 			{
 				throw new ArgumentException(

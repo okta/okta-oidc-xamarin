@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,62 +14,84 @@ namespace Okta.Xamarin
 		/// <summary>
 		/// The client ID of your Okta Application.  Required.
 		/// </summary>
-		[JsonProperty("ClientId")]
+		[JsonProperty("ClientId", Required = Required.Always)]
 		public string ClientId { get; set; }
 
 		/// <summary>
 		/// OIDC callback path for the code flow.  Optional, not recommended to override.
 		/// </summary>
-		[JsonProperty("CallbackPath", DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
-		public string CallbackPath { get; set; } = Defaults.CallbackPath;
+		[JsonProperty("CallbackPath", DefaultValueHandling = DefaultValueHandling.Populate)]
+		public string CallbackPath { get; set; } = "/authorization-code/callback";
 
 		/// <summary>
-		/// The location Okta should redirect to process a login. This is typically something like "{yourOktaScheme}:/callback".  Required.
+		/// The location Okta should redirect to process a login. This is typically something like "{yourOktaScheme}://callback".  Required.
 		/// </summary>
-		[JsonProperty("RedirectUri", DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
-		public string RedirectUri { get; set; } = Defaults.RedirectUri;
+		[JsonProperty("RedirectUri", Required = Required.Always)]
+		public string RedirectUri { get; set; }
 
 		/// <summary>
-		/// The location Okta should redirect to process a login. This is typically something like "{yourOktaScheme}:/logout".  Required.
+		/// The location Okta should redirect to process a login. This is typically something like "{yourOktaScheme}://logout".  Required.
 		/// </summary>
-		[JsonProperty("PostLogoutRedirectUri", DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
-		public string PostLogoutRedirectUri { get; set; } = Defaults.PostLogoutRedirectUri;
+		[JsonProperty("PostLogoutRedirectUri", Required = Required.Always)]
+		public string PostLogoutRedirectUri { get; set; }
 
 		/// <summary>
 		/// The OAuth 2.0/OpenID Connect scopes to request when logging in, seperated by spaces.  Optional, the default value is "openid profile".
 		/// </summary>
-		[JsonProperty("Scope", DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
-		public string Scope { get; set; } = Defaults.Scope;
+		[JsonProperty("Scope", DefaultValueHandling = DefaultValueHandling.Populate)]
+		public string Scope { get; set; } = "openid profile";
 		/// <summary>
-		/// A readlony list of OAuth 2.0/OpenID Connect scopes to request when logging in, as specified by <see cref="Scope" />.
+		/// A readonly list of OAuth 2.0/OpenID Connect scopes to request when logging in, as specified by <see cref="Scope" />.
 		/// </summary>
 		public IReadOnlyList<string> Scopes => Scope.Split(' ');
 
 		/// <summary>
 		/// Whether to retrieve additional claims from the UserInfo endpoint after login (not usually necessary).  Optional, the default value is <see cref="false"/>.
 		/// </summary>
-		[JsonProperty("GetClaimsFromUserInfoEndpoint", DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty("GetClaimsFromUserInfoEndpoint", DefaultValueHandling = DefaultValueHandling.Populate)]
 		public bool GetClaimsFromUserInfoEndpoint { get; set; } = false;
 
 		/// <summary>
 		/// Your Okta domain, i.e. https://dev-123456.oktapreview.com.  Do not include the "-admin" part of the domain.  Required.
 		/// </summary>
-		[JsonProperty("OktaDomain")]
+		[JsonProperty("OktaDomain", Required = Required.Always)]
 		public string OktaDomain { get; set; }
 
 		/// <summary>
 		/// The Okta Authorization Server to use.  optional, the default value is "default".
 		/// </summary>
-		[JsonProperty("AuthorizationServerId", DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
-		public string AuthorizationServerId { get; set; } = Defaults.AuthorizationServerId;
+		[JsonProperty("AuthorizationServerId", DefaultValueHandling = DefaultValueHandling.Populate)]
+		public string AuthorizationServerId { get; set; } = "default";
 
 		/// <summary>
 		/// The clock skew allowed when validating tokens.  Optional, the default value is 2 minutes.  When parsed from a config file, an integer is interpreted as a number of seconds.
 		/// </summary>
-		[JsonProperty("ClockSkew", DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
-		public TimeSpan ClockSkew { get; set; } = Defaults.ClockSkew;
+		[JsonProperty("ClockSkew", DefaultValueHandling = DefaultValueHandling.Populate)]
+		public TimeSpan ClockSkew { get; set; } = TimeSpan.FromMinutes(2);
 
 
+
+		/// <summary>
+		/// Default constructor for an OktaConfig object, with optional properties set to defaults.  This config will not be valid until the required properties are set.
+		/// </summary>
+		public OktaConfig()
+		{
+		}
+
+		/// <summary>
+		/// Constructor for an OktaConfig object including all required properties, with optional properties set to defaults.
+		/// </summary>
+		/// <param name="clientId"><seealso cref="ClientId"/></param>
+		/// <param name="oktaDomain"><seealso cref="OktaDomain"/></param>
+		/// <param name="redirectUri"><seealso cref="RedirectUri"/></param>
+		/// <param name="postLogoutRedirectUri"><seealso cref="PostLogoutRedirectUri"/></param>
+		public OktaConfig(string clientId, string oktaDomain, string redirectUri, string postLogoutRedirectUri)
+		{
+			this.ClientId = clientId;
+			this.OktaDomain = oktaDomain;
+			this.RedirectUri = redirectUri;
+			this.PostLogoutRedirectUri = postLogoutRedirectUri;
+		}
 
 
 		/// <summary>
@@ -78,7 +101,39 @@ namespace Okta.Xamarin
 		/// <returns>Returns the <see cref="OktaConfig"/> with fields filled from <paramref name="json"/>.</returns>
 		private static OktaConfig ParseJson(string json)
 		{
-			OktaConfig config = JsonConvert.DeserializeObject<OktaConfig>(json);
+			JObject root = JObject.Parse(json);
+			if (root.ContainsKey("Okta"))
+				root = (JObject)root["Okta"];
+
+			OktaConfig config = new OktaConfig(root.Value<string>("ClientId"),
+												root.Value<string>("OktaDomain"),
+												root.Value<string>("RedirectUri"),
+												root.Value<string>("PostLogoutRedirectUri"));
+
+			if (root.ContainsKey("CallbackPath"))
+			{
+				config.CallbackPath = root.Value<string>("CallbackPath");
+			}
+
+			if (root.ContainsKey("Scope"))
+			{
+				config.Scope = root.Value<string>("Scope");
+			}
+
+			if (root.ContainsKey("AuthorizationServerId"))
+			{
+				config.AuthorizationServerId = root.Value<string>("AuthorizationServerId");
+			}
+
+			if (root.ContainsKey("GetClaimsFromUserInfoEndpoint"))
+			{
+				config.GetClaimsFromUserInfoEndpoint = root.Value<bool>("GetClaimsFromUserInfoEndpoint");
+			}
+
+			if (root.ContainsKey("ClockSkew"))
+			{
+				config.ClockSkew = TimeSpan.FromSeconds(root.Value<int>("ClockSkew"));
+			}
 
 			OktaConfigValidator<OktaConfig> validator = new OktaConfigValidator<OktaConfig>();
 			validator.Validate(config);
@@ -99,20 +154,5 @@ namespace Okta.Xamarin
 			}
 		}
 
-
-
-
-		/// <summary>
-		/// These are default values for optional configuration fields.
-		/// </summary>
-		public static readonly OktaConfig Defaults = new OktaConfig()
-		{
-			CallbackPath = "/authorization-code/callback",
-
-			Scope = "openid profile",
-
-			AuthorizationServerId = "default",
-			ClockSkew = TimeSpan.FromMinutes(2)
-		};
 	}
 }
