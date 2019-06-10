@@ -21,12 +21,6 @@ namespace Okta.Xamarin
 		public string ClientId { get; set; }
 
 		/// <summary>
-		/// OIDC callback path for the code flow.  Optional, not recommended to override.
-		/// </summary>
-		[JsonProperty("CallbackPath", DefaultValueHandling = DefaultValueHandling.Populate)]
-		public string CallbackPath { get; set; } = "/authorization-code/callback";
-
-		/// <summary>
 		/// The location Okta should redirect to process a login. This is typically something like "{yourAppScheme}:/callback".  Required.
 		/// </summary>
 		[JsonProperty("RedirectUri", Required = Required.Always)]
@@ -113,10 +107,6 @@ namespace Okta.Xamarin
 												root.Value<string>("RedirectUri"),
 												root.Value<string>("PostLogoutRedirectUri"));
 
-			if (root.ContainsKey("CallbackPath"))
-			{
-				config.CallbackPath = root.Value<string>("CallbackPath");
-			}
 
 			if (root.ContainsKey("Scope"))
 			{

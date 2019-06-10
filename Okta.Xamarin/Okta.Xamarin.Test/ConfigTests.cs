@@ -84,13 +84,12 @@ namespace Okta.Xamarin.Test
 				  ""ClockSkew"": 90
 				}");
 
-			OktaConfig config = await OktaConfig.LoadfromJsonFileAsync(f.FullName);
+			OktaConfig config = await OktaConfig.LoadFromJsonFileAsync(f.FullName);
 
 			Assert.Equal("testoktaid", config.ClientId);
 			Assert.Equal("https://dev-00000.oktapreview.com", config.OktaDomain);
 			Assert.Equal("com.test:/redirect", config.RedirectUri);
 			Assert.Equal("com.test:/logout", config.PostLogoutRedirectUri);
-			Assert.Equal("/test/callback", config.CallbackPath);
 			Assert.Equal("test1 test2 test3", config.Scope);
 			Assert.Equal((IEnumerable<string>)(new string[] { "test1", "test2", "test3" }), config.Scopes);
 			Assert.True(config.GetClaimsFromUserInfoEndpoint);
@@ -120,13 +119,12 @@ namespace Okta.Xamarin.Test
 				  ""PostLogoutRedirectUri"": ""com.test:/logout""
 				}");
 
-			OktaConfig config = await OktaConfig.LoadfromJsonFileAsync(f.FullName);
+			OktaConfig config = await OktaConfig.LoadFromJsonFileAsync(f.FullName);
 
 			Assert.Equal("testoktaid", config.ClientId);
 			Assert.Equal("https://dev-00000.oktapreview.com", config.OktaDomain);
 			Assert.Equal("com.test:/redirect", config.RedirectUri);
 			Assert.Equal("com.test:/logout", config.PostLogoutRedirectUri);
-			Assert.Equal("/authorization-code/callback", config.CallbackPath);
 			Assert.Equal("openid profile", config.Scope);
 			Assert.Equal((IEnumerable<string>)(new string[] { "openid", "profile" }), config.Scopes);
 			Assert.False(config.GetClaimsFromUserInfoEndpoint);
