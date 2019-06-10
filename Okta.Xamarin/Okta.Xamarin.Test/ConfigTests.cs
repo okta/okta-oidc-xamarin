@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,10 +17,10 @@ namespace Okta.Xamarin.Test
 			OktaConfigValidator<OktaConfig> validator = new OktaConfigValidator<OktaConfig>();
 
 			validator.Validate(
-				new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test://redirect", "com.test://logout"));
+				new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
 			validator.Validate(
-							new OktaConfig("testoktaid", "https://okta.okta.com", "appid://redirect", "appid://logout")
+							new OktaConfig("testoktaid", "https://okta.okta.com", "appid:/redirect", "appid:/logout")
 							{ ClockSkew = TimeSpan.FromSeconds(100), Scope = "test1 test2", GetClaimsFromUserInfoEndpoint = true });
 
 			// The validator throws an exception when the config is invalid, so if we got here without an exception then the configs are valid.
@@ -34,16 +35,16 @@ namespace Okta.Xamarin.Test
 				validator.Validate(new OktaConfig()));
 
 			Assert.Throws<ArgumentNullException>(() =>
-				 validator.Validate(new OktaConfig(null, "https://dev-00000.oktapreview.com", "com.test://redirect", "com.test://logout")));
+				 validator.Validate(new OktaConfig(null, "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout")));
 
 			Assert.Throws<ArgumentNullException>(() =>
-				 validator.Validate(new OktaConfig("testoktaid", null, "com.test://redirect", "com.test://logout")));
+				 validator.Validate(new OktaConfig("testoktaid", null, "com.test:/redirect", "com.test:/logout")));
 
 			Assert.Throws<ArgumentNullException>(() =>
-				 validator.Validate(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", null, "com.test://logout")));
+				 validator.Validate(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", null, "com.test:/logout")));
 
 			Assert.Throws<ArgumentNullException>(() =>
-				 validator.Validate(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test://redirect", null)));
+				 validator.Validate(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", null)));
 		}
 
 
@@ -54,16 +55,16 @@ namespace Okta.Xamarin.Test
 
 
 			Assert.Throws<ArgumentException>(() =>
-				 validator.Validate(new OktaConfig("testoktaid", "http://dev-00000.oktapreview.com", "com.test://redirect", "com.test://logout")));
+				 validator.Validate(new OktaConfig("testoktaid", "http://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout")));
 
 			Assert.Throws<ArgumentException>(() =>
-				 validator.Validate(new OktaConfig("testoktaid", "https://dev-00000-admin.oktapreview.com", "com.test://redirect", "com.test://logout")));
+				 validator.Validate(new OktaConfig("testoktaid", "https://dev-00000-admin.oktapreview.com", "com.test:/redirect", "com.test:/logout")));
 
 			Assert.Throws<ArgumentException>(() =>
-				 validator.Validate(new OktaConfig("testoktaid", "https://{yourOktaDomain}", "com.test://redirect", "com.test://logout")));
+				 validator.Validate(new OktaConfig("testoktaid", "https://{yourOktaDomain}", "com.test:/redirect", "com.test:/logout")));
 
 			Assert.Throws<ArgumentException>(() =>
-				 validator.Validate(new OktaConfig("testoktaid", "dev-00000.oktapreview.com", "com.test://redirect", "com.test://logout")));
+				 validator.Validate(new OktaConfig("testoktaid", "dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout")));
 		}
 
 		[Fact]
@@ -74,8 +75,8 @@ namespace Okta.Xamarin.Test
 			File.WriteAllText(f.FullName, @"{
 				  ""ClientId"": ""testoktaid"",
 				  ""OktaDomain"": ""https://dev-00000.oktapreview.com"",
-				  ""RedirectUri"": ""com.test://redirect"",
-				  ""PostLogoutRedirectUri"": ""com.test://logout"",
+				  ""RedirectUri"": ""com.test:/redirect"",
+				  ""PostLogoutRedirectUri"": ""com.test:/logout"",
 				  ""CallbackPath"": ""/test/callback"",
 				  ""Scope"": ""test1 test2 test3"",
 				  ""GetClaimsFromUserInfoEndpoint"": true,
@@ -87,8 +88,8 @@ namespace Okta.Xamarin.Test
 
 			Assert.Equal("testoktaid", config.ClientId);
 			Assert.Equal("https://dev-00000.oktapreview.com", config.OktaDomain);
-			Assert.Equal("com.test://redirect", config.RedirectUri);
-			Assert.Equal("com.test://logout", config.PostLogoutRedirectUri);
+			Assert.Equal("com.test:/redirect", config.RedirectUri);
+			Assert.Equal("com.test:/logout", config.PostLogoutRedirectUri);
 			Assert.Equal("/test/callback", config.CallbackPath);
 			Assert.Equal("test1 test2 test3", config.Scope);
 			Assert.Equal((IEnumerable<string>)(new string[] { "test1", "test2", "test3" }), config.Scopes);
@@ -100,8 +101,10 @@ namespace Okta.Xamarin.Test
 			{
 				f.Delete();
 			}
-			catch (Exception)
-			{ }
+			catch (Exception ex)
+			{
+				Debug.WriteLine("Unable to clean up temp file used for testing OktaConfig JSON file parsing at " + f.FullName + Environment.NewLine + ex.ToString());
+			}
 		}
 
 
@@ -113,16 +116,16 @@ namespace Okta.Xamarin.Test
 			File.WriteAllText(f.FullName, @"{
 				  ""ClientId"": ""testoktaid"",
 				  ""OktaDomain"": ""https://dev-00000.oktapreview.com"",
-				  ""RedirectUri"": ""com.test://redirect"",
-				  ""PostLogoutRedirectUri"": ""com.test://logout""
+				  ""RedirectUri"": ""com.test:/redirect"",
+				  ""PostLogoutRedirectUri"": ""com.test:/logout""
 				}");
 
 			OktaConfig config = await OktaConfig.LoadfromJsonFileAsync(f.FullName);
 
 			Assert.Equal("testoktaid", config.ClientId);
 			Assert.Equal("https://dev-00000.oktapreview.com", config.OktaDomain);
-			Assert.Equal("com.test://redirect", config.RedirectUri);
-			Assert.Equal("com.test://logout", config.PostLogoutRedirectUri);
+			Assert.Equal("com.test:/redirect", config.RedirectUri);
+			Assert.Equal("com.test:/logout", config.PostLogoutRedirectUri);
 			Assert.Equal("/authorization-code/callback", config.CallbackPath);
 			Assert.Equal("openid profile", config.Scope);
 			Assert.Equal((IEnumerable<string>)(new string[] { "openid", "profile" }), config.Scopes);
@@ -134,8 +137,10 @@ namespace Okta.Xamarin.Test
 			{
 				f.Delete();
 			}
-			catch (Exception)
-			{ }
+			catch (Exception ex)
+			{
+				Debug.WriteLine("Unable to clean up temp file used for testing OktaConfig JSON file parsing at " + f.FullName + Environment.NewLine + ex.ToString());
+			}
 		}
 	}
 }

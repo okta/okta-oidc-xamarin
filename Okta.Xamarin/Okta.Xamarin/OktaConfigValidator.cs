@@ -46,14 +46,14 @@ namespace Okta.Xamarin
 			{
 				throw new ArgumentNullException(
 					nameof(config.RedirectUri),
-					"Your RedirectUri is missing. This is typically something like \"{ yourOktaScheme }://callback\", and should match your scheme/intent settings for your mobile project.");
+					"Your RedirectUri is missing. This is typically something like \"{ yourAppScheme }://callback\", and should match your scheme/intent settings for your mobile project.");
 			}
 
 			if (string.IsNullOrEmpty(config.PostLogoutRedirectUri))
 			{
 				throw new ArgumentNullException(
 					nameof(config.PostLogoutRedirectUri),
-					"Your PostLogoutRedirectUri is missing. This is typically something like \"{ yourOktaScheme }://logout\", and should match your scheme/intent settings for your mobile project.");
+					"Your PostLogoutRedirectUri is missing. This is typically something like \"{ yourAppScheme }://logout\", and should match your scheme/intent settings for your mobile project.");
 			}
 
 

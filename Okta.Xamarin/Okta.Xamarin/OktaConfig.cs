@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
+	/// <summary>
+	/// Stores configuration for the Okta OIDC client
+	/// </summary>
 	public class OktaConfig
 	{
 
@@ -24,13 +27,13 @@ namespace Okta.Xamarin
 		public string CallbackPath { get; set; } = "/authorization-code/callback";
 
 		/// <summary>
-		/// The location Okta should redirect to process a login. This is typically something like "{yourOktaScheme}://callback".  Required.
+		/// The location Okta should redirect to process a login. This is typically something like "{yourAppScheme}:/callback".  Required.
 		/// </summary>
 		[JsonProperty("RedirectUri", Required = Required.Always)]
 		public string RedirectUri { get; set; }
 
 		/// <summary>
-		/// The location Okta should redirect to process a login. This is typically something like "{yourOktaScheme}://logout".  Required.
+		/// The location Okta should redirect to process a logout. This is typically something like "{yourAppScheme}:/logout".  Required.
 		/// </summary>
 		[JsonProperty("PostLogoutRedirectUri", Required = Required.Always)]
 		public string PostLogoutRedirectUri { get; set; }
@@ -146,7 +149,7 @@ namespace Okta.Xamarin
 		/// </summary>
 		/// <param name="filename">The file containing json to parse.  This is treated as a simple file path.  If you are attempting to load an embedded resource you need to impliment that yourself and call <see cref="ParseJson(string)"/> instead.</param>
 		/// <returns>Returns a Task which returns the <see cref="OktaConfig"/> with fields filled from <paramref name="filename"/>.</returns>
-		public static async Task<OktaConfig> LoadfromJsonFileAsync(string filename)
+		public static async Task<OktaConfig> LoadFromJsonFileAsync(string filename)
 		{
 			using (StreamReader reader = File.OpenText(filename))
 			{

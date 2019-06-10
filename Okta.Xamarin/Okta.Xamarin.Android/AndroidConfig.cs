@@ -14,10 +14,12 @@ using Android.Widget;
 
 namespace Okta.Xamarin.Android
 {
+	/// <summary>
+	/// Stores configuration for the Okta Android OIDC client
+	/// </summary>
 	public class AndroidConfig : OktaConfig
 	{
 		// There might be some Android-specific config in the future.  That would go here.
-
 
 		/// <summary>
 		/// Instantiates a <see cref="AndroidConfig"/> from an XML string and validates it.  Throws an exception if required fields are missing or invalid.
@@ -76,7 +78,6 @@ namespace Okta.Xamarin.Android
 			validator.Validate(config);
 
 			return config;
-
 		}
 
 		/// <summary>
