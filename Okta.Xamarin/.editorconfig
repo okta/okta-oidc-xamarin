@@ -1,0 +1,8 @@
+# You can learn more about editorconfig here: https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference
+[*.cs]
+
+#Core editorconfig formatting - indentation
+
+#use hard tabs for indentation
+indent_style = tab
+indent_size = 4
