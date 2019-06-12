@@ -58,11 +58,6 @@ namespace Okta.Xamarin.iOS
 					config.PostLogoutRedirectUri = (dict["PostLogoutRedirectUri"] as NSString);
 				}
 
-				if (dict.ContainsKey(new NSString("GetClaimsFromUserInfoEndpoint")))
-				{
-					config.GetClaimsFromUserInfoEndpoint = (dict["GetClaimsFromUserInfoEndpoint"] as NSNumber).BoolValue;
-				}
-
 				if (dict.ContainsKey(new NSString("ClockSkew")))
 				{
 					config.ClockSkew = TimeSpan.FromSeconds((dict["ClockSkew"] as NSNumber).DoubleValue);

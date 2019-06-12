@@ -43,12 +43,6 @@ namespace Okta.Xamarin
 		public IReadOnlyList<string> Scopes => Scope.Split(' ');
 
 		/// <summary>
-		/// Whether to retrieve additional claims from the UserInfo endpoint after login (not usually necessary).  Optional, the default value is <see cref="false"/>.
-		/// </summary>
-		[JsonProperty("GetClaimsFromUserInfoEndpoint", DefaultValueHandling = DefaultValueHandling.Populate)]
-		public bool GetClaimsFromUserInfoEndpoint { get; set; } = false;
-
-		/// <summary>
 		/// Your Okta domain, i.e. https://dev-123456.oktapreview.com.  Do not include the "-admin" part of the domain.  Required.
 		/// </summary>
 		[JsonProperty("OktaDomain", Required = Required.Always)]
@@ -103,9 +97,9 @@ namespace Okta.Xamarin
 				root = (JObject)root["Okta"];
 
 			OktaConfig config = new OktaConfig(root.Value<string>("ClientId"),
-												root.Value<string>("OktaDomain"),
-												root.Value<string>("RedirectUri"),
-												root.Value<string>("PostLogoutRedirectUri"));
+			                                   root.Value<string>("OktaDomain"),
+			                                   root.Value<string>("RedirectUri"),
+			                                   root.Value<string>("PostLogoutRedirectUri"));
 
 
 			if (root.ContainsKey("Scope"))
@@ -116,11 +110,6 @@ namespace Okta.Xamarin
 			if (root.ContainsKey("AuthorizationServerId"))
 			{
 				config.AuthorizationServerId = root.Value<string>("AuthorizationServerId");
-			}
-
-			if (root.ContainsKey("GetClaimsFromUserInfoEndpoint"))
-			{
-				config.GetClaimsFromUserInfoEndpoint = root.Value<bool>("GetClaimsFromUserInfoEndpoint");
 			}
 
 			if (root.ContainsKey("ClockSkew"))

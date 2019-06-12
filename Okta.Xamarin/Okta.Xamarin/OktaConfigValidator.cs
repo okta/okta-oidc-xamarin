@@ -20,7 +20,7 @@ namespace Okta.Xamarin
 		/// <summary>
 		/// Validates all fields in this config object and throws an exception if anything is wrong.
 		/// </summary>
-		/// <param name="options">The config object to validate</param>
+		/// <param name="config">The config object to validate</param>
 		public void Validate(OktaConfig config)
 		{
 			if (config == null)

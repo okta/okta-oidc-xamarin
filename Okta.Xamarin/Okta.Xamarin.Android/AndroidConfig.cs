@@ -62,12 +62,6 @@ namespace Okta.Xamarin.Android
 				config.PostLogoutRedirectUri = doc.Element("Okta").Element("PostLogoutRedirectUri").Value;
 			}
 
-			if (doc.Element("Okta").Element("GetClaimsFromUserInfoEndpoint") != null &&
-				bool.TryParse(doc.Element("Okta").Element("GetClaimsFromUserInfoEndpoint").Value, out bool getClaimsFromUserInfoEndpoint))
-			{
-				config.GetClaimsFromUserInfoEndpoint = getClaimsFromUserInfoEndpoint;
-			}
-
 			if (doc.Element("Okta").Element("ClockSkew") != null &&
 				int.TryParse(doc.Element("Okta").Element("ClockSkew").Value, out int clockSkewSeconds))
 			{
