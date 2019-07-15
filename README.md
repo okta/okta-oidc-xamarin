@@ -13,6 +13,7 @@ You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/
 - [Configuration Reference](#configuration-reference)
   - [Okta.json](#oktajson)
   - [Configuration object](#configuration-object)
+  - [Validating the config](#validating-the-config)
 - [API Reference](#api-reference)
   - [OidcClient](#oidcclient)
     - [SignInWithBrowserAsync()](#signinwithbrowserasync)
@@ -59,17 +60,17 @@ The entrypoint for the SDK is an instance of `Okta.Xamarin.OidcClient`.  If you 
 
 ```csharp
 
-// Use the default configuration from Okta.json
+// Use the default configuration from "Okta.json"
 var oidcClient = new Okta.Xamarin.OidcClient()
 
 // Load configuration from a json file
-var config = await new Okta.Xamarin.OktaConfig.LoadfromJsonFileAsync(/* path to .json file */)
+var config = await Okta.Xamarin.OktaConfig.LoadFromJsonFileAsync(/* path to .json file */)
 
-// Load configuration from an Android resource xml file
-var config = await new Okta.Xamarin.Android.AndroidConfig.LoadFromXmlResourceAsync(/* xml resource name */)
+// Load configuration from an xml file on Android
+var config = await Okta.Xamarin.Android.AndroidConfig.LoadFromXmlFileAsync(/* xml file name */)
 
-// Load configuration from an iOS plist file
-// coming soon
+// Load configuration from a plist file on iOS
+var config = Okta.Xamarin.iOS.iOSConfig.LoadFromPList(/* plist file name */)
 
 // Specify config manually
 var config = new Okta.Xamarin.OktaConfig() {
@@ -91,7 +92,11 @@ A refresh token is a special token that is used to generate additional access an
 
 ### Configuration file
 
-The easiest way is to create a config file in your solution.  By default, the library checks for the existence of the file `Okta.json`.  However any json file can be used to create a configuration object.  On Andoid you can also use an xml file or resource.  Here is an example json file:
+The easiest way is to create a config file in your solution.  By default, the library checks for the existence of the file `Okta.json`.  However any json file can be used to create a configuration object.  On Andoid you can also use an xml file or resource, and on iOS you can use a plist.
+
+Make sure you set any config file (json, xml, or plist) as *build action*: `Content` and *copy to output directory*: `Copy always` or `Copy if newer`.
+
+Here is an example json file that will work in both Android and iOS:
 
 ```json
 {
@@ -103,8 +108,9 @@ The easiest way is to create a config file in your solution.  By default, the li
 }
 ```
 
-And the equivalent Android xml file:
+Here is the equivalent Android xml file:
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
 <Okta>
     <OktaDomain>https://{yourOktaDomain}</OktaDomain>
     <ClientId>{clientId}<ClientId>
@@ -112,6 +118,27 @@ And the equivalent Android xml file:
     <PostLogoutRedirectUri>{yourOktaScheme}:/logout</PostLogoutRedirectUri>
     <Scope>openid profile offline_access</Scope>
 </Okta>
+```
+
+And the equivalent iOS plist file:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>ClientId</key>
+    <string>{clientId}</string>
+    <key>OktaDomain</key>
+    <string>https://{yourOktaDomain}</string>
+    <key>RedirectUri</key>
+    <string>{yourOktaScheme}:/callback</string>
+    <key>PostLogoutRedirectUri</key>
+    <string>{yourOktaScheme}:/logout</string>
+    <key>Scope</key>
+    <string>openid profile offline_access</string>
+</dict>
+</plist>
+
 ```
 
 
@@ -129,6 +156,18 @@ var config = new Okta.Xamarin.OktaConfig() {
 }
 ```
 
+### Validating the config
+
+You can use an OktaConfigValidator to ensure that a given configuration object is valid.  This is called automatically when using a config to instantiate an OidcClient, but in case you want to call it manually, here's how:
+
+```csharp
+OktaConfigValidator<OktaConfig> validator = new OktaConfigValidator<OktaConfig>();
+
+validator.Validate(myConfigObject);
+// throws an exception if the config is invalid
+```
+
+
 
 ## API Reference
 
@@ -144,6 +183,7 @@ Start the authorization flow by simply calling `SignInWithBrowserAsync()`.  This
 ```csharp
 StateManager stateManager = await oidcClient.SignInWithBrowserAsync();
 
+// stateManager.IsAuthenticated;
 // stateManager.AccessToken
 // stateManager.IdToken
 // stateManager.RefreshToken
@@ -174,6 +214,7 @@ If you have used the [AuthN SDK](https://github.com/okta/okta-auth-dotnet) to lo
 // pass the sessionToken obtained from the AuthN SDK
 StateManager stateManager = await oidcClient.AuthenticateAsync(sessionToken);
 
+// stateManager.IsAuthenticated;
 // stateManager.AccessToken
 // stateManager.IdToken
 // stateManager.RefreshToken
