@@ -58,10 +58,16 @@ namespace Okta.Xamarin.Android
 			public static int abc_slide_out_top = 2130968585;
 			
 			// aapt resource value: 0x7f04000a
-			public static int tooltip_enter = 2130968586;
+			public static int slide_in_right = 2130968586;
 			
 			// aapt resource value: 0x7f04000b
-			public static int tooltip_exit = 2130968587;
+			public static int slide_out_left = 2130968587;
+			
+			// aapt resource value: 0x7f04000c
+			public static int tooltip_enter = 2130968588;
+			
+			// aapt resource value: 0x7f04000d
+			public static int tooltip_exit = 2130968589;
 			
 			static Animation()
 			{
@@ -1743,46 +1749,49 @@ namespace Okta.Xamarin.Android
 			public static int abc_vector_test = 2130837586;
 			
 			// aapt resource value: 0x7f020053
-			public static int notification_action_background = 2130837587;
+			public static int ic_arrow_back = 2130837587;
 			
 			// aapt resource value: 0x7f020054
-			public static int notification_bg = 2130837588;
+			public static int notification_action_background = 2130837588;
 			
 			// aapt resource value: 0x7f020055
-			public static int notification_bg_low = 2130837589;
+			public static int notification_bg = 2130837589;
 			
 			// aapt resource value: 0x7f020056
-			public static int notification_bg_low_normal = 2130837590;
+			public static int notification_bg_low = 2130837590;
 			
 			// aapt resource value: 0x7f020057
-			public static int notification_bg_low_pressed = 2130837591;
+			public static int notification_bg_low_normal = 2130837591;
 			
 			// aapt resource value: 0x7f020058
-			public static int notification_bg_normal = 2130837592;
+			public static int notification_bg_low_pressed = 2130837592;
 			
 			// aapt resource value: 0x7f020059
-			public static int notification_bg_normal_pressed = 2130837593;
+			public static int notification_bg_normal = 2130837593;
 			
 			// aapt resource value: 0x7f02005a
-			public static int notification_icon_background = 2130837594;
-			
-			// aapt resource value: 0x7f02005f
-			public static int notification_template_icon_bg = 2130837599;
-			
-			// aapt resource value: 0x7f020060
-			public static int notification_template_icon_low_bg = 2130837600;
+			public static int notification_bg_normal_pressed = 2130837594;
 			
 			// aapt resource value: 0x7f02005b
-			public static int notification_tile_bg = 2130837595;
+			public static int notification_icon_background = 2130837595;
+			
+			// aapt resource value: 0x7f020060
+			public static int notification_template_icon_bg = 2130837600;
+			
+			// aapt resource value: 0x7f020061
+			public static int notification_template_icon_low_bg = 2130837601;
 			
 			// aapt resource value: 0x7f02005c
-			public static int notify_panel_notification_icon_bg = 2130837596;
+			public static int notification_tile_bg = 2130837596;
 			
 			// aapt resource value: 0x7f02005d
-			public static int tooltip_frame_dark = 2130837597;
+			public static int notify_panel_notification_icon_bg = 2130837597;
 			
 			// aapt resource value: 0x7f02005e
-			public static int tooltip_frame_light = 2130837598;
+			public static int tooltip_frame_dark = 2130837598;
+			
+			// aapt resource value: 0x7f02005f
+			public static int tooltip_frame_light = 2130837599;
 			
 			static Drawable()
 			{
@@ -1815,8 +1824,8 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a0029
 			public static int SYM = 2131361833;
 			
-			// aapt resource value: 0x7f0a0069
-			public static int action0 = 2131361897;
+			// aapt resource value: 0x7f0a006a
+			public static int action0 = 2131361898;
 			
 			// aapt resource value: 0x7f0a0057
 			public static int action_bar = 2131361879;
@@ -1839,17 +1848,17 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a0035
 			public static int action_bar_title = 2131361845;
 			
-			// aapt resource value: 0x7f0a0066
-			public static int action_container = 2131361894;
+			// aapt resource value: 0x7f0a0067
+			public static int action_container = 2131361895;
 			
 			// aapt resource value: 0x7f0a0058
 			public static int action_context_bar = 2131361880;
 			
-			// aapt resource value: 0x7f0a006d
-			public static int action_divider = 2131361901;
+			// aapt resource value: 0x7f0a006e
+			public static int action_divider = 2131361902;
 			
-			// aapt resource value: 0x7f0a0067
-			public static int action_image = 2131361895;
+			// aapt resource value: 0x7f0a0068
+			public static int action_image = 2131361896;
 			
 			// aapt resource value: 0x7f0a0002
 			public static int action_menu_divider = 2131361794;
@@ -1866,11 +1875,11 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a0037
 			public static int action_mode_close_button = 2131361847;
 			
-			// aapt resource value: 0x7f0a0068
-			public static int action_text = 2131361896;
+			// aapt resource value: 0x7f0a0069
+			public static int action_text = 2131361897;
 			
-			// aapt resource value: 0x7f0a0076
-			public static int actions = 2131361910;
+			// aapt resource value: 0x7f0a0077
+			public static int actions = 2131361911;
 			
 			// aapt resource value: 0x7f0a0038
 			public static int activity_chooser_view_content = 2131361848;
@@ -1899,14 +1908,14 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a003e
 			public static int buttonPanel = 2131361854;
 			
-			// aapt resource value: 0x7f0a006a
-			public static int cancel_action = 2131361898;
+			// aapt resource value: 0x7f0a006b
+			public static int cancel_action = 2131361899;
 			
 			// aapt resource value: 0x7f0a004e
 			public static int checkbox = 2131361870;
 			
-			// aapt resource value: 0x7f0a0072
-			public static int chronometer = 2131361906;
+			// aapt resource value: 0x7f0a0073
+			public static int chronometer = 2131361907;
 			
 			// aapt resource value: 0x7f0a002b
 			public static int collapseActionView = 2131361835;
@@ -1935,8 +1944,8 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a0022
 			public static int end = 2131361826;
 			
-			// aapt resource value: 0x7f0a0078
-			public static int end_padder = 2131361912;
+			// aapt resource value: 0x7f0a0079
+			public static int end_padder = 2131361913;
 			
 			// aapt resource value: 0x7f0a0039
 			public static int expand_activities_button = 2131361849;
@@ -1956,8 +1965,8 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a003d
 			public static int icon = 2131361853;
 			
-			// aapt resource value: 0x7f0a0077
-			public static int icon_group = 2131361911;
+			// aapt resource value: 0x7f0a0078
+			public static int icon_group = 2131361912;
 			
 			// aapt resource value: 0x7f0a002c
 			public static int ifRoom = 2131361836;
@@ -1965,8 +1974,8 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a003a
 			public static int image = 2131361850;
 			
-			// aapt resource value: 0x7f0a0073
-			public static int info = 2131361907;
+			// aapt resource value: 0x7f0a0074
+			public static int info = 2131361908;
 			
 			// aapt resource value: 0x7f0a0034
 			public static int italic = 2131361844;
@@ -1983,11 +1992,11 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a003c
 			public static int list_item = 2131361852;
 			
-			// aapt resource value: 0x7f0a006c
-			public static int media_actions = 2131361900;
+			// aapt resource value: 0x7f0a006d
+			public static int media_actions = 2131361901;
 			
-			// aapt resource value: 0x7f0a0079
-			public static int message = 2131361913;
+			// aapt resource value: 0x7f0a007a
+			public static int message = 2131361914;
 			
 			// aapt resource value: 0x7f0a0023
 			public static int middle = 2131361827;
@@ -2004,14 +2013,14 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a0010
 			public static int normal = 2131361808;
 			
-			// aapt resource value: 0x7f0a0075
-			public static int notification_background = 2131361909;
+			// aapt resource value: 0x7f0a0076
+			public static int notification_background = 2131361910;
+			
+			// aapt resource value: 0x7f0a0070
+			public static int notification_main_column = 2131361904;
 			
 			// aapt resource value: 0x7f0a006f
-			public static int notification_main_column = 2131361903;
-			
-			// aapt resource value: 0x7f0a006e
-			public static int notification_main_column_container = 2131361902;
+			public static int notification_main_column_container = 2131361903;
 			
 			// aapt resource value: 0x7f0a0040
 			public static int parentPanel = 2131361856;
@@ -2025,11 +2034,11 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a0050
 			public static int radio = 2131361872;
 			
-			// aapt resource value: 0x7f0a0074
-			public static int right_icon = 2131361908;
+			// aapt resource value: 0x7f0a0075
+			public static int right_icon = 2131361909;
 			
-			// aapt resource value: 0x7f0a0070
-			public static int right_side = 2131361904;
+			// aapt resource value: 0x7f0a0071
+			public static int right_side = 2131361905;
 			
 			// aapt resource value: 0x7f0a001b
 			public static int screen = 2131361819;
@@ -2103,8 +2112,8 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a001e
 			public static int src_over = 2131361822;
 			
-			// aapt resource value: 0x7f0a006b
-			public static int status_bar_latest_event_content = 2131361899;
+			// aapt resource value: 0x7f0a006c
+			public static int status_bar_latest_event_content = 2131361900;
 			
 			// aapt resource value: 0x7f0a0051
 			public static int submenuarrow = 2131361873;
@@ -2130,8 +2139,8 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f0a0044
 			public static int textSpacerNoTitle = 2131361860;
 			
-			// aapt resource value: 0x7f0a0071
-			public static int time = 2131361905;
+			// aapt resource value: 0x7f0a0072
+			public static int time = 2131361906;
 			
 			// aapt resource value: 0x7f0a000e
 			public static int title = 2131361806;
@@ -2156,6 +2165,9 @@ namespace Okta.Xamarin.Android
 			
 			// aapt resource value: 0x7f0a0018
 			public static int useLogo = 2131361816;
+			
+			// aapt resource value: 0x7f0a0066
+			public static int webview = 2131361894;
 			
 			// aapt resource value: 0x7f0a002e
 			public static int withText = 2131361838;
@@ -2283,64 +2295,67 @@ namespace Okta.Xamarin.Android
 			public static int abc_select_dialog_material = 2130903065;
 			
 			// aapt resource value: 0x7f03001a
-			public static int notification_action = 2130903066;
+			public static int activity_webview = 2130903066;
 			
 			// aapt resource value: 0x7f03001b
-			public static int notification_action_tombstone = 2130903067;
+			public static int notification_action = 2130903067;
 			
 			// aapt resource value: 0x7f03001c
-			public static int notification_media_action = 2130903068;
+			public static int notification_action_tombstone = 2130903068;
 			
 			// aapt resource value: 0x7f03001d
-			public static int notification_media_cancel_action = 2130903069;
+			public static int notification_media_action = 2130903069;
 			
 			// aapt resource value: 0x7f03001e
-			public static int notification_template_big_media = 2130903070;
+			public static int notification_media_cancel_action = 2130903070;
 			
 			// aapt resource value: 0x7f03001f
-			public static int notification_template_big_media_custom = 2130903071;
+			public static int notification_template_big_media = 2130903071;
 			
 			// aapt resource value: 0x7f030020
-			public static int notification_template_big_media_narrow = 2130903072;
+			public static int notification_template_big_media_custom = 2130903072;
 			
 			// aapt resource value: 0x7f030021
-			public static int notification_template_big_media_narrow_custom = 2130903073;
+			public static int notification_template_big_media_narrow = 2130903073;
 			
 			// aapt resource value: 0x7f030022
-			public static int notification_template_custom_big = 2130903074;
+			public static int notification_template_big_media_narrow_custom = 2130903074;
 			
 			// aapt resource value: 0x7f030023
-			public static int notification_template_icon_group = 2130903075;
+			public static int notification_template_custom_big = 2130903075;
 			
 			// aapt resource value: 0x7f030024
-			public static int notification_template_lines_media = 2130903076;
+			public static int notification_template_icon_group = 2130903076;
 			
 			// aapt resource value: 0x7f030025
-			public static int notification_template_media = 2130903077;
+			public static int notification_template_lines_media = 2130903077;
 			
 			// aapt resource value: 0x7f030026
-			public static int notification_template_media_custom = 2130903078;
+			public static int notification_template_media = 2130903078;
 			
 			// aapt resource value: 0x7f030027
-			public static int notification_template_part_chronometer = 2130903079;
+			public static int notification_template_media_custom = 2130903079;
 			
 			// aapt resource value: 0x7f030028
-			public static int notification_template_part_time = 2130903080;
+			public static int notification_template_part_chronometer = 2130903080;
 			
 			// aapt resource value: 0x7f030029
-			public static int select_dialog_item_material = 2130903081;
+			public static int notification_template_part_time = 2130903081;
 			
 			// aapt resource value: 0x7f03002a
-			public static int select_dialog_multichoice_material = 2130903082;
+			public static int select_dialog_item_material = 2130903082;
 			
 			// aapt resource value: 0x7f03002b
-			public static int select_dialog_singlechoice_material = 2130903083;
+			public static int select_dialog_multichoice_material = 2130903083;
 			
 			// aapt resource value: 0x7f03002c
-			public static int support_simple_spinner_dropdown_item = 2130903084;
+			public static int select_dialog_singlechoice_material = 2130903084;
 			
 			// aapt resource value: 0x7f03002d
-			public static int tooltip = 2130903085;
+			public static int support_simple_spinner_dropdown_item = 2130903085;
+			
+			// aapt resource value: 0x7f03002e
+			public static int tooltip = 2130903086;
 			
 			static Layout()
 			{
@@ -2355,104 +2370,107 @@ namespace Okta.Xamarin.Android
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f050000
-			public static int abc_action_bar_home_description = 2131034112;
-			
 			// aapt resource value: 0x7f050001
-			public static int abc_action_bar_up_description = 2131034113;
+			public static int abc_action_bar_home_description = 2131034113;
 			
 			// aapt resource value: 0x7f050002
-			public static int abc_action_menu_overflow_description = 2131034114;
+			public static int abc_action_bar_up_description = 2131034114;
 			
 			// aapt resource value: 0x7f050003
-			public static int abc_action_mode_done = 2131034115;
+			public static int abc_action_menu_overflow_description = 2131034115;
 			
 			// aapt resource value: 0x7f050004
-			public static int abc_activity_chooser_view_see_all = 2131034116;
+			public static int abc_action_mode_done = 2131034116;
 			
 			// aapt resource value: 0x7f050005
-			public static int abc_activitychooserview_choose_application = 2131034117;
+			public static int abc_activity_chooser_view_see_all = 2131034117;
 			
 			// aapt resource value: 0x7f050006
-			public static int abc_capital_off = 2131034118;
+			public static int abc_activitychooserview_choose_application = 2131034118;
 			
 			// aapt resource value: 0x7f050007
-			public static int abc_capital_on = 2131034119;
-			
-			// aapt resource value: 0x7f050012
-			public static int abc_font_family_body_1_material = 2131034130;
-			
-			// aapt resource value: 0x7f050013
-			public static int abc_font_family_body_2_material = 2131034131;
-			
-			// aapt resource value: 0x7f050014
-			public static int abc_font_family_button_material = 2131034132;
-			
-			// aapt resource value: 0x7f050015
-			public static int abc_font_family_caption_material = 2131034133;
-			
-			// aapt resource value: 0x7f050016
-			public static int abc_font_family_display_1_material = 2131034134;
-			
-			// aapt resource value: 0x7f050017
-			public static int abc_font_family_display_2_material = 2131034135;
-			
-			// aapt resource value: 0x7f050018
-			public static int abc_font_family_display_3_material = 2131034136;
-			
-			// aapt resource value: 0x7f050019
-			public static int abc_font_family_display_4_material = 2131034137;
-			
-			// aapt resource value: 0x7f05001a
-			public static int abc_font_family_headline_material = 2131034138;
-			
-			// aapt resource value: 0x7f05001b
-			public static int abc_font_family_menu_material = 2131034139;
-			
-			// aapt resource value: 0x7f05001c
-			public static int abc_font_family_subhead_material = 2131034140;
-			
-			// aapt resource value: 0x7f05001d
-			public static int abc_font_family_title_material = 2131034141;
+			public static int abc_capital_off = 2131034119;
 			
 			// aapt resource value: 0x7f050008
-			public static int abc_search_hint = 2131034120;
+			public static int abc_capital_on = 2131034120;
 			
-			// aapt resource value: 0x7f050009
-			public static int abc_searchview_description_clear = 2131034121;
+			// aapt resource value: 0x7f050013
+			public static int abc_font_family_body_1_material = 2131034131;
 			
-			// aapt resource value: 0x7f05000a
-			public static int abc_searchview_description_query = 2131034122;
+			// aapt resource value: 0x7f050014
+			public static int abc_font_family_body_2_material = 2131034132;
 			
-			// aapt resource value: 0x7f05000b
-			public static int abc_searchview_description_search = 2131034123;
+			// aapt resource value: 0x7f050015
+			public static int abc_font_family_button_material = 2131034133;
 			
-			// aapt resource value: 0x7f05000c
-			public static int abc_searchview_description_submit = 2131034124;
+			// aapt resource value: 0x7f050016
+			public static int abc_font_family_caption_material = 2131034134;
 			
-			// aapt resource value: 0x7f05000d
-			public static int abc_searchview_description_voice = 2131034125;
+			// aapt resource value: 0x7f050017
+			public static int abc_font_family_display_1_material = 2131034135;
 			
-			// aapt resource value: 0x7f05000e
-			public static int abc_shareactionprovider_share_with = 2131034126;
+			// aapt resource value: 0x7f050018
+			public static int abc_font_family_display_2_material = 2131034136;
 			
-			// aapt resource value: 0x7f05000f
-			public static int abc_shareactionprovider_share_with_application = 2131034127;
+			// aapt resource value: 0x7f050019
+			public static int abc_font_family_display_3_material = 2131034137;
 			
-			// aapt resource value: 0x7f050010
-			public static int abc_toolbar_collapse_description = 2131034128;
+			// aapt resource value: 0x7f05001a
+			public static int abc_font_family_display_4_material = 2131034138;
 			
-			// aapt resource value: 0x7f050020
-			public static int app_name = 2131034144;
+			// aapt resource value: 0x7f05001b
+			public static int abc_font_family_headline_material = 2131034139;
 			
-			// aapt resource value: 0x7f05001f
-			public static int hello = 2131034143;
+			// aapt resource value: 0x7f05001c
+			public static int abc_font_family_menu_material = 2131034140;
 			
-			// aapt resource value: 0x7f050011
-			public static int search_menu_title = 2131034129;
+			// aapt resource value: 0x7f05001d
+			public static int abc_font_family_subhead_material = 2131034141;
 			
 			// aapt resource value: 0x7f05001e
-			public static int status_bar_notification_info_overflow = 2131034142;
+			public static int abc_font_family_title_material = 2131034142;
+			
+			// aapt resource value: 0x7f050009
+			public static int abc_search_hint = 2131034121;
+			
+			// aapt resource value: 0x7f05000a
+			public static int abc_searchview_description_clear = 2131034122;
+			
+			// aapt resource value: 0x7f05000b
+			public static int abc_searchview_description_query = 2131034123;
+			
+			// aapt resource value: 0x7f05000c
+			public static int abc_searchview_description_search = 2131034124;
+			
+			// aapt resource value: 0x7f05000d
+			public static int abc_searchview_description_submit = 2131034125;
+			
+			// aapt resource value: 0x7f05000e
+			public static int abc_searchview_description_voice = 2131034126;
+			
+			// aapt resource value: 0x7f05000f
+			public static int abc_shareactionprovider_share_with = 2131034127;
+			
+			// aapt resource value: 0x7f050010
+			public static int abc_shareactionprovider_share_with_application = 2131034128;
+			
+			// aapt resource value: 0x7f050011
+			public static int abc_toolbar_collapse_description = 2131034129;
+			
+			// aapt resource value: 0x7f050021
+			public static int app_name = 2131034145;
+			
+			// aapt resource value: 0x7f050020
+			public static int hello = 2131034144;
+			
+			// aapt resource value: 0x7f050012
+			public static int search_menu_title = 2131034130;
+			
+			// aapt resource value: 0x7f05001f
+			public static int status_bar_notification_info_overflow = 2131034143;
+			
+			// aapt resource value: 0x7f050000
+			public static int title_activity_webview = 2131034112;
 			
 			static String()
 			{
