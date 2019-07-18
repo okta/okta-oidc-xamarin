@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace Okta.Xamarin
 {
 	public class OktaConfigValidator<T>
-		where T : OktaConfig
+		where T : IOktaConfig
 	{
 		/// <summary>
 		/// Can be overriden to validate config fields specific to a derived class
@@ -21,7 +21,7 @@ namespace Okta.Xamarin
 		/// Validates all fields in this config object and throws an exception if anything is wrong.
 		/// </summary>
 		/// <param name="config">The config object to validate</param>
-		public void Validate(OktaConfig config)
+		public void Validate(IOktaConfig config)
 		{
 			if (config == null)
 			{

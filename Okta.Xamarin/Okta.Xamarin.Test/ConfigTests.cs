@@ -14,7 +14,7 @@ namespace Okta.Xamarin.Test
 		[Fact]
 		public void ConfigValidatorPassesWhenValid()
 		{
-			OktaConfigValidator<OktaConfig> validator = new OktaConfigValidator<OktaConfig>();
+			OktaConfigValidator<IOktaConfig> validator = new OktaConfigValidator<IOktaConfig>();
 
 			validator.Validate(
 				new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));

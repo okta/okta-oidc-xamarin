@@ -11,7 +11,7 @@ namespace Okta.Xamarin
 	/// <summary>
 	/// Stores configuration for the Okta OIDC client
 	/// </summary>
-	public class OktaConfig
+	public partial class OktaConfig : IOktaConfig
 	{
 
 		/// <summary>
@@ -97,9 +97,9 @@ namespace Okta.Xamarin
 				root = (JObject)root["Okta"];
 
 			OktaConfig config = new OktaConfig(root.Value<string>("ClientId"),
-			                                   root.Value<string>("OktaDomain"),
-			                                   root.Value<string>("RedirectUri"),
-			                                   root.Value<string>("PostLogoutRedirectUri"));
+											   root.Value<string>("OktaDomain"),
+											   root.Value<string>("RedirectUri"),
+											   root.Value<string>("PostLogoutRedirectUri"));
 
 
 			if (root.ContainsKey("Scope"))

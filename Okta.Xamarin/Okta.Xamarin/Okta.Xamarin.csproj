@@ -5,6 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="OidcClient.cs" />
+    <Compile Remove="OktaConfig.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="OidcClient.cs" />
+    <None Include="OktaConfig.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Xamarin.Auth" Version="1.7.0" />
   </ItemGroup>

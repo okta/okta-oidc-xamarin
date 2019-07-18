@@ -6,11 +6,11 @@ using Xamarin.Auth;
 
 namespace Okta.Xamarin
 {
-	public partial class OidcClient
+	public partial class OidcClient : IOidcClient
 	{
-		public OktaConfig Config { get; private set; }
+		public IOktaConfig Config { get; private set; }
 
-		public OidcClient(OktaConfig config)
+		public OidcClient(IOktaConfig config)
 		{
 			this.Config = config;
 		}
@@ -61,6 +61,11 @@ namespace Okta.Xamarin
 
 			return oktaDomain.EndsWith("/") ? oktaDomain : $"{oktaDomain}/"
 				+ "oauth2/" + authorizationServerId;
+		}
+
+		public void ParseRedirectedUrl(Uri url)
+		{
+			System.Diagnostics.Debug.WriteLine(url);
 		}
 
 

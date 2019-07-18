@@ -77,7 +77,7 @@ namespace Okta.Xamarin
 		/// </summary>
 		/// <param name="config">the Okta configuration that corresponds to a manager you are interested in</param>
 		/// <returns>If a state manager is found for the provided config, this Task will return the <see cref="StateManager"/>.</returns>
-		public static async Task<StateManager> ReadFromSecureStorageAsync(OktaConfig config)
+		public static async Task<StateManager> ReadFromSecureStorageAsync(IOktaConfig config)
 		{
 			throw new NotImplementedException();
 		}

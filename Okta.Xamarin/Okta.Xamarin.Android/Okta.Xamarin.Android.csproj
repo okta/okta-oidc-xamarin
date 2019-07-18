@@ -48,7 +48,11 @@
     <Compile Include="..\Okta.Xamarin\OidcClient.cs">
       <Link>OidcClient.cs</Link>
     </Compile>
-    <Compile Include="AndroidConfig.cs" />
+    <Compile Include="..\Okta.Xamarin\OktaConfig.cs">
+      <Link>OktaConfig.cs</Link>
+    </Compile>
+    <Compile Include="ActivityCustomUrlSchemeInterceptor.cs" />
+    <Compile Include="OktaConfig.Android.cs" />
     <Compile Include="OidcClient.Android.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

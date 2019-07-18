@@ -9,7 +9,7 @@ namespace Okta.Xamarin
 {
 	public partial class OidcClient
 	{
-
+		public static OidcClient currentAuthenticator;
 
 		public Task<StateManager> SignInWithBrowserAsync(Context context)
 		{
@@ -24,11 +24,15 @@ namespace Okta.Xamarin
 
 			TaskCompletionSource<StateManager> result = new TaskCompletionSource<StateManager>();
 
+			currentAuthenticator = this;
+
+			var authActivity = auth.GetUI(context);
+
 			auth.Completed += (object sender, AuthenticatorCompletedEventArgs e) =>
 			{
 				// UI presented, so it's up to us to dimiss it on Android
 				// dismiss Activity with WebView or CustomTabs
-				context.Finish();
+				//authActivity .Finish();
 
 				if (e.IsAuthenticated)
 				{
@@ -43,7 +47,8 @@ namespace Okta.Xamarin
 				}
 			};
 
-			context.StartActivity(auth.GetUI(context));
+
+			context.StartActivity(authActivity);
 
 
 			return result.Task;
