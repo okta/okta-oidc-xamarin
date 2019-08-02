@@ -8,7 +8,7 @@ namespace Okta.Xamarin
 		IOktaConfig Config { get; }
 
 		Task<StateManager> AuthenticateAsync(string sessionToken);
-		void ParseRedirectedUrl(Uri url);
+		Task ParseRedirectedUrl(Uri url);
 		Task<StateManager> SignInWithBrowserAsync();
 		Task SignOutOfOktaAsync(StateManager stateManager);
 	}

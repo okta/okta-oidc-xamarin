@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Xamarin.Auth" Version="1.7.0" />
   </ItemGroup>
 
 </Project>

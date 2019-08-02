@@ -13,17 +13,6 @@ using Android.Widget;
 
 namespace Okta.Xamarin.Android
 {
-	[Activity(Label = "ActivityCustomUrlSchemeInterceptor", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
-	[IntentFilter(
-			actions: new[] { Intent.ActionView },
-			Categories = new[]
-					{
-						Intent.CategoryDefault,
-						Intent.CategoryBrowsable
-					},
-			DataSchemes = new string[0],
-			DataPath = "/redirect"
-		)]
 	public class ActivityCustomUrlSchemeInterceptor : Activity
 	{
 		protected override void OnCreate(Bundle savedInstanceState)
@@ -35,9 +24,24 @@ namespace Okta.Xamarin.Android
 			// Convert Android.Net.Url to C#/netxf/BCL System.Uri - common API
 			Uri uri_netfx = new Uri(uri_android.ToString());
 
-			// load redirect_url Page for parsing
-			OidcClient.currentAuthenticator.ParseRedirectedUrl(uri_netfx);
 
+			string uriString = uri_netfx.Query.ToString();
+			System.Diagnostics.Debug.WriteLine(uriString);
+
+			var parsed = System.Web.HttpUtility.ParseQueryString(uriString);
+			System.Diagnostics.Debug.WriteLine(parsed.ToString());
+
+			string state = parsed["state"];
+
+			if (OidcClient.currentAuthenticatorbyState.ContainsKey(state))
+			{
+				// load redirect_url Page for parsing
+				OidcClient.currentAuthenticatorbyState[state].ParseRedirectedUrl(uri_netfx);
+			}
+			else
+			{
+				//throw new InvalidOperationException("OAuth callback did not include expected state in url: " + uri_netfx.ToString());
+			}
 			this.Finish();
 
 			return;

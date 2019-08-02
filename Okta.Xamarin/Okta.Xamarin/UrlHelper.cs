@@ -1,44 +1,40 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Okta.Xamarin
 {
-	static class UrlHelper
+	public static class Helpers
 	{
-
-		public static string CreateIssuerUrl(string oktaDomain, string authorizationServerId)
+		public static Dictionary<string, string> ToDictionary(this System.Collections.Specialized.NameValueCollection nvc)
 		{
-			if (string.IsNullOrEmpty(oktaDomain))
+			Dictionary<string, string> dict = new Dictionary<string, string>();
+			foreach (var k in nvc.AllKeys)
 			{
-				throw new ArgumentNullException(nameof(oktaDomain));
+				dict.Add(k, nvc[k]);
 			}
-
-			if (string.IsNullOrEmpty(authorizationServerId))
-			{
-				return oktaDomain;
-			}
-
-			return $"{EnsureTrailingSlash(oktaDomain)}oauth2/{authorizationServerId}";
+			return dict;
 		}
 
-		/// <summary>
-		/// Ensures that this URI ends with a trailing slash <c>/</c>.
-		/// </summary>
-		/// <param name="uri">The URI string.</param>
-		/// <returns>The URI string, appended with <c>/</c> if necessary.</returns>
-		public static string EnsureTrailingSlash(string uri)
+		public static Dictionary<string, string> JsonDecode(string encodedString)
 		{
-			if (string.IsNullOrEmpty(uri))
+			var inputs = new Dictionary<string, string>();
+			var json = JValue.Parse(encodedString) as JObject;
+
+			foreach (var kv in json)
 			{
-				throw new ArgumentNullException(nameof(uri));
+				var v = kv.Value as JValue;
+				if (v != null)
+				{
+					if (v.Type != JTokenType.String)
+						inputs[kv.Key] = v.ToString();
+					else
+						inputs[kv.Key] = (string)v;
+				}
 			}
 
-			return uri.EndsWith("/")
-				? uri
-				: $"{uri}/";
+			return inputs;
 		}
-
-
 	}
 }

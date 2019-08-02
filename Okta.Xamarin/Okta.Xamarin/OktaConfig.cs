@@ -21,11 +21,16 @@ namespace Okta.Xamarin
 		public string ClientId { get; set; }
 
 		/// <summary>
+		/// This identifies the URL where the authorization code will be obtained from. If not specified, will default to  "{OktaDomain}/oauth2/{AuthorizationServerId}/v1/authorize".  Optional.
+		/// </summary>
+		[JsonProperty("AuthorizeUri", Required = Required.Always)]
+		public string AuthorizeUri { get; set; }
+
+		/// <summary>
 		/// The location Okta should redirect to process a login. This is typically something like "{yourAppScheme}:/callback".  Required.
 		/// </summary>
 		[JsonProperty("RedirectUri", Required = Required.Always)]
 		public string RedirectUri { get; set; }
-
 		/// <summary>
 		/// The location Okta should redirect to process a logout. This is typically something like "{yourAppScheme}:/logout".  Required.
 		/// </summary>

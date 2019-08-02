@@ -7,45 +7,15 @@ namespace Okta.Xamarin
 {
 	public class StateManager
 	{
-		#region InternalState/Tokens
-		public object AuthState { get; set; }
 
-
-		private string _accessToken;
-		/// <summary>
-		/// Return the known accessToken if it hasn't expired
-		/// </summary>
-		public string AccessToken
-		{
-			get
-			{
-				// TODO: https://github.com/okta/okta-oidc-ios/blob/566ee5fdf844ec9c3ee4c5aecafde7b25ad777fa/Okta/OktaOidc/OktaOidcStateManager.swift#L21
-				return _accessToken;
-			}
-		}
-
-		private string _idToken;
-
-		/// <summary>
-		/// Return the known IdToken if it is valid
-		/// </summary>
-		public string IdToken
-		{
-			get
-			{
-				//TODO: https://github.com/okta/okta-oidc-ios/blob/566ee5fdf844ec9c3ee4c5aecafde7b25ad777fa/Okta/OktaOidc/OktaOidcStateManager.swift#L34
-				return _idToken;
-			}
-		}
-
-
-		private string _refreshToken;
-
-		/// <summary>
-		/// A refresh token is a special token that is used to generate additional access and ID tokens. Make sure to include the `offline_access` scope in your configuration to silently renew the user's session in your application.
-		/// </summary>
+		public string TokenType { get; private set; }
+		public string AccessToken { get; private set; }
+		public string IdToken { get; private set; }
 		public string RefreshToken { get; private set; }
-		#endregion
+		public string Scope { get; private set; }
+		public DateTime Expires { get; private set; }
+
+		
 
 
 		#region CTors
@@ -54,11 +24,14 @@ namespace Okta.Xamarin
 
 		}
 
-		public StateManager(string accessToken, string idToken, string refreshToken)
+		public StateManager(string accessToken, string tokenType, string idToken=null, string refreshToken=null, int? expiresIn=null, string scope=null)
 		{
-			this._accessToken = accessToken;
-			this._idToken = idToken;
-			this._refreshToken = refreshToken;
+			this.TokenType = tokenType;
+			this.AccessToken = accessToken;
+			this.IdToken = idToken;
+			this.RefreshToken = refreshToken;
+			this.Expires = expiresIn.HasValue ? DateTime.UtcNow.AddSeconds(expiresIn.Value) : DateTime.MaxValue;
+			this.Scope = scope;
 		} 
 		#endregion
 

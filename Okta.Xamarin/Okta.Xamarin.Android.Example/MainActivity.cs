@@ -50,12 +50,13 @@ namespace Okta.Xamarin.Android.Example
 		{
 			View view = (View) sender;
 
+			//global::Xamarin.Auth.OAuth2Authenticator testAuth = new global::Xamarin.Auth.OAuth2Authenticator(null,null,null,null);
 
-			OidcClient client = new OidcClient(await OktaConfig.LoadFromXmlStreamAsync(Assets.Open("OktaConfig.xml")));
+			OidcClient client = new OidcClient(this, await OktaConfig.LoadFromXmlStreamAsync(Assets.Open("OktaConfig.xml")));
 
-			var res = await client.SignInWithBrowserAsync(this);
+			var res = await client.SignInWithBrowserAsync();
 
-
+			res.AccessToken.Clone();
 			//OidcClient client = new OidcClient(await OktaConfig.LoadFromXmlResourceAsync("OktaConfig.xml"));
 		}
 		public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
