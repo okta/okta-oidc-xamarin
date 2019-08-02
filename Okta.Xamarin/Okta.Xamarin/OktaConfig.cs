@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Okta.Xamarin
@@ -139,6 +138,24 @@ namespace Okta.Xamarin
 			{
 				return ParseJson(await reader.ReadToEndAsync());
 			}
+		}
+
+
+		public string GetAuthorizeUri()
+		{
+			if (string.IsNullOrEmpty(AuthorizeUri))
+			{
+				return $"{OktaDomain}/oauth2/{AuthorizationServerId}/v1/authorize";
+			}
+			else
+			{
+				return AuthorizeUri;
+			}
+		}
+
+		public string GetAccessTokenUrl()
+		{
+			return $"{OktaDomain}/oauth2/{AuthorizationServerId}/v1/token";
 		}
 
 	}

@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 
 namespace Okta.Xamarin
 {
@@ -82,7 +72,7 @@ namespace Okta.Xamarin
 		/// <returns>Returns a Task which returns the <see cref="OktaConfig"/> with fields filled from <paramref name="resourceName"/>.</returns>
 		public static async Task<OktaConfig> LoadFromXmlStreamAsync(Stream xmlStream)
 		{
-		//	var allre = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+			//	var allre = Assembly.GetExecutingAssembly().GetManifestResourceNames();
 
 			using (StreamReader reader = new StreamReader(xmlStream))
 			{

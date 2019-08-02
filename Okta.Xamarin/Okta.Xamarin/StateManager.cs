@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Okta.Xamarin
@@ -15,7 +13,7 @@ namespace Okta.Xamarin
 		public string Scope { get; private set; }
 		public DateTime Expires { get; private set; }
 
-		
+
 
 
 		#region CTors
@@ -24,7 +22,7 @@ namespace Okta.Xamarin
 
 		}
 
-		public StateManager(string accessToken, string tokenType, string idToken=null, string refreshToken=null, int? expiresIn=null, string scope=null)
+		public StateManager(string accessToken, string tokenType, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
 		{
 			this.TokenType = tokenType;
 			this.AccessToken = accessToken;
@@ -32,7 +30,7 @@ namespace Okta.Xamarin
 			this.RefreshToken = refreshToken;
 			this.Expires = expiresIn.HasValue ? DateTime.UtcNow.AddSeconds(expiresIn.Value) : DateTime.MaxValue;
 			this.Scope = scope;
-		} 
+		}
 		#endregion
 
 

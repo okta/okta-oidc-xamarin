@@ -14,27 +14,8 @@ namespace Okta.Xamarin
 		string RedirectUri { get; set; }
 		string Scope { get; set; }
 		IReadOnlyList<string> Scopes { get; }
-	}
 
-	public static class OktaConfigExtensions
-	{
-		public static string GetAuthorizeUri(this IOktaConfig config)
-		{
-			if (string.IsNullOrEmpty(config.AuthorizeUri))
-			{
-				return $"{config.OktaDomain}/oauth2/{config.AuthorizationServerId}/v1/authorize";
-			}
-			else
-			{
-				return config.AuthorizeUri;
-			}
-		}
-
-		public static string GetAccessTokenUrl(this IOktaConfig config)
-		{
-
-			return $"{config.OktaDomain}/oauth2/{config.AuthorizationServerId}/v1/token";
-
-		}
+		string GetAuthorizeUri();
+		string GetAccessTokenUrl();
 	}
 }

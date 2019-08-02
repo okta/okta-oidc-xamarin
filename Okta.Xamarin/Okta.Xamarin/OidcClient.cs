@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Okta.Xamarin
 {
@@ -74,7 +72,7 @@ namespace Okta.Xamarin
 			Debug.WriteLine("ParseRedirectedUrl " + url.ToString());
 
 			var all = System.Web.HttpUtility.ParseQueryString(url.Query).ToDictionary();
-			
+
 
 
 			// check if ther is an error
@@ -148,9 +146,9 @@ namespace Okta.Xamarin
 			currentTask.SetResult(state);
 		}
 
-		private string State { get;  set; }
-		private string CodeVerifier { get;  set; }
-		private string CodeChallenge { get;  set; }
+		private string State { get; set; }
+		private string CodeVerifier { get; set; }
+		private string CodeChallenge { get; set; }
 		private TaskCompletionSource<StateManager> currentTask;
 
 		private void GenerateStateCodeVerifierAndChallenge()
@@ -160,7 +158,7 @@ namespace Okta.Xamarin
 				byte[] tokenData = new byte[16];
 				rng.GetBytes(tokenData);
 
-				State = Convert.ToBase64String(tokenData).Substring(0,16);
+				State = Convert.ToBase64String(tokenData).Substring(0, 16);
 			}
 
 			using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
