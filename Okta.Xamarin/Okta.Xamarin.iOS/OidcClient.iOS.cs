@@ -2,24 +2,35 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Foundation;
+using SafariServices;
+using UIKit;
 
 namespace Okta.Xamarin
 {
 	public partial class OidcClient
 	{
-		//public Context AndroidContext { get; set; }
+		public UIKit.UIViewController iOSViewController { get; set; }
 
 		public void LaunchBrowser(string url)
 		{
-			//CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-			//CustomTabsIntent customTabsIntent = builder.Build();
-			//customTabsIntent.LaunchUrl(AndroidContext, global::Android.Net.Uri.Parse(url));
+			var sfViewController = new SFSafariViewController(Foundation.NSUrl.FromString(url));
+			iOSViewController.PresentViewControllerAsync(sfViewController, true);
 		}
 
-		public OidcClient(object context, IOktaConfig config = null)
+		public OidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config = null)
 		{
-			//this.AndroidContext = context;
+			this.iOSViewController = iOSViewController;
 			this.Config = config;
+		}
+
+		public static bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
+		{			if (OidcClient.CaptureRedirectUrl(new Uri(url.AbsoluteString)))
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

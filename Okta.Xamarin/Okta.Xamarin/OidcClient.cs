@@ -211,5 +211,22 @@ namespace Okta.Xamarin
 			return url;
 		}
 
+		public static bool CaptureRedirectUrl(Uri uri)
+		{
+			string uriString = uri.Query.ToString();
+			var parsed = System.Web.HttpUtility.ParseQueryString(uriString);
+			string state = parsed["state"];
+
+			if (OidcClient.currentAuthenticatorbyState.ContainsKey(state))
+			{
+				OidcClient.currentAuthenticatorbyState[state].ParseRedirectedUrl(uri);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 	}
 }
