@@ -19,5 +19,10 @@ namespace Okta.Xamarin
 			this.AndroidContext = context;
 			this.Config = config;
 		}
+
+		private void CloseBrowser()
+		{
+			// not needed on Android
+		}
 	}
 }

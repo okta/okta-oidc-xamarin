@@ -70,6 +70,7 @@ namespace Okta.Xamarin
 		public async Task ParseRedirectedUrl(Uri url)
 		{
 			Debug.WriteLine("ParseRedirectedUrl " + url.ToString());
+			CloseBrowser();
 
 			var all = System.Web.HttpUtility.ParseQueryString(url.Query).ToDictionary();
 
@@ -155,10 +156,10 @@ namespace Okta.Xamarin
 		{
 			using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
 			{
-				byte[] tokenData = new byte[16];
-				rng.GetBytes(tokenData);
+				byte[] stateData = new byte[16];
+				rng.GetBytes(stateData);
 
-				State = Convert.ToBase64String(tokenData).Substring(0, 16);
+				State = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(stateData).Substring(0, 16);
 			}
 
 			using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
