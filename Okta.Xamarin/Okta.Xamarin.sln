@@ -21,10 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{8079F219-9C13-4BB2-8406-16E160F2641F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Okta.Xamarin.Android.Example", "Okta.Xamarin.Android.Example\Okta.Xamarin.Android.Example.csproj", "{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Okta.Xamarin.iOS.ExampleApp", "Okta.Xamarin.iOS.ExampleApp\Okta.Xamarin.iOS.ExampleApp.csproj", "{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D2A7ED8B-B27B-4EA6-88FF-CF76C87D4FAF}"
 EndProject
 Global
@@ -100,48 +96,12 @@ Global
 		{6BC0D61C-8B1E-4AE3-A718-8118CF5F68DD}.Release|iPhone.Build.0 = Release|Any CPU
 		{6BC0D61C-8B1E-4AE3-A718-8118CF5F68DD}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{6BC0D61C-8B1E-4AE3-A718-8118CF5F68DD}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|Android.ActiveCfg = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|Android.Build.0 = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|Android.Deploy.0 = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|iPhone.Deploy.0 = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|Android.ActiveCfg = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|Android.Build.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|Android.Deploy.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|iPhone.Build.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|iPhone.Deploy.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8}.Release|iPhoneSimulator.Deploy.0 = Release|Any CPU
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Debug|Android.ActiveCfg = Debug|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Debug|Any CPU.ActiveCfg = Debug|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Debug|iPhone.ActiveCfg = Debug|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Debug|iPhone.Build.0 = Debug|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Release|Android.ActiveCfg = Release|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Release|Any CPU.ActiveCfg = Release|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Release|iPhone.ActiveCfg = Release|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Release|iPhone.Build.0 = Release|iPhone
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6BC0D61C-8B1E-4AE3-A718-8118CF5F68DD} = {D2A7ED8B-B27B-4EA6-88FF-CF76C87D4FAF}
-		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8} = {8079F219-9C13-4BB2-8406-16E160F2641F}
-		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4} = {8079F219-9C13-4BB2-8406-16E160F2641F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8D258CC3-33D9-4055-9627-BB4B404A2682}
