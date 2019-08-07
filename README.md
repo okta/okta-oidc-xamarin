@@ -56,21 +56,17 @@ You can also browse the full [API reference documentation](#api-reference).
 
 ## Configuration Reference
 
-The entrypoint for the SDK is an instance of `Okta.Xamarin.OidcClient`.  If you use the default `OidcClient` constructor without parameters then the SDK will load configuration values from an `Okta.json` file in your project directory.  Alternatively you can create an `OidcClient` with a custom configuration object by passing in a `Okta.Xamarin.OktaConfig`. 
+The entrypoint for the SDK is an instance of `Okta.Xamarin.OidcClient`.  When you instantiate an `OidcClient`, you need to include a configuration object by passing in a `Okta.Xamarin.OktaConfig`. 
 
 ```csharp
-
-// Use the default configuration from "Okta.json"
-var oidcClient = new Okta.Xamarin.OidcClient()
-
 // Load configuration from a json file
 var config = await Okta.Xamarin.OktaConfig.LoadFromJsonFileAsync(/* path to .json file */)
 
-// Load configuration from an xml file on Android
-var config = await Okta.Xamarin.Android.AndroidConfig.LoadFromXmlFileAsync(/* xml file name */)
+// Load configuration from an xml asset on Android
+var config = await Okta.Xamarin.OktaConfig.LoadFromXmlStreamAsync(Assets.Open("OktaConfig.xml")))
 
 // Load configuration from a plist file on iOS
-var config = Okta.Xamarin.iOS.iOSConfig.LoadFromPList(/* plist file name */)
+var config = Okta.Xamarin.OktaConfig.LoadFromPList(/* plist file name */)
 
 // Specify config manually
 var config = new Okta.Xamarin.OktaConfig() {
@@ -82,7 +78,7 @@ var config = new Okta.Xamarin.OktaConfig() {
 };
 
 // Instantiate Okta.Xamarin.OidcClient with a configuration object
-var oidcClient = new Okta.Xamarin.OidcClient(config)
+var oidcClient = new Okta.Xamarin.OidcClient(this, config)
 
 ```
 
