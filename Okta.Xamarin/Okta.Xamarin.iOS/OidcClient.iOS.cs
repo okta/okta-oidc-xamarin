@@ -1,4 +1,7 @@
-﻿using SafariServices;
+﻿using Foundation;
+using SafariServices;
+using System;
+using UIKit;
 
 namespace Okta.Xamarin
 {
@@ -52,6 +55,20 @@ namespace Okta.Xamarin
 				SafariViewController.DismissViewControllerAsync(false);
 			}
 
+		}
+
+		/// <summary>
+		/// This is used to handle the callback from the Safari view controller after a user logs in.  You need to forward calls to AppDelegate.OpenUrl to this function.  Please see the documentation for more information.
+		/// </summary>
+		/// <returns><see langword="true"/> if this url can be handled by an <see cref="OidcClient"/>, or <see langword="false"/> if it is some other url which is not handled by the login flow.</returns>
+		public static bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
+		{
+			if (OidcClient.CaptureRedirectUrl(new Uri(url.AbsoluteString)))
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
