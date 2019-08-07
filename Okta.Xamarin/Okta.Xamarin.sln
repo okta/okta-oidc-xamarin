@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Okta.Xamarin.Android.Exampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Okta.Xamarin.iOS.ExampleApp", "Okta.Xamarin.iOS.ExampleApp\Okta.Xamarin.iOS.ExampleApp.csproj", "{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D2A7ED8B-B27B-4EA6-88FF-CF76C87D4FAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Android = Debug|Android
@@ -137,6 +139,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{6BC0D61C-8B1E-4AE3-A718-8118CF5F68DD} = {D2A7ED8B-B27B-4EA6-88FF-CF76C87D4FAF}
 		{85CF0EEC-D607-4F6C-B5D2-2800992AC3B8} = {8079F219-9C13-4BB2-8406-16E160F2641F}
 		{BB0FDF85-44EA-481A-94CB-3AA78AADD2C4} = {8079F219-9C13-4BB2-8406-16E160F2641F}
 	EndGlobalSection

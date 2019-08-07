@@ -14,6 +14,11 @@ namespace Okta.Xamarin
 
 		public static Dictionary<string, IOidcClient> currentAuthenticatorbyState = new Dictionary<string, IOidcClient>();
 
+		private HttpClient client = new HttpClient();
+
+		private static readonly OktaConfigValidator<IOktaConfig> validator = new OktaConfigValidator<IOktaConfig>();
+
+
 
 		/// <summary>
 		/// Start the authorization flow.  This is an async method and should be awaited.
@@ -21,11 +26,13 @@ namespace Okta.Xamarin
 		/// <returns>In case of successful authorization, this Task will return a valid <see cref="StateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
 		public Task<StateManager> SignInWithBrowserAsync()
 		{
+			validator.Validate(Config);
+
 			currentTask = new TaskCompletionSource<StateManager>();
 			GenerateStateCodeVerifierAndChallenge();
 			currentAuthenticatorbyState.Add(State, this);
 			this.LaunchBrowser(this.GenerateAuthorizeUrl());
-
+			
 			return currentTask.Task;
 		}
 
@@ -51,32 +58,32 @@ namespace Okta.Xamarin
 
 
 
-		private static string CreateIssuerUrl(string oktaDomain, string authorizationServerId)
-		{
-			if (string.IsNullOrEmpty(oktaDomain))
-			{
-				throw new ArgumentNullException(nameof(oktaDomain));
-			}
+		//private static string CreateIssuerUrl(string oktaDomain, string authorizationServerId)
+		//{
+		//	if (string.IsNullOrEmpty(oktaDomain))
+		//	{
+		//		throw new ArgumentNullException(nameof(oktaDomain));
+		//	}
 
-			if (string.IsNullOrEmpty(authorizationServerId))
-			{
-				return oktaDomain;
-			}
+		//	if (string.IsNullOrEmpty(authorizationServerId))
+		//	{
+		//		return oktaDomain;
+		//	}
 
-			return oktaDomain.EndsWith("/") ? oktaDomain : $"{oktaDomain}/"
-				+ "oauth2/" + authorizationServerId;
-		}
+		//	return oktaDomain.EndsWith("/") ? oktaDomain : $"{oktaDomain}/"
+		//		+ "oauth2/" + authorizationServerId;
+		//}
 
 		public async Task ParseRedirectedUrl(Uri url)
 		{
 			Debug.WriteLine("ParseRedirectedUrl " + url.ToString());
-			CloseBrowser();
+			this.CloseBrowser();
 
 			var all = System.Web.HttpUtility.ParseQueryString(url.Query).ToDictionary();
 
 
 
-			// check if ther is an error
+			// check if there is an error
 			if (all.ContainsKey("error"))
 			{
 				string description = all["error"];
@@ -120,7 +127,6 @@ namespace Okta.Xamarin
 			}
 
 			// now exchange authorization code for an access token 
-			HttpClient client = new HttpClient();
 			List<KeyValuePair<string, string>> kvdata = new List<KeyValuePair<string, string>>();
 			kvdata.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
 			kvdata.Add(new KeyValuePair<string, string>("code", code));
@@ -131,10 +137,28 @@ namespace Okta.Xamarin
 
 			var request = new HttpRequestMessage(HttpMethod.Post, this.Config.GetAccessTokenUrl()) { Content = content, Method = HttpMethod.Post };
 			HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-
+			
 			string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			var data = Helpers.JsonDecode(text);
+
+			if (data.ContainsKey("error"))
+			{
+				string description = data["error"];
+				if (data.ContainsKey("error_description"))
+				{
+					description = data["error_description"];
+				}
+				currentTask.SetException(new OAuthException()
+				{
+					ErrorTitle = data["error"],
+					ErrorDescription = data.GetValueOrDefault("error_description"),
+					RequestUrl = this.Config.GetAccessTokenUrl(),
+					ExtraData = kvdata
+				});
+
+				return;
+			}
 
 			StateManager state = new StateManager(
 				data["access_token"],
@@ -172,16 +196,8 @@ namespace Okta.Xamarin
 
 			using (SHA256 sha256Hash = SHA256.Create())
 			{
-				// ComputeHash - returns byte array  
 				byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(CodeVerifier));
 				CodeChallenge = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(bytes);
-				/*// Convert byte array to a string   
-				StringBuilder builder = new StringBuilder();
-				for (int i = 0; i < bytes.Length; i++)
-				{
-					builder.Append(bytes[i].ToString("x2"));
-				}
-				CodeChallenge = builder.ToString();*/
 			}
 		}
 

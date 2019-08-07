@@ -19,7 +19,7 @@ namespace Okta.Xamarin
 			iOSViewController.PresentViewControllerAsync(safariViewController, true);
 		}
 
-		public OidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config = null)
+		public OidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config)
 		{
 			while (iOSViewController.PresentedViewController != null)
 			{
@@ -27,6 +27,7 @@ namespace Okta.Xamarin
 			}
 			this.iOSViewController = iOSViewController;
 			this.Config = config;
+			validator.Validate(Config);
 		}
 
 		public static bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)

@@ -14,10 +14,11 @@ namespace Okta.Xamarin
 			customTabsIntent.LaunchUrl(AndroidContext, global::Android.Net.Uri.Parse(url));
 		}
 
-		public OidcClient(Context context, IOktaConfig config = null)
+		public OidcClient(Context context, IOktaConfig config)
 		{
 			this.AndroidContext = context;
 			this.Config = config;
+			validator.Validate(Config);
 		}
 
 		private void CloseBrowser()
