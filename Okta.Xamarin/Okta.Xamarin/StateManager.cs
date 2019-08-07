@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
+	/// <summary>
+	/// Tracks the current login state, including any access tokens, refresh tokens, scope, etc
+	/// </summary>
 	public class StateManager
 	{
 
@@ -12,9 +15,6 @@ namespace Okta.Xamarin
 		public string RefreshToken { get; private set; }
 		public string Scope { get; private set; }
 		public DateTime Expires { get; private set; }
-
-
-
 
 		#region CTors
 		public StateManager()
@@ -32,6 +32,14 @@ namespace Okta.Xamarin
 			this.Scope = scope;
 		}
 		#endregion
+
+		/// <summary>
+		/// Whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated
+		/// </summary>
+		public bool IsAuthenticated
+		{
+			get { return (!string.IsNullOrEmpty(AccessToken) && Expires < DateTime.UtcNow); }
+		}
 
 
 		/// <summary>

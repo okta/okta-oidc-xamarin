@@ -14,6 +14,9 @@ You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/
   - [Okta.json](#oktajson)
   - [Configuration object](#configuration-object)
   - [Validating the config](#validating-the-config)
+- [Register a callback](#registering-callbacks)
+  - [Android](#android)
+  - [iOS](#ios)
 - [API Reference](#api-reference)
   - [OidcClient](#oidcclient)
     - [SignInWithBrowserAsync()](#signinwithbrowserasync)
@@ -45,9 +48,16 @@ You'll also need:
 
 ## Usage Guide
 
-For an overview of this library's features and authentication flows, check out [our developer docs](https://developer.okta.com/code/****).
+1. [Register a callback](#registering-callbacks) (via ActivityCustomUrlSchemeInterceptor on Android or CFBundleURLTypes and AppDelegate on iOS) to allow the browser to call back to your app after login.
+2. [Create an `OktaConfig`](#configuration-reference) by loading a configuration file or specifying configuration details in code.
+3. [Create an `OidcClient`](#oidcclient), passing in `this` (a reference to the current Android Activity or iOS ViewController) and the config object
+4. When a user wants to sign in, [call `SignInWithBrowserAsync`](#signinwithbrowserasync) on the OidcClient.  This is an async function and must be awaited.
+5. Use the returned [`StateManager`](#statemanager) to get the access token and other login details.
+
 
 <!--
+For an overview of this library's features and authentication flows, check out [our developer docs](https://developer.okta.com/code/****).
+
 TODO: Once the developer site provides code walkthroughs, update this with a bulleted list of possible flows.
 -->
 
@@ -88,12 +98,11 @@ A refresh token is a special token that is used to generate additional access an
 
 ### Configuration file
 
-The easiest way is to create a config file in your solution.  By default, the library checks for the existence of the file `Okta.json`.  However any json file can be used to create a configuration object.  On Andoid you can also use an xml file or resource, and on iOS you can use a plist.
+The easiest way to load configuration is to load a json file.  Additionally on Android you can use an xml file from your `Assets` directory, and on iOS you can use a plist.
 
-Make sure you set any config file (json, xml, or plist) as *build action*: `Content` and *copy to output directory*: `Copy always` or `Copy if newer`.
+If loading an xml config from an Android Assets directory, the file's *build action* should be set to `AndroidAsset`.  Otherwise, set any config file as *build action*: `Content` and *copy to output directory*: `Copy always` or `Copy if newer`.
 
 Here is an example json file that will work in both Android and iOS:
-
 ```json
 {
     "OktaDomain": "https://{yourOktaDomain}",
@@ -140,7 +149,7 @@ And the equivalent iOS plist file:
 
 ### Configuration object
 
-Alternatively, you can create a configuration object ( `Okta.Xamarin.OktaConfig`) with the required values:
+Alternatively, you can create a configuration object in code ( `Okta.Xamarin.OktaConfig`) with the required values:
 
 ```csharp
 var config = new Okta.Xamarin.OktaConfig() {
@@ -163,6 +172,57 @@ validator.Validate(myConfigObject);
 // throws an exception if the config is invalid
 ```
 
+## Registering Callbacks
+
+The browser-based login is securely implemented on Android with Chrome Custom Tabs and on iOS through Safari ViewController.  In order to complete the flow, the browser must be able to redirect back to the application, which then needs to process the response.  You need to do a bit of work to hook all this up.
+
+In the following examples, assume we have a RedirectUri in our config as well as on the Okta application dashboard set to `com.myappnamespace.exampleapp:/callback`
+
+### Android
+
+Create a new Activity in your app.  Edit the code fr your new activity to make it inherit from `Okta.Xamarin.Android.ActivityCustomUrlSchemeInterceptor` rather than Activity or AppCompatActivity.  On this class, you need to set the Activity attributes to `NoHistory = true, LaunchMode = LaunchMode.SingleTop` and also set the IntentFilter attribute to include the `DataSchemes` that matches the scheme of your RedirectUri (the part before the ":/", where "https" would normally go in a url) and `DataPath` that matches the path of your RedirectUri.
+
+Here is an example activity called `ExampleActivityCustomUrlSchemeInterceptor`:
+```csharp
+[Activity(Label = "ExampleActivityCustomUrlSchemeInterceptor", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
+[IntentFilter(actions: new[] { Intent.ActionView },
+    Categories = new[] {Intent.CategoryDefault,Intent.CategoryBrowsable},
+    DataSchemes = new[] {"com.myappnamespace.exampleapp"},
+    DataPath = "/callback" )]
+public class ExampleActivityCustomUrlSchemeInterceptor : ActivityCustomUrlSchemeInterceptor
+{ }
+```
+
+### iOS
+
+Modify your `Info.plist` to include a `CFBundleURLSchemes` under `CFBundleURLTypes`, which matches the scheme of your RedirectUri.
+
+Here is an example Info.plist:
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLName</key>
+        <string>MyExample OAuth</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.myappnamespace.exampleapp</string>
+        </array>
+        <key>CFBundleURLTypes</key>
+        <string>Viewer</string>
+    </dict>
+</array>
+```
+
+In your `AppDelegate.cs`, override `OpenUrl` and pass its arguments to the static function `Okta.Xamarin.OidcClient.OpenUrl`.  This  returns `false` if it is not given a valid login RedirectUrl, so if you are deep linking other urls into your app for other functionality you can continue processing in that case.
+
+Here is an example OpenUrl to add to your AppDelegate.cs:
+```csharp
+public override bool OpenUrl(UIApplication application,NSUrl url,string sourceApplication,NSObject annotation)
+{
+    return Okta.Xamarin.OidcClient.OpenUrl(application, url, sourceApplication, annotation);
+}
+```
 
 
 ## API Reference
@@ -170,7 +230,6 @@ validator.Validate(myConfigObject);
 ### OidcClient
 
 The `Okta.Xamarin.OidcClient` class contains methods for signing in, signing out, and authenticating sessions.
-
 
 #### SignInWithBrowserAsync()
 

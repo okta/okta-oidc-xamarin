@@ -9,8 +9,6 @@ namespace Okta.Xamarin.Test
 {
 	public class ClientTests
 	{
-
-
 		[Fact]
 		public void FailsWithInvalidConfig()
 		{
@@ -131,8 +129,6 @@ namespace Okta.Xamarin.Test
 			Assert.Equal("access_token_example", state.AccessToken);
 		}
 
-
-
 		[Fact]
 		public async void FailsOnStateMismatchInInitialRequest()
 		{
@@ -213,5 +209,4 @@ namespace Okta.Xamarin.Test
 			await Assert.ThrowsAsync<OAuthException>(() => client.SignInWithBrowserAsync());
 		}
 	}
-
 }
