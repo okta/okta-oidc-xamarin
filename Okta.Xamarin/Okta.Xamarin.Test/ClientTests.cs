@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,13 +12,13 @@ namespace Okta.Xamarin.Test
 
 
 		[Fact]
-		public async void FailsWithInvalidConfig()
+		public void FailsWithInvalidConfig()
 		{
 			Assert.Throws<ArgumentNullException>(() => new OidcClient(new OktaConfig()));
 		}
 
 		[Fact]
-		public async void GetsCorrectAuthUrl()
+		public void GetsCorrectAuthUrl()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect+&TEST!@url%20Encode#*^(0)", "com.test:/logout") { Scope = "test hello test_scope" });
 
@@ -38,7 +36,7 @@ namespace Okta.Xamarin.Test
 
 			bool didLaunchBrowser = false;
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 			{
 				Assert.StartsWith("https://dev-00000.oktapreview.com/oauth2/default/v1/authorize?", url);
 				didLaunchBrowser = true;
@@ -56,12 +54,12 @@ namespace Okta.Xamarin.Test
 
 			bool didCloseBrowser = false;
 
-			client.onCloseBrowser = () =>
+			client.OnCloseBrowser = () =>
 			{
 				didCloseBrowser = true;
 			};
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 			{
 				OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=" + client.State_Internal));
 			});
@@ -96,7 +94,7 @@ namespace Okta.Xamarin.Test
 
 			client.SetHttpMock(mockHttpClient);
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 			{
 				Assert.True(
 					OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=" + client.State_Internal)));
@@ -125,10 +123,10 @@ namespace Okta.Xamarin.Test
 
 			client.SetHttpMock(mockHttpClient);
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 				OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=" + client.State_Internal)));
 
-			var state = await client.SignInWithBrowserAsync();
+			StateManager state = await client.SignInWithBrowserAsync();
 
 			Assert.Equal("access_token_example", state.AccessToken);
 		}
@@ -140,7 +138,7 @@ namespace Okta.Xamarin.Test
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 			{
 				Assert.False(
 					OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=fake_state")));
@@ -154,7 +152,7 @@ namespace Okta.Xamarin.Test
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 			{
 				Assert.True(
 					OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?error=test_error&state=" + client.State_Internal)));
@@ -181,7 +179,7 @@ namespace Okta.Xamarin.Test
 
 			client.SetHttpMock(mockHttpClient);
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 			{
 				OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=" + client.State_Internal));
 			});
@@ -207,7 +205,7 @@ namespace Okta.Xamarin.Test
 
 			client.SetHttpMock(mockHttpClient);
 
-			client.onLaunchBrowser = new Action<string>(url =>
+			client.OnLaunchBrowser = new Action<string>(url =>
 			{
 				OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=" + client.State_Internal));
 			});

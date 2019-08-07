@@ -20,8 +20,8 @@ namespace Okta.Xamarin.Test
 				new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
 			validator.Validate(
-			                 new OktaConfig("testoktaid", "https://okta.okta.com", "appid:/redirect", "appid:/logout")
-			                 { ClockSkew = TimeSpan.FromSeconds(100), Scope = "test1 test2" });
+							 new OktaConfig("testoktaid", "https://okta.okta.com", "appid:/redirect", "appid:/logout")
+							 { ClockSkew = TimeSpan.FromSeconds(100), Scope = "test1 test2" });
 
 			// The validator throws an exception when the config is invalid, so if we got here without an exception then the configs are valid.
 		}

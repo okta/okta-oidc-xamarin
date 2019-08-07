@@ -37,7 +37,7 @@ namespace Okta.Xamarin
 		public string PostLogoutRedirectUri { get; set; }
 
 		/// <summary>
-		/// The OAuth 2.0/OpenID Connect scopes to request when logging in, seperated by spaces.  Optional, the default value is "openid profile".
+		/// The OAuth 2.0/OpenID Connect scopes to request when logging in, separated by spaces.  Optional, the default value is "openid profile".
 		/// </summary>
 		[JsonProperty("Scope", DefaultValueHandling = DefaultValueHandling.Populate)]
 		public string Scope { get; set; } = "openid profile";
@@ -92,7 +92,7 @@ namespace Okta.Xamarin
 		/// <summary>
 		/// Instantiates a <see cref="OktaConfig"/> from a json string and validates it.  Throws an exception if required fields are missing or invalid.
 		/// </summary>
-		/// <param name="json">The json string to parse.  This should be an object with the various confige entries as keys/values.  Please refer to the documentation or samples for examples.</param>
+		/// <param name="json">The json string to parse.  This should be an object with the various config entries as keys/values.  Please refer to the documentation or samples for examples.</param>
 		/// <returns>Returns the <see cref="OktaConfig"/> with fields filled from <paramref name="json"/>.</returns>
 		private static OktaConfig ParseJson(string json)
 		{
@@ -130,7 +130,7 @@ namespace Okta.Xamarin
 		/// <summary>
 		/// Instantiates a <see cref="OktaConfig"/> from a json file asynchronously and validates it.  Throws an exception if required fields are missing or invalid.
 		/// </summary>
-		/// <param name="filename">The file containing json to parse.  This is treated as a simple file path.  If you are attempting to load an embedded resource you need to impliment that yourself and call <see cref="ParseJson(string)"/> instead.</param>
+		/// <param name="filename">The file containing json to parse.  This is treated as a simple file path.  If you are attempting to load an embedded resource you need to implement that yourself and call <see cref="ParseJson(string)"/> instead.</param>
 		/// <returns>Returns a Task which returns the <see cref="OktaConfig"/> with fields filled from <paramref name="filename"/>.</returns>
 		public static async Task<OktaConfig> LoadFromJsonFileAsync(string filename)
 		{

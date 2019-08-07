@@ -1,24 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Foundation;
-using SafariServices;
-using UIKit;
+﻿using SafariServices;
 
 namespace Okta.Xamarin
 {
 	public partial class OidcClient
 	{
-		public UIKit.UIViewController iOSViewController { get; set; }
-		SFSafariViewController safariViewController;
+#pragma warning disable IDE1006 // Naming Styles
+		/// <summary>
+		/// Stores a reference to the current iOS <see cref="UIKit.UIViewController"/>, for use in launching the browser for login
+		/// </summary>
+		private UIKit.UIViewController iOSViewController { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
 
-		public void LaunchBrowser(string url)
+		/// <summary>
+		/// Stores the current Safari view controller, so that it can be programmatically closed
+		/// </summary>
+		private SFSafariViewController SafariViewController;
+
+		/// <summary>
+		/// Launches a Safari view controller to the specified url
+		/// </summary>
+		/// <param name="url">The url to launch in a Safari view controller</param>
+		private void LaunchBrowser(string url)
 		{
-			safariViewController = new SFSafariViewController(Foundation.NSUrl.FromString(url));
-			iOSViewController.PresentViewControllerAsync(safariViewController, true);
+			SafariViewController = new SFSafariViewController(Foundation.NSUrl.FromString(url));
+			iOSViewController.PresentViewControllerAsync(SafariViewController, true);
 		}
 
+		/// <summary>
+		/// Creates a new iOS Okta OidcClient, attached to the provided <see cref="UIKit.UIViewController"/> and based on the specified <see cref="OktaConfig"/>
+		/// </summary>
+		/// <param name="iOSViewController">A reference to the current iOS <see cref="UIKit.UIViewController"/>, for use in launching the browser for login</param>
+		/// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
 		public OidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config)
 		{
 			while (iOSViewController.PresentedViewController != null)
@@ -30,21 +42,14 @@ namespace Okta.Xamarin
 			validator.Validate(Config);
 		}
 
-		public static bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
-		{
-			if (OidcClient.CaptureRedirectUrl(new Uri(url.AbsoluteString)))
-			{
-				return true;
-			}
-
-			return false;
-		}
-
+		/// <summary>
+		/// Called to close the Safari view controller used for login after the redirect
+		/// </summary>
 		private void CloseBrowser()
 		{
-			if (safariViewController != null)
+			if (SafariViewController != null)
 			{
-				safariViewController.DismissViewControllerAsync(false);
+				SafariViewController.DismissViewControllerAsync(false);
 			}
 
 		}

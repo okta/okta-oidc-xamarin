@@ -55,7 +55,7 @@
     <Compile Include="..\Okta.Xamarin\OktaConfig.cs">
       <Link>OktaConfig.cs</Link>
     </Compile>
-    <Compile Include="iOSConfig.cs" />
+    <Compile Include="OktaConfig.iOS.cs" />
     <Compile Include="OidcClient.iOS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -20,10 +20,9 @@ namespace Okta.Xamarin
 			var inputs = new Dictionary<string, string>();
 			var json = JValue.Parse(encodedString) as JObject;
 
-			foreach (var kv in json)
+			foreach (KeyValuePair<string, JToken> kv in json)
 			{
-				var v = kv.Value as JValue;
-				if (v != null)
+				if (kv.Value is JValue v)
 				{
 					if (v.Type != JTokenType.String)
 						inputs[kv.Key] = v.ToString();

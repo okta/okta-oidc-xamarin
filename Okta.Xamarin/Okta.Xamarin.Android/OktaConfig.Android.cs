@@ -66,14 +66,12 @@ namespace Okta.Xamarin
 		}
 
 		/// <summary>
-		/// Instantiates a <see cref="OktaConfig"/> from an xml resource asynchronously and validates it.  Throws an exception if required fields are missing or invalid.
+		/// Instantiates a <see cref="OktaConfig"/> from an xml stream asynchronously and validates it.  Throws an exception if required fields are missing or invalid.
 		/// </summary>
-		/// <param name="resourceName">The xml resource filename</param>
-		/// <returns>Returns a Task which returns the <see cref="OktaConfig"/> with fields filled from <paramref name="resourceName"/>.</returns>
+		/// <param name="xmlStream">The xml stream to read from</param>
+		/// <returns>Returns a Task which returns the <see cref="OktaConfig"/> with fields filled from <paramref name="xmlStream"/>.</returns>
 		public static async Task<OktaConfig> LoadFromXmlStreamAsync(Stream xmlStream)
 		{
-			//	var allre = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-
 			using (StreamReader reader = new StreamReader(xmlStream))
 			{
 				return ParseXml(await reader.ReadToEndAsync());
@@ -83,7 +81,7 @@ namespace Okta.Xamarin
 		/// <summary>
 		/// Instantiates a <see cref="OktaConfig"/> from an xml file asynchronously and validates it.  Throws an exception if required fields are missing or invalid.
 		/// </summary>
-		/// <param name="filename">The file containing xml to parse.  This is treated as a simple file path.  If you are attempting to load an embedded resource you should use <see cref="LoadFromXmlResourceAsync(string)"/> instead.</param>
+		/// <param name="filename">The file containing xml to parse.  This is treated as a simple file path.</param>
 		/// <returns>Returns a Task which returns the <see cref="OktaConfig"/> with fields filled from <paramref name="filename"/>.</returns>
 		public static async Task<OktaConfig> LoadFromXmlFileAsync(string filename)
 		{

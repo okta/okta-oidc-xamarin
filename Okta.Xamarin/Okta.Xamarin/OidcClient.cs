@@ -8,14 +8,29 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
+	/// <summary>
+	/// A client for logging into Okta via Oidc
+	/// </summary>
 	public partial class OidcClient : IOidcClient
 	{
+		/// <summary>
+		/// The configuration for this Client.  Must be set in the constructor.
+		/// </summary>
 		public IOktaConfig Config { get; private set; }
 
-		public static Dictionary<string, IOidcClient> currentAuthenticatorbyState = new Dictionary<string, IOidcClient>();
+		/// <summary>
+		/// Maintains a list of all currently active Clients, by state.  This is used after the intent/universal link callback from login to continue the state machine.
+		/// </summary>
+		internal static Dictionary<string, IOidcClient> currentAuthenticatorbyState = new Dictionary<string, IOidcClient>();
 
+		/// <summary>
+		/// The <see cref="HttpClient"/> for use in getting an auth token.  Microsoft guidance specifies that this should be reused for performance reasons.
+		/// </summary>
 		private HttpClient client = new HttpClient();
 
+		/// <summary>
+		/// A <see cref="OktaConfigValidator"/> used to validate any configuration used by Clients
+		/// </summary>
 		private static readonly OktaConfigValidator<IOktaConfig> validator = new OktaConfigValidator<IOktaConfig>();
 
 
@@ -32,7 +47,7 @@ namespace Okta.Xamarin
 			GenerateStateCodeVerifierAndChallenge();
 			currentAuthenticatorbyState.Add(State, this);
 			this.LaunchBrowser(this.GenerateAuthorizeUrl());
-			
+
 			return currentTask.Task;
 		}
 
@@ -56,51 +71,30 @@ namespace Okta.Xamarin
 			throw new NotImplementedException();
 		}
 
-
-
-		//private static string CreateIssuerUrl(string oktaDomain, string authorizationServerId)
-		//{
-		//	if (string.IsNullOrEmpty(oktaDomain))
-		//	{
-		//		throw new ArgumentNullException(nameof(oktaDomain));
-		//	}
-
-		//	if (string.IsNullOrEmpty(authorizationServerId))
-		//	{
-		//		return oktaDomain;
-		//	}
-
-		//	return oktaDomain.EndsWith("/") ? oktaDomain : $"{oktaDomain}/"
-		//		+ "oauth2/" + authorizationServerId;
-		//}
-
-		public async Task ParseRedirectedUrl(Uri url)
+		/// <summary>
+		/// After a user logs in and is redirected back to the app via an intent or universal link, this method is called to parse the returned token and continue the flow
+		/// </summary>
+		/// <param name="url">The full callback url that the user was directed to</param>
+		/// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="StateManager"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
+		private async Task ParseRedirectedUrl(Uri url)
 		{
 			Debug.WriteLine("ParseRedirectedUrl " + url.ToString());
 			this.CloseBrowser();
 
-			var all = System.Web.HttpUtility.ParseQueryString(url.Query).ToDictionary();
-
-
+			var queryData = System.Web.HttpUtility.ParseQueryString(url.Query).ToDictionary();
 
 			// check if there is an error
-			if (all.ContainsKey("error"))
+			if (queryData.ContainsKey("error"))
 			{
-				string description = all["error"];
-				if (all.ContainsKey("error_description"))
-				{
-					description = all["error_description"];
-				}
 				currentTask.SetException(new OAuthException()
 				{
-					ErrorTitle = all["error"],
-					ErrorDescription = all.GetValueOrDefault("error_description"),
+					ErrorTitle = queryData["error"],
+					ErrorDescription = queryData.GetValueOrDefault("error_description"),
 					RequestUrl = url.ToString()
 				});
 
 				return;
 			}
-
 
 			// confirm that the url matches the redirect url we expect
 			if (!url.ToString().ToLower().StartsWith(Config.RedirectUri.ToLower()))
@@ -115,7 +109,8 @@ namespace Okta.Xamarin
 				return;
 			}
 
-			string code = all["code"];
+			// confirm we received a code
+			string code = queryData["code"];
 			if (string.IsNullOrWhiteSpace(code))
 			{
 				currentTask.SetException(new OAuthException()
@@ -126,29 +121,36 @@ namespace Okta.Xamarin
 				return;
 			}
 
-			// now exchange authorization code for an access token 
-			List<KeyValuePair<string, string>> kvdata = new List<KeyValuePair<string, string>>();
-			kvdata.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
-			kvdata.Add(new KeyValuePair<string, string>("code", code));
-			kvdata.Add(new KeyValuePair<string, string>("redirect_uri", this.Config.RedirectUri));
-			kvdata.Add(new KeyValuePair<string, string>("client_id", this.Config.ClientId));
-			kvdata.Add(new KeyValuePair<string, string>("code_verifier", CodeVerifier));
+			// now exchange authorization code for an access token
+			await ExchangeAuthCodeForToken(code);
+		}
+
+		/// <summary>
+		/// Exchange authorization code for an access token
+		/// </summary>
+		/// <param name="code">The authorization code received from the login</param>
+		/// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="StateManager"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
+		private async Task ExchangeAuthCodeForToken(string code)
+		{
+			List<KeyValuePair<string, string>> kvdata = new List<KeyValuePair<string, string>>
+			{
+				new KeyValuePair<string, string>("grant_type", "authorization_code"),
+				new KeyValuePair<string, string>("code", code),
+				new KeyValuePair<string, string>("redirect_uri", this.Config.RedirectUri),
+				new KeyValuePair<string, string>("client_id", this.Config.ClientId),
+				new KeyValuePair<string, string>("code_verifier", CodeVerifier)
+			};
 			var content = new FormUrlEncodedContent(kvdata);
 
 			var request = new HttpRequestMessage(HttpMethod.Post, this.Config.GetAccessTokenUrl()) { Content = content, Method = HttpMethod.Post };
 			HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-			
+
 			string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-			var data = Helpers.JsonDecode(text);
+			Dictionary<string, string> data = Helpers.JsonDecode(text);
 
 			if (data.ContainsKey("error"))
 			{
-				string description = data["error"];
-				if (data.ContainsKey("error_description"))
-				{
-					description = data["error_description"];
-				}
 				currentTask.SetException(new OAuthException()
 				{
 					ErrorTitle = data["error"],
@@ -171,11 +173,26 @@ namespace Okta.Xamarin
 			currentTask.SetResult(state);
 		}
 
+		/// <summary>
+		/// The internal OAuth state used to track requests from this client
+		/// </summary>
 		private string State { get; set; }
+		/// <summary>
+		/// The PKCE code that is used to verify the integrity of the token exchange
+		/// </summary>
 		private string CodeVerifier { get; set; }
+		/// <summary>
+		/// A SHA256 hash of the <see cref="CodeVerifier"/> used for PKCE
+		/// </summary>
 		private string CodeChallenge { get; set; }
+		/// <summary>
+		/// Tracks the current state machine used by <see cref="SignInWithBrowserAsync"/> across the login callback
+		/// </summary>
 		private TaskCompletionSource<StateManager> currentTask;
 
+		/// <summary>
+		/// Generates a cryptographically random <see cref="State"/> and <see cref="CodeVerifier"/>, and computes the <see cref="CodeChallenge"/> for use in PKCE
+		/// </summary>
 		private void GenerateStateCodeVerifierAndChallenge()
 		{
 			using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
@@ -201,12 +218,16 @@ namespace Okta.Xamarin
 			}
 		}
 
+		/// <summary>
+		/// Determines the AuthorizeUrl including login query parameters based on the <see cref="Config"/>
+		/// </summary>
+		/// <returns>The url ready to be used for login</returns>
 		private string GenerateAuthorizeUrl()
 		{
 			var baseUri = new Uri(this.Config.GetAuthorizeUri());
 			string url = baseUri.AbsoluteUri;
 
-			// remove fragement if any
+			// remove fragment if any
 			if (url.Contains('#'))
 				url = url.Substring(0, url.IndexOf('#'));
 
@@ -228,19 +249,36 @@ namespace Okta.Xamarin
 			return url;
 		}
 
+		/// <summary>
+		/// Call after a user logs in and is redirected back to the app via an intent or universal link.  This method determines the appropriate <see cref="OidcClient"/> to continue the flow based on the <see cref="State"/>.
+		/// </summary>
+		/// <param name="uri">The full callback url that the user was directed to</param>
+		/// <returns><see langword="true"/> if this url can be handled by an <see cref="OidcClient"/>, or <see langword="false"/> if it is some other url which is not handled by the login flow.</returns>
 		public static bool CaptureRedirectUrl(Uri uri)
 		{
+			if (uri == null)
+				throw new ArgumentNullException(nameof(uri));
+
+			if (string.IsNullOrEmpty(uri.Query))
+				return false;
+
+			// get the state from the uri
 			string uriString = uri.Query.ToString();
 			var parsed = System.Web.HttpUtility.ParseQueryString(uriString);
 			string state = parsed["state"];
 
+			if (string.IsNullOrEmpty(state))
+				return false;
+
 			if (OidcClient.currentAuthenticatorbyState.ContainsKey(state))
 			{
-				OidcClient.currentAuthenticatorbyState[state].ParseRedirectedUrl(uri);
+				// state is valid for a current client, so continue the flow with that client
+				((OidcClient)OidcClient.currentAuthenticatorbyState[state]).ParseRedirectedUrl(uri);
 				return true;
 			}
 			else
 			{
+				// there is no client matching that state.  Rather than throw an error, return false, as it's possible the application is handling callbacks from multiple different universal links
 				return false;
 			}
 		}
