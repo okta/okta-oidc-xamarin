@@ -10,16 +10,16 @@ using Xunit;
 
 namespace Okta.Xamarin.Test
 {
-	public class ClientTests
+	public class OidcClientShould
 	{
 		[Fact]
-		public void FailsWithInvalidConfig()
+		public void FailWithInvalidConfig()
 		{
 			Assert.Throws<ArgumentNullException>(() => new OidcClient(new OktaConfig()));
 		}
 
 		[Fact]
-		public void GetsCorrectAuthUrl()
+		public void GetCorrectAuthUrl()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect+&TEST!@url%20Encode#*^(0)", "com.test:/logout") { Scope = "test hello test_scope" });
 
@@ -31,7 +31,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void LaunchesBrowserCorrectly()
+		public async void LaunchBrowserCorrectly()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -49,7 +49,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void ClosesBrowserCorrectly()
+		public async void CloseBrowserCorrectly()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -71,7 +71,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void RequestsAccessToken()
+		public async void RequestAccessToken()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -107,7 +107,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void SuccessfullyGetsAccessToken()
+		public async void SuccessfullyGetAccessToken()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -133,7 +133,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void FailsOnStateMismatchInInitialRequest()
+		public async void FailOnStateMismatchInInitialRequest()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -147,7 +147,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void FailsOnErrorInInitialRequest()
+		public async void FailOnErrorInInitialRequest()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -161,7 +161,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void FailsOnErrorDataInAccessTokenRequest()
+		public async void FailOnErrorDataInAccessTokenRequest()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -187,7 +187,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async void FailsGracefullyOnHttpErrorInAccessTokenRequest()
+		public async void FailGracefullyOnHttpErrorInAccessTokenRequest()
 		{
 			OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 

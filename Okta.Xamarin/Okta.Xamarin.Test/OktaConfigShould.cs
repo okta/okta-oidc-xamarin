@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Okta.Xamarin.Test
 {
-	public class ConfigTests
+	public class OktaConfigShould
 	{
 		[Fact]
 		public void ConfigValidatorPassesWhenValid()
@@ -74,7 +74,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async Task ConfigParsesJsonFull()
+		public async Task ParseJsonFull()
 		{
 			var tempConfigFile = new FileInfo(Path.GetTempFileName());
 
@@ -111,7 +111,7 @@ namespace Okta.Xamarin.Test
 
 
 		[Fact]
-		public async Task ConfigParsesJsonMinimal()
+		public async Task ParseJsonMinimal()
 		{
 			var tempConfigFile = new FileInfo(Path.GetTempFileName());
 

@@ -74,7 +74,7 @@ namespace Okta.Xamarin
 
 
 		/// <summary>
-		/// Renew expired tokens by exchanging a refresh token for new ones.  Make sure to include the `offline_access` scope in your configuration.  
+		/// Renew expired tokens by exchanging a refresh token for new ones.  Make sure to include the <c>offline_access</c> scope in your configuration.  
 		/// </summary>
 		/// <returns>Returns the new access token, also accessible in <see cref="AccessToken"/></returns>
 		public async Task<string> RenewAsync()
@@ -82,10 +82,17 @@ namespace Okta.Xamarin
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.  This is an async method and should be awaited.
+		/// </summary>
+		/// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user</returns>
 		public async Task<System.Security.Claims.ClaimsPrincipal> GetUserAsync()
 		{
 			throw new NotImplementedException();
 		}
+		/// <summary>
+		/// Removes the local authentication state by removing cached tokens in the keychain. A full sign out should consist of calling <see cref="OidcClient.SignOutOfOktaAsync"/>, then <see cref="RevokeAsync"/>, and then <see cref="Clear"/>.
+		/// </summary>
 		public void Clear()
 		{
 			throw new NotImplementedException();

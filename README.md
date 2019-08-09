@@ -180,7 +180,7 @@ In the following examples, assume we have a RedirectUri in our config as well as
 
 ### Android
 
-Create a new Activity in your app.  Edit the code fr your new activity to make it inherit from `Okta.Xamarin.Android.ActivityCustomUrlSchemeInterceptor` rather than Activity or AppCompatActivity.  On this class, you need to set the Activity attributes to `NoHistory = true, LaunchMode = LaunchMode.SingleTop` and also set the IntentFilter attribute to include the `DataSchemes` that matches the scheme of your RedirectUri (the part before the ":/", where "https" would normally go in a url) and `DataPath` that matches the path of your RedirectUri.
+Create a new Activity in your app.  Edit the code for your new activity to make it inherit from `Okta.Xamarin.Android.ActivityCustomUrlSchemeInterceptor` rather than Activity or AppCompatActivity.  On this class, you need to set the Activity attributes to `NoHistory = true, LaunchMode = LaunchMode.SingleTop` and also set the IntentFilter attribute to include the `DataSchemes` that matches the scheme of your RedirectUri (the part before the ":/", where "https" would normally go in a url) and `DataPath` that matches the path of your RedirectUri.
 
 Here is an example activity called `ExampleActivityCustomUrlSchemeInterceptor`:
 ```csharp

@@ -13,9 +13,6 @@ namespace Okta.Xamarin
 	/// </summary>
 	public partial class OktaConfig : IOktaConfig
 	{
-		// There might be some iOS-specific config in the future.  That would go here.
-
-
 		/// <summary>
 		/// Converts an iOS-typed NSDictionary into an OktaConfig, casting or parsing each field and then validating the resulting config.
 		/// </summary>

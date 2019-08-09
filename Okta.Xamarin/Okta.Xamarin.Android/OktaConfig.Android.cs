@@ -15,8 +15,6 @@ namespace Okta.Xamarin
 	/// </summary>
 	public partial class OktaConfig : IOktaConfig
 	{
-		// There might be some Android-specific config in the future.  That would go here.
-
 		/// <summary>
 		/// Instantiates a <see cref="OktaConfig"/> from an XML string and validates it.  Throws an exception if required fields are missing or invalid.
 		/// </summary>

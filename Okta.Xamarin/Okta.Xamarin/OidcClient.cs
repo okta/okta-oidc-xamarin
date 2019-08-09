@@ -83,7 +83,6 @@ namespace Okta.Xamarin
 		/// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="StateManager"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
 		private async Task ParseRedirectedUrl(Uri url)
 		{
-			Debug.WriteLine("ParseRedirectedUrl " + url.ToString());
 			this.CloseBrowser();
 
 			var queryData = System.Web.HttpUtility.ParseQueryString(url.Query).ToDictionary();
