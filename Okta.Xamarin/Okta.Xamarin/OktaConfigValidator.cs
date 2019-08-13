@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// <copyright file="OktaConfigValidator.cs" company="Okta, Inc">
+// Copyright (c) 2019-present Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Text.RegularExpressions;
 
 namespace Okta.Xamarin
 {
+	/// <summary>
+	/// Validates an <see cref="IOktaConfig"/> config to ensure all required fields are present and in the correct form
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class OktaConfigValidator<T>
-		where T : OktaConfig
+		where T : IOktaConfig
 	{
 		/// <summary>
 		/// Can be overriden to validate config fields specific to a derived class
@@ -21,7 +28,7 @@ namespace Okta.Xamarin
 		/// Validates all fields in this config object and throws an exception if anything is wrong.
 		/// </summary>
 		/// <param name="config">The config object to validate</param>
-		public void Validate(OktaConfig config)
+		public void Validate(IOktaConfig config)
 		{
 			if (config == null)
 			{

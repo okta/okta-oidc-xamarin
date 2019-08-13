@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Foundation;
-using UIKit;
+﻿// <copyright file="OktaConfig.iOS.cs" company="Okta, Inc">
+// Copyright (c) 2019-present Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
 
-namespace Okta.Xamarin.iOS
+using Foundation;
+using System;
+
+namespace Okta.Xamarin
 {
 	/// <summary>
 	/// Stores configuration for the Okta iOS OIDC client
 	/// </summary>
-	public class iOSConfig : OktaConfig
+	public partial class OktaConfig : IOktaConfig
 	{
-		// There might be some iOS-specific config in the future.  That would go here.
-
-
 		/// <summary>
 		/// Converts an iOS-typed NSDictionary into an OktaConfig, casting or parsing each field and then validating the resulting config.
 		/// </summary>
 		/// <param name="dict">The <see cref="NSDictionary"/> to convert from</param>
-		/// <returns>An <see cref="iOSConfig"/> with config values filled and validated</returns>
-		private static iOSConfig FromNSDictionary(NSDictionary dict)
+		/// <returns>An <see cref="OktaConfig"/> with config values filled and validated</returns>
+		private static OktaConfig FromNSDictionary(NSDictionary dict)
 		{
-			iOSConfig config = new iOSConfig();
+			OktaConfig config = new OktaConfig();
 
 			try
 			{
@@ -68,7 +64,7 @@ namespace Okta.Xamarin.iOS
 				throw new FormatException("The Okta Config PList could not be parsed.  Make sure values are the correct type/format.", ex);
 			}
 
-			OktaConfigValidator<iOSConfig> validator = new OktaConfigValidator<iOSConfig>();
+			OktaConfigValidator<OktaConfig> validator = new OktaConfigValidator<OktaConfig>();
 			validator.Validate(config);
 
 			return config;
@@ -77,11 +73,11 @@ namespace Okta.Xamarin.iOS
 
 
 		/// <summary>
-		/// Instantiates a <see cref="iOSConfig"/> from a property list file and validates it.  Throws an exception if required fields are missing or invalid.
+		/// Instantiates a <see cref="OktaConfig"/> from a property list file and validates it.  Throws an exception if required fields are missing or invalid.
 		/// </summary>
 		/// <param name="filename">The plist file to parse.  This is treated as a simple file path.</param>
-		/// <returns>Returns the <see cref="iOSConfig"/> with fields filled from <paramref name="filename"/>.</returns>
-		public static iOSConfig LoadFromPList(string filename)
+		/// <returns>Returns the <see cref="OktaConfig"/> with fields filled from <paramref name="filename"/>.</returns>
+		public static OktaConfig LoadFromPList(string filename)
 		{
 			NSDictionary dict = new NSDictionary(filename);
 			if (dict == null)

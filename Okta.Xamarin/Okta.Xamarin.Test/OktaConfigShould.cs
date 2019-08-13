@@ -1,3 +1,8 @@
+// <copyright file="OktaConfigShould.cs" company="Okta, Inc">
+// Copyright (c) 2019-present Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5,23 +10,21 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-
-
 namespace Okta.Xamarin.Test
 {
-	public class ConfigTests
+	public class OktaConfigShould
 	{
 		[Fact]
 		public void ConfigValidatorPassesWhenValid()
 		{
-			OktaConfigValidator<OktaConfig> validator = new OktaConfigValidator<OktaConfig>();
+			OktaConfigValidator<IOktaConfig> validator = new OktaConfigValidator<IOktaConfig>();
 
 			validator.Validate(
 				new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
 			validator.Validate(
-			                 new OktaConfig("testoktaid", "https://okta.okta.com", "appid:/redirect", "appid:/logout")
-			                 { ClockSkew = TimeSpan.FromSeconds(100), Scope = "test1 test2" });
+							 new OktaConfig("testoktaid", "https://okta.okta.com", "appid:/redirect", "appid:/logout")
+							 { ClockSkew = TimeSpan.FromSeconds(100), Scope = "test1 test2" });
 
 			// The validator throws an exception when the config is invalid, so if we got here without an exception then the configs are valid.
 		}
@@ -71,7 +74,7 @@ namespace Okta.Xamarin.Test
 		}
 
 		[Fact]
-		public async Task ConfigParsesJsonFull()
+		public async Task ParseJsonFull()
 		{
 			var tempConfigFile = new FileInfo(Path.GetTempFileName());
 
@@ -108,7 +111,7 @@ namespace Okta.Xamarin.Test
 
 
 		[Fact]
-		public async Task ConfigParsesJsonMinimal()
+		public async Task ParseJsonMinimal()
 		{
 			var tempConfigFile = new FileInfo(Path.GetTempFileName());
 

@@ -41,11 +41,21 @@
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AndroidConfig.cs" />
+    <Compile Include="..\Okta.Xamarin\OidcClient.cs">
+      <Link>OidcClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Okta.Xamarin\OktaConfig.cs">
+      <Link>OktaConfig.cs</Link>
+    </Compile>
+    <Compile Include="ActivityCustomUrlSchemeInterceptor.cs" />
+    <Compile Include="OktaConfig.Android.cs" />
+    <Compile Include="OidcClient.Android.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -53,6 +63,9 @@
     <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Xamarin.Android.Support.CustomTabs">
+      <Version>28.0.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.1" />
   </ItemGroup>
   <ItemGroup>
