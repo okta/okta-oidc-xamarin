@@ -1,4 +1,4 @@
-﻿// <copyright file="OktaMiddlewareExtensions.cs" company="Okta, Inc">
+﻿// <copyright file="IOidcClient.cs" company="Okta, Inc">
 // Copyright (c) 2019-present Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Okta.Xamarin
 {
 	/// <summary>
-	/// An interface defining the cross platform surface area of the OidcClient
+	/// An interface defining the cross-platform surface area of the OidcClient
 	/// </summary>
 	public interface IOidcClient
 	{

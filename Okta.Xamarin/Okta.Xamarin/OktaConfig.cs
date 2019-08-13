@@ -1,4 +1,4 @@
-﻿// <copyright file="OktaMiddlewareExtensions.cs" company="Okta, Inc">
+﻿// <copyright file="OktaConfig.cs" company="Okta, Inc">
 // Copyright (c) 2019-present Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -35,6 +35,7 @@ namespace Okta.Xamarin
 		/// </summary>
 		[JsonProperty("RedirectUri", Required = Required.Always)]
 		public string RedirectUri { get; set; }
+
 		/// <summary>
 		/// The location Okta should redirect to process a logout. This is typically something like "{yourAppScheme}:/logout".  Required.
 		/// </summary>
@@ -46,6 +47,7 @@ namespace Okta.Xamarin
 		/// </summary>
 		[JsonProperty("Scope", DefaultValueHandling = DefaultValueHandling.Populate)]
 		public string Scope { get; set; } = "openid profile";
+
 		/// <summary>
 		/// A readonly list of OAuth 2.0/OpenID Connect scopes to request when logging in, as specified by <see cref="Scope" />.
 		/// </summary>
@@ -58,7 +60,7 @@ namespace Okta.Xamarin
 		public string OktaDomain { get; set; }
 
 		/// <summary>
-		/// The Okta Authorization Server to use.  optional, the default value is "default".
+		/// The Okta Authorization Server to use.  Optional, the default value is "default".
 		/// </summary>
 		[JsonProperty("AuthorizationServerId", DefaultValueHandling = DefaultValueHandling.Populate)]
 		public string AuthorizationServerId { get; set; } = "default";
@@ -146,7 +148,11 @@ namespace Okta.Xamarin
 		}
 
 
-		public string GetAuthorizeUri()
+		/// <summary>
+		/// Gets the Authorize Url used for logging in, which is either the <see cref="AuthorizeUri"/> if specified, or constructed from the <see cref="OktaDomain"/> and <see cref="AuthorizationServerId"/>.
+		/// </summary>
+		/// <returns>The computed Authorize Url used for logging in</returns>
+		public string GetAuthorizeUrl()
 		{
 			if (string.IsNullOrEmpty(AuthorizeUri))
 			{
@@ -158,6 +164,10 @@ namespace Okta.Xamarin
 			}
 		}
 
+		/// <summary>
+		/// Gets the Access Token Url used for retrieving a token, which is constructed from the <see cref="OktaDomain"/> and <see cref="AuthorizationServerId"/>.
+		/// </summary>
+		/// <returns>The computed Access Token Url used for retrieving a token</returns>
 		public string GetAccessTokenUrl()
 		{
 			return $"{OktaDomain}/oauth2/{AuthorizationServerId}/v1/token";

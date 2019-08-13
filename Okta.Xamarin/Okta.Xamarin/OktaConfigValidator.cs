@@ -1,4 +1,4 @@
-﻿// <copyright file="OktaMiddlewareExtensions.cs" company="Okta, Inc">
+﻿// <copyright file="OktaConfigValidator.cs" company="Okta, Inc">
 // Copyright (c) 2019-present Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -8,6 +8,10 @@ using System.Text.RegularExpressions;
 
 namespace Okta.Xamarin
 {
+	/// <summary>
+	/// Validates an <see cref="IOktaConfig"/> config to ensure all required fields are present and in the correct form
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class OktaConfigValidator<T>
 		where T : IOktaConfig
 	{
