@@ -2442,12 +2442,6 @@ namespace Okta.Xamarin.Android
 			// aapt resource value: 0x7f050010
 			public static int abc_toolbar_collapse_description = 2131034128;
 			
-			// aapt resource value: 0x7f050020
-			public static int app_name = 2131034144;
-			
-			// aapt resource value: 0x7f05001f
-			public static int hello = 2131034143;
-			
 			// aapt resource value: 0x7f050011
 			public static int search_menu_title = 2131034129;
 			

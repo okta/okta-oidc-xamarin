@@ -56,11 +56,7 @@
     <Compile Include="ActivityCustomUrlSchemeInterceptor.cs" />
     <Compile Include="OktaConfig.Android.cs" />
     <Compile Include="OidcClient.Android.cs" />
-    <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.CustomTabs">
@@ -68,12 +64,7 @@
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\values\strings.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\drawable\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Okta.Xamarin\Okta.Xamarin.csproj">
       <Project>{49cd54c4-eb9a-423d-a2e8-885d80744659}</Project>
