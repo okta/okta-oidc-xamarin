@@ -158,7 +158,7 @@ namespace Okta.Xamarin
 				currentTask.SetException(new OAuthException()
 				{
 					ErrorTitle = data["error"],
-					ErrorDescription = data.GetValueOrDefault("error_description"),
+					ErrorDescription = data.GetValueOrDefault("error_description", ""),
 					RequestUrl = this.Config.GetAccessTokenUrl(),
 					ExtraData = kvdata
 				});
@@ -232,11 +232,11 @@ namespace Okta.Xamarin
 			string url = baseUri.AbsoluteUri;
 
 			// remove fragment if any
-			if (url.Contains('#'))
+			if (url.Contains("#"))
 				url = url.Substring(0, url.IndexOf('#'));
 
 			// if url already has a query, then append to it
-			if (!baseUri.PathAndQuery.Contains('?'))
+			if (!baseUri.PathAndQuery.Contains("?"))
 				url += "?";
 			else
 				url += "&";
