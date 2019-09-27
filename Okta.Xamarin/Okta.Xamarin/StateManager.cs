@@ -43,7 +43,7 @@ namespace Okta.Xamarin
 		/// </summary>
 		public bool IsAuthenticated
 		{
-			get { return (!string.IsNullOrEmpty(AccessToken) && Expires < DateTime.UtcNow); }
+			get { return (!string.IsNullOrEmpty(AccessToken) && Expires > DateTime.UtcNow); }
 		}
 
 
