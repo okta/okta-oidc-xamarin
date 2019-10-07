@@ -61,14 +61,9 @@ Task("Run-Tests")
 			.SetVerbosity(Verbosity.Normal));			
 
 		var testSettings = new VSTestSettings{
-			ToolPath        = Context.Tools.Resolve("vstest.console.exe"),
-
-			// use the Trx Logger and a deterministic output file name
-			// to be able to import test results into a build orchestration tool (VSTS, Teamcity etc.).
-			ArgumentCustomization = arg => arg.Append("/logger:trx;LogFileName=VsTestResults.xml")
+			ToolPath        = Context.Tools.Resolve("vstest.console.exe")
 		};
 		
-		// the test file pattern will obviously depend on the project.
 		VSTest(testsDllPath, testSettings);
 
 
