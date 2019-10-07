@@ -130,6 +130,24 @@ namespace Okta.Xamarin.Test
 			StateManager state = await client.SignInWithBrowserAsync();
 
 			Assert.Equal("access_token_example", state.AccessToken);
+
+			Assert.True(state.IsAuthenticated);
+		}
+
+		[Fact]
+		public void CorrectlySetIsAuthenticated()
+		{
+			StateManager stateWithNoToken = new StateManager(null, "test");
+			Assert.False(stateWithNoToken.IsAuthenticated);
+
+			StateManager stateWithTokenAndExpInPast = new StateManager("test", "test", null, null, -100);
+			Assert.False(stateWithTokenAndExpInPast.IsAuthenticated);
+
+			StateManager stateWithNoExp = new StateManager("test", "test");
+			Assert.True(stateWithNoExp.IsAuthenticated);
+
+			StateManager stateWithExpInFuture = new StateManager("test", "test", null, null, 100);
+			Assert.True(stateWithExpInFuture.IsAuthenticated);
 		}
 
 		[Fact]
