@@ -1,6 +1,8 @@
 #addin "Cake.Xamarin"
 
-#tool "xunit.runner.console"
+//#tool "xunit.runner.console"
+#tool "nuget:?package=Microsoft.TestPlatform&version=15.7.0"
+
 
 // Arguments.
 var target = Argument("target", "Default");
@@ -42,32 +44,46 @@ Task("Restore-Packages")
 		NuGetRestore(solutionFile);
 	});
 
-Task("Run-Tests")
-	// Allows the build process to continue even if there Tests aren't passing.
-	.ContinueOnError()
-	.IsDependentOn("Prepare-Build")
-	.Does(() =>
-	{		
-		DotNetBuild(testsProject.FullPath, settings => settings
-			.SetConfiguration(configuration)
-			.WithTarget("Build")
-			.SetVerbosity(Verbosity.Normal));			
-
-		DotNetCoreTool(
-			projectPath: testsDllPath,
-			command: "xunit", 
-            arguments: $"-configuration {configuration} --no-build");
-	});
-
 Task("Prepare-Build")
 	.IsDependentOn("Clean")
 	.IsDependentOn("Restore-Packages")
 		.Does (() => {});
 
+Task("Run-Tests")
+	// Allows the build process to continue even if there Tests aren't passing.
+	.ContinueOnError()
+	.IsDependentOn("Prepare-Build")
+	.Does(() =>
+	{	
+		DotNetBuild(testsProject.FullPath, settings => settings
+			.SetConfiguration(configuration)
+			.WithTarget("Build")
+			.SetVerbosity(Verbosity.Normal));			
+
+		var testSettings = new VSTestSettings{
+			ToolPath        = Context.Tools.Resolve("vstest.console.exe"),
+
+			// use the Trx Logger and a deterministic output file name
+			// to be able to import test results into a build orchestration tool (VSTS, Teamcity etc.).
+			ArgumentCustomization = arg => arg.Append("/logger:trx;LogFileName=VsTestResults.xml")
+		};
+		
+		// the test file pattern will obviously depend on the project.
+		VSTest(testsDllPath, testSettings);
+
+
+	//	DotNetCoreTool(
+	//		projectPath: testsDllPath,
+	//		command: "xunit", 
+	//        arguments: $"-configuration {configuration} --no-build");
+	});
+
+
+
 Task("Build-Android")
 	.IsDependentOn("Prepare-Build")
 	.Does(() =>
-	{ 		
+	{
 		DotNetBuild(androidProject, settings =>
 			settings.SetConfiguration(configuration)           
 			.WithProperty("DebugSymbols", "false")
