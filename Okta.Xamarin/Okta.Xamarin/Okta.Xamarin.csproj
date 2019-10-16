@@ -1,7 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Okta</Company>
+    <Authors>Okta, Inc.</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0-beta01</Version>
+    <PackageTags>okta,token,authentication,authorization</PackageTags>
+    <RepositoryUrl>https://github.com/okta/okta-oidc-xamarin/</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/okta/okta-oidc-xamarin/</PackageProjectUrl>
+    <Copyright>2019 Okta, Inc.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
