@@ -2,12 +2,15 @@
 
 # Okta Xamarin SDK
 
+> :warning: Beta alert! This library is in beta. See [release status](#release-status) for more information.
+
 This library is a Xamarin library for communicating with Okta as an OAuth 2.0 + OpenID Connect provider, and follows current best practice for native apps using [Authorization Code Flow + PKCE](https://developer.okta.com/authentication-guide/implementing-authentication/auth-code-pkce).
 
 You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/) page in our documentation.
 
 **Table of Contents**
-
+- [Release status](#release-status)
+- [Need help?](#need-help)
 - [Getting Started](#getting-started)
 - [Usage Guide](#usage-guide)
 - [Configuration Reference](#configuration-reference)
@@ -20,6 +23,7 @@ You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/
 - [API Reference](#api-reference)
   - [OidcClient](#oidcclient)
     - [SignInWithBrowserAsync()](#signinwithbrowserasync)
+   <!-- TODO: methods not yet available 
     - [SignOutOfOktaAsync()](#signoutofoktaasync)
     - [AuthenticateAsync()](#authenticateasync)
   - [StateManager](#statemanager)
@@ -29,15 +33,43 @@ You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/
     - [IntrospectAsync()](#introspectasync)
     - [GetUserAsync()](#getuserasync)
     - [RevokeAsync()](#revokeasync)
-    - [Clear()](#clear)
+    - [Clear()](#clear)-->
+- [Contributing](#contributing)
 
+
+## Release Status
+
+This library uses semantic versioning and follows Okta's [library version policy](https://developer.okta.com/code/library-versions/).
+
+| Version | Status                    |
+| ------- | ------------------------- |
+| 1.x | :warning: Beta |
+
+The latest release can always be found on the [releases page](https://github.com/okta/okta-oidc-xamarin/releases).
+
+## Need help?
+ 
+If you run into problems using the SDK, you can
+ 
+* Ask questions on the [Okta Developer Forums](https://devforum.okta.com/)
+* Post [issues](https://github.com/okta/okta-oidc-xamarin/issues) here on GitHub (for code errors)
 
 ## Getting Started 
 
-Installing the Okta.Xamarin SDK into your project is simple. The easiest way to include this library into your project is through [Nuget](https://www.nuget.org/packages/Okta******).  
+The Okta.Xamarin SDK is compatible with [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
+
+Installing the Okta.Xamarin SDK into your project is simple. The easiest way to include this library into your project is through NuGet.
+
+### Android
 
 ```cmd
-Install-Package Okta.Xamarin
+Install-Package Okta.Xamarin.Android
+```
+
+### iOS
+
+```cmd
+Install-Package Okta.Xamarin.iOS
 ```
 
 You'll also need:
@@ -59,14 +91,14 @@ You'll also need:
 For an overview of this library's features and authentication flows, check out [our developer docs](https://developer.okta.com/code/****).
 
 TODO: Once the developer site provides code walkthroughs, update this with a bulleted list of possible flows.
--->
 
 You can also browse the full [API reference documentation](#api-reference).
+-->
 
 
 ## Configuration Reference
 
-The entrypoint for the SDK is an instance of `Okta.Xamarin.OidcClient`.  When you instantiate an `OidcClient`, you need to include a configuration object by passing in a `Okta.Xamarin.OktaConfig`. 
+The entry point for the SDK is an instance of `Okta.Xamarin.OidcClient`.  When you instantiate an `OidcClient`, you need to include a configuration object by passing in a `Okta.Xamarin.OktaConfig`. 
 
 ```csharp
 // Load configuration from a json file
@@ -91,10 +123,13 @@ var config = new Okta.Xamarin.OktaConfig() {
 var oidcClient = new Okta.Xamarin.OidcClient(this, config)
 
 ```
+<!--
+
+TODO: Uncomment when this feature is available
 
 **Need a refresh token?**
 A refresh token is a special token that is used to generate additional access and ID tokens. Make sure to include the `offline_access` scope in your configuration to silently renew the user's session in your application!
-
+-->
 
 ### Configuration file
 
@@ -176,7 +211,7 @@ validator.Validate(myConfigObject);
 
 The browser-based login is securely implemented on Android with Chrome Custom Tabs and on iOS through Safari ViewController.  In order to complete the flow, the browser must be able to redirect back to the application, which then needs to process the response.  You need to do a bit of work to hook all this up.
 
-In the following examples, assume we have a RedirectUri in our config as well as on the Okta application dashboard set to `com.myappnamespace.exampleapp:/callback`
+In the following examples, assume we have a `RedirectUri` in our config as well as on the Okta application dashboard set to `com.myappnamespace.exampleapp:/callback`
 
 ### Android
 
@@ -244,127 +279,6 @@ StateManager stateManager = await oidcClient.SignInWithBrowserAsync();
 // stateManager.RefreshToken
 ```
 
+## Contributing
 
-#### SignOutOfOktaAsync()
-
-You can start the sign out flow by simply calling `SignOutOfOktaAsync()` with the appropriate `Okta.Xamarin.StateManager` . This method will end the user's Okta session in the browser.
-
-**Important**: This method **does not** clear or revoke tokens minted by Okta. Use the [`revoke`](#revoke) and [`clear`](#clear) methods of `Okta.Xamarin.StateManager` to terminate the user's local session in your application.
-
-```csharp
-// Redirects to the configured 'postLogoutRedirectUri' specified in the config.
-await oidcClient.SignOutOfOktaAsync(stateManager);
-
-// to complete sign out, also call `stateManager.RevokeAsync(accessToken)` and then `stateManager.Clear()` 
-await stateManager.RevokeAsync(stateManager.AccessToken);
-stateManager.Clear();
-```
-
-
-#### AuthenticateAsync()
-
-If you have used the [AuthN SDK](https://github.com/okta/okta-auth-dotnet) to log in to Okta and have a valid session token, you can complete authorization by calling `AuthenticateAsync(sessionToken)`. In case of successful authorization, this operation will return valid `Okta.Xamarin.StateManager` in its callback. Clients are responsible for further storage and maintenance of the manager.
-
-```csharp
-// pass the sessionToken obtained from the AuthN SDK
-StateManager stateManager = await oidcClient.AuthenticateAsync(sessionToken);
-
-// stateManager.IsAuthenticated;
-// stateManager.AccessToken
-// stateManager.IdToken
-// stateManager.RefreshToken
-}
-```
-
-
-### StateManager
-
-The `SignInWithBrowserAsync()` and `AuthenticateAsync()` operations return an instance of `Okta.Xamarin.StateManager`, which includes the login state and any tokens.
-
-```csharp
-bool stateManager.IsAuthenticated;
-string stateManager.AccessToken;
-string stateManager.IdToken;
-string stateManager.RefreshToken;
-```
-
-
-#### WriteToSecureStorageAsync()
-
-Tokens are securely stored in the iOS Keychain or the Android SecureStore (***TODO: update with real name***) and can be retrieved by accessing the StateManager.  The developer is responsible for storing StateManager returned by `SignInWithBrowserAsync()` or `AuthenticateAsync(token)` operation.  To store the manager call its `WriteToSecureStorageAsync()` method:
-
-```csharp
-var stateManager = await oidcClient.SignInWithBrowserAsync();
-if (stateManager.IsAuthenticated) {
-    stateManager.WriteToSecureStorageAsync()
-}
-```
-
-
-#### ReadFromSecureStorageAsync()
-
-To retrieve a stored manager call `ReadFromSecureStorageAsync(config)` and pass in the Okta configuration that corresponds to a manager you are interested in.
-
-```csharp
-var stateManager = await StateManager.ReadFromSecureStorageAsync(config);
-
-if (stateManager.IsAuthenticated) {
-    // authenticated 
-    // stateManager.AccessToken
-    // stateManager.IdToken
-    // stateManager.RefreshToken
-} else {
-    //not authenticated
-}
-```
-
-
-#### RenewAsync()
-
-Since access tokens are traditionally short-lived, you can renew expired tokens by exchanging a refresh token for new ones. See the [configuration reference](#configuration-reference) to ensure your app is configured properly for this flow.
-
-```csharp
-var newAccessToken = await stateManager.RenewAsync();
-```
-
-
-#### IntrospectAsync()
-
-Calls the introspection endpoint to inspect the validity of the specified token.
-
-```csharp
-var payload = await stateManager.IntrospectAsync(accessToken);
-
-System.Diagnostics.Debug.WriteLine($"Is token valid? {payload.Active}");
-```
-
-
-#### GetUserAsync()
-
-Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.
-
-```csharp
-ClaimsPrincipal user = await stateManager.GetUserAsync();
-
-System.Diagnostics.Debug.WriteLine($"User's name is {user.Identity.Name}");
-```
-
-
-#### RevokeAsync()
-
-Calls the revocation endpoint to revoke the specified token.  A full sign out should consist of calling `SignOutOfOktaAsync()`, then `RevokeAsync()`, and then `Clear()`.
-
-```csharp
-await stateManager.RevokeAsync(accessToken);
-```
-
-
-#### Clear()
-
-Removes the local authentication state by removing cached tokens in the keychain.  A full sign out should consist of calling `SignOutOfOktaAsync()`, then `RevokeAsync()`, and then `Clear()`.
-
-```csharp
-stateManager.Clear();
-```
-
-
+We're happy to accept contributions and PRs! Please see the [contribution guide](CONTRIBUTING.md) to understand how to structure a contribution.
