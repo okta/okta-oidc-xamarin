@@ -23,17 +23,6 @@ You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/
 - [API Reference](#api-reference)
   - [OidcClient](#oidcclient)
     - [SignInWithBrowserAsync()](#signinwithbrowserasync)
-   <!-- TODO: methods not yet available 
-    - [SignOutOfOktaAsync()](#signoutofoktaasync)
-    - [AuthenticateAsync()](#authenticateasync)
-  - [StateManager](#statemanager)
-    - [WriteToSecureStorageAsync()](#writetosecurestorageasync)
-    - [ReadFromSecureStorageAsync()](#readfromsecurestorageasync)
-    - [RenewAsync()](#renewasync)
-    - [IntrospectAsync()](#introspectasync)
-    - [GetUserAsync()](#getuserasync)
-    - [RevokeAsync()](#revokeasync)
-    - [Clear()](#clear)-->
 - [Contributing](#contributing)
 
 
@@ -86,16 +75,6 @@ You'll also need:
 4. When a user wants to sign in, [call `SignInWithBrowserAsync`](#signinwithbrowserasync) on the OidcClient.  This is an async function and must be awaited.
 5. Use the returned [`StateManager`](#statemanager) to get the access token and other login details.
 
-
-<!--
-For an overview of this library's features and authentication flows, check out [our developer docs](https://developer.okta.com/code/****).
-
-TODO: Once the developer site provides code walkthroughs, update this with a bulleted list of possible flows.
-
-You can also browse the full [API reference documentation](#api-reference).
--->
-
-
 ## Configuration Reference
 
 The entry point for the SDK is an instance of `Okta.Xamarin.OidcClient`.  When you instantiate an `OidcClient`, you need to include a configuration object by passing in a `Okta.Xamarin.OktaConfig`. 
@@ -123,13 +102,6 @@ var config = new Okta.Xamarin.OktaConfig() {
 var oidcClient = new Okta.Xamarin.OidcClient(this, config)
 
 ```
-<!--
-
-TODO: Uncomment when this feature is available
-
-**Need a refresh token?**
-A refresh token is a special token that is used to generate additional access and ID tokens. Make sure to include the `offline_access` scope in your configuration to silently renew the user's session in your application!
--->
 
 ### Configuration file
 
