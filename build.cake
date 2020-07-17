@@ -18,64 +18,67 @@ var iOSOutputDirectory = Directory(System.IO.Path.Combine(artifactsDirectory, "i
 var testsProject = GetFiles("./Okta.Xamarin/Okta.Xamarin.Test/*.csproj").First();
 
 Task("Clean")
-	.Does(() => 
-	{
-		CleanDirectory(artifactsDirectory);
+    .Does(() => 
+    {
+        Console.WriteLine("Cleaning directory {0}", artifactsDirectory);
+        CleanDirectory(artifactsDirectory);
 
-		DotNetBuild(solutionFile, settings => settings
-			.SetConfiguration(configuration)
-			.WithTarget("Clean")
-			.SetVerbosity(Verbosity.Minimal));
-	});
+        Console.WriteLine("Calling DotNetBuild Target=Clean");
+        MSBuild(solutionFile, settings => settings
+            .SetConfiguration(configuration)
+            .WithTarget("Clean")
+            .SetVerbosity(Verbosity.Minimal)); 
+    });
 
 Task("Restore-Packages")
-	.Does(() => 
-	{
-		NuGetRestore(solutionFile);
-	});
+    .Does(() => 
+    {
+        NuGetRestore(solutionFile);
+    });
 
 Task("Build-Android")
-	.IsDependentOn("Restore-Packages")
-	.Does(() =>
-	{ 		
-		DotNetBuild(androidProject, settings =>
-			settings
-				.SetConfiguration(configuration)  
-				.WithProperty("OutputPath", androidOutputDirectory)         
-				.WithProperty("DebugSymbols", "false")
-				.WithProperty("TreatWarningsAsErrors", "false")
-				.SetVerbosity(Verbosity.Minimal));
+    .IsDependentOn("Restore-Packages")
+    .Does(() =>
+    { 	
+        MSBuild(androidProject, settings =>
+            settings
+                .SetConfiguration(configuration)  
+                .WithProperty("OutputPath", androidOutputDirectory)         
+                .WithProperty("DebugSymbols", "false")
+                .WithProperty("TreatWarningsAsErrors", "false")
+                .SetVerbosity(Verbosity.Minimal));
     });
 
 Task("Build-iOS")
-	.IsDependentOn("Restore-Packages")
-	.Does (() =>
-	{
-		DotNetBuild(iOSProject, settings => 
-			settings
-				.SetConfiguration(configuration)   
-				.WithTarget("Build")
-				.WithProperty("Platform", "iPhoneSimulator")
-				.WithProperty("OutputPath", iOSOutputDirectory)
-				.WithProperty("TreatWarningsAsErrors", "false")
-				.SetVerbosity(Verbosity.Minimal));
-	});
+    .IsDependentOn("Restore-Packages")
+    .Does (() =>
+    {
+        MSBuild(iOSProject, settings => 
+            settings
+                .SetConfiguration(configuration)   
+                .WithTarget("Build")
+                .WithProperty("Platform", "iPhoneSimulator")
+                .WithProperty("OutputPath", iOSOutputDirectory)
+                .WithProperty("TreatWarningsAsErrors", "false")
+                .SetVerbosity(Verbosity.Minimal));
+    });
 
 Task("Run-Tests")
-	.IsDependentOn("Restore-Packages")
-	.Does(() =>
-	{		
-		DotNetCoreTest(testsProject.FullPath, 
-			new DotNetCoreTestSettings()
-			{
-				Configuration = configuration
-			});
+    .IsDependentOn("Restore-Packages")
+    .Does(() =>
+    {		
+        DotNetCoreTest(testsProject.FullPath, 
+            new DotNetCoreTestSettings()
+            {
+                Configuration = configuration
+                //NoBuild = true // Running tests will build the test project first, uncomment this line if this behavior should change
+            });
     });
 
 Task("Default")
-	.IsDependentOn("Clean")
-	.IsDependentOn("Build-Android")
-	.IsDependentOn("Build-iOS")
-	.IsDependentOn("Run-Tests");
+    .IsDependentOn("Clean")
+    .IsDependentOn("Build-Android")
+    .IsDependentOn("Build-iOS")
+    .IsDependentOn("Run-Tests");
 
 RunTarget(target);
