@@ -44,16 +44,25 @@ namespace Okta.Xamarin
 		/// Start the authorization flow.  This is an async method and should be awaited.
 		/// </summary>
 		/// <returns>In case of successful authorization, this Task will return a valid <see cref="StateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-		public Task<StateManager> SignInWithBrowserAsync()
+		public
+#if WINDOWS_UWP
+			async
+#endif
+			Task<StateManager> SignInWithBrowserAsync()
 		{
 			validator.Validate(Config);
 
 			currentTask = new TaskCompletionSource<StateManager>();
 			GenerateStateCodeVerifierAndChallenge();
 			currentAuthenticatorbyState.Add(State, this);
-			this.LaunchBrowser(this.GenerateAuthorizeUrl());
 
+#if !WINDOWS_UWP
+			this.LaunchBrowser(this.GenerateAuthorizeUrl());
 			return currentTask.Task;
+#else
+			await this.LaunchBrowserAsync(this.GenerateAuthorizeUrl()).ConfigureAwait(false);
+			return await currentTask.Task;
+#endif
 		}
 
 		/// <summary>
@@ -232,11 +241,11 @@ namespace Okta.Xamarin
 			string url = baseUri.AbsoluteUri;
 
 			// remove fragment if any
-			if (url.Contains('#'))
+			if (url.Contains("#"))
 				url = url.Substring(0, url.IndexOf('#'));
 
 			// if url already has a query, then append to it
-			if (!baseUri.PathAndQuery.Contains('?'))
+			if (!baseUri.PathAndQuery.Contains("?"))
 				url += "?";
 			else
 				url += "&";
