@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 
+CAKE_ARGUMENTS=()
+
+if [ -z "$1" ]; then
+    source ./configure.sh
+    if [[ "${BUILD_ENV}" == "linux" ]]; then
+        echo "Cake Target: CommonTarget"
+        CAKE_ARGUMENTS+=("--target=CommonTarget")
+    fi
+    if [[ "${BUILD_ENV}" == "windows" ]]; then
+        echo "Cake Target: AndroidTarget"
+        CAKE_ARGUMENTS+=("--target=AndroidTarget")
+    fi
+    if [[ "${BUILD_ENV}" == "mac" ]]; then
+        echo "Cake Target: iOSTarget"
+        CAKE_ARGUMENTS+=("--target=iOSTarget")
+    fi
+fi
+
 ##########################################################################
 # This is the Cake bootstrapper script for Linux and OS X.
 # This file was downloaded from https://github.com/cake-build/resources
@@ -28,7 +46,6 @@ fi
 
 # Define default arguments.
 SCRIPT="build.cake"
-CAKE_ARGUMENTS=()
 
 # Parse arguments.
 for i in "$@"; do
@@ -114,4 +131,5 @@ if [ ! -f "$CAKE_EXE" ]; then
 fi
 
 # Start Cake
-exec mono "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
+echo "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
+mono "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
