@@ -20,5 +20,5 @@ git fetch --all
 git checkout -b release-${GITCOMMIT}
 echo `date` > ./release
 git add release
-git commit -m "CI: added release file"
+git commit -m "CI: added release file for ${GITCOMMIT}"
 echo "push 'release-${GITCOMMIT}' branch to azure to begin release build" # ideally this would be run from bacon task but there is currently no easy way to hide azure credentials in bacon
