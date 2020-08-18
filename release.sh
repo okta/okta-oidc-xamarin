@@ -13,10 +13,7 @@ if [[ ${CURRENTBRANCH} != 'integration' ]]; then
     echo "Release script must be run from the integration branch."
     exit 1
 fi
-
-echo "Current branch is: ${CURRENTBRANCH}"
-echo "Fetching branches..."
-git fetch --all    
+  
 git checkout -b release-${GITCOMMIT}
 echo `date` > ./release
 git add release
