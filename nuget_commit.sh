@@ -31,20 +31,10 @@ if [[ -z ${CURRENTBRANCH} ]]; then
     CURRENTBRANCH=${GITCOMMIT}
 fi
 
-echo "Current branch/commit is: ${CURRENTBRANCH}"
-if [[ ${CURRENTBRANCH} != "integration" ]]; then
-    echo "Fetching branches..."
-    git fetch --all    
-    echo "Merging 'integration' branch..."
-    git merge origin/integration
-    git checkout integration
-    git merge ${CURRENTBRANCH}
-else
-    git pull
-fi
-
 echo 'ls ./nuget/packages/'
 ls ./nuget/packages/
+
+git checkout -b integration
 git add ./nuget/packages/*.nupkg -f
 git commit --author="azure-ci <noreply@okta.com>" -m "CI: 'integration' nuget packages for ${GITCOMMIT}"
 git push -u origin integration -f
