@@ -37,5 +37,4 @@ ls ./nuget/packages/
 git checkout -b integration
 git add ./nuget/packages/*.nupkg -f
 git commit --author="azure-ci <noreply@okta.com>" -m "CI: 'integration' nuget packages for ${GITCOMMIT}"
-git push -u origin integration -f
 git push -u https://${GITHUB_USERNAME}:${GITHUB_ACCESS_TOKEN}@github.com/okta/okta-oidc-xamarin.git integration -f
