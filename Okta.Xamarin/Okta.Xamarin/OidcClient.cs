@@ -19,9 +19,9 @@ namespace Okta.Xamarin
 	public partial class OidcClient : IOidcClient
 	{
 		/// <summary>
-		/// The configuration for this Client.  Must be set in the constructor.
+		/// The configuration for this Client.
 		/// </summary>
-		public IOktaConfig Config { get; private set; }
+		public IOktaConfig Config { get; set; }
 
 		/// <summary>
 		/// Maintains a list of all currently active Clients, by state.  This is used after the intent/universal link callback from login to continue the state machine.
@@ -37,8 +37,6 @@ namespace Okta.Xamarin
 		/// A <see cref="OktaConfigValidator"/> used to validate any configuration used by Clients
 		/// </summary>
 		private static readonly OktaConfigValidator<IOktaConfig> validator = new OktaConfigValidator<IOktaConfig>();
-
-
 
 		/// <summary>
 		/// Start the authorization flow.  This is an async method and should be awaited.
@@ -166,6 +164,7 @@ namespace Okta.Xamarin
 				return;
 			}
 
+			// TODO: add a StateManager constructor that takes Dictionary<string, string>
 			StateManager state = new StateManager(
 				data["access_token"],
 				data["token_type"],
@@ -189,6 +188,8 @@ namespace Okta.Xamarin
 		/// A SHA256 hash of the <see cref="CodeVerifier"/> used for PKCE
 		/// </summary>
 		private string CodeChallenge { get; set; }
+		public object ReturnContext { get; set; }
+
 		/// <summary>
 		/// Tracks the current state machine used by <see cref="SignInWithBrowserAsync"/> across the login callback
 		/// </summary>
@@ -277,7 +278,7 @@ namespace Okta.Xamarin
 			if (OidcClient.currentAuthenticatorbyState.ContainsKey(state))
 			{
 				// state is valid for a current client, so continue the flow with that client
-				((OidcClient)OidcClient.currentAuthenticatorbyState[state]).ParseRedirectedUrl(uri);
+				((OidcClient)currentAuthenticatorbyState[state]).ParseRedirectedUrl(uri);
 				return true;
 			}
 			else

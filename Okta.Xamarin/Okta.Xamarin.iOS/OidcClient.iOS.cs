@@ -41,7 +41,7 @@ namespace Okta.Xamarin
 		/// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
 		public OidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config)
 		{
-			while (iOSViewController.PresentedViewController != null)
+			while (iOSViewController?.PresentedViewController != null)
 			{
 				iOSViewController = iOSViewController.PresentedViewController;
 			}

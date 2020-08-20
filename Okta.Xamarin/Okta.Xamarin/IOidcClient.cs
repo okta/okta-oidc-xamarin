@@ -12,10 +12,11 @@ namespace Okta.Xamarin
 	/// </summary>
 	public interface IOidcClient
 	{
+		object ReturnContext { get; set; }
 		/// <summary>
-		/// The configuration for this Client.  Must be set in the constructor.
+		/// The configuration for this Client.
 		/// </summary>
-		IOktaConfig Config { get; }
+		IOktaConfig Config { get; set; }
 
 		/// <summary>
 		/// Complete the authorization of a valid session obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see>.

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ -z ${OKTA_CLIENT_ID} ]]; then
+    echo "OKTA_CLIENT_ID environment variable not set."
+    exit 1
+fi
+if [[ -z ${OKTA_DOMAIN} ]]; then
+    echo "OKTA_DOMAIN environment variable not set."
+    exit 1
+fi
+
 CONFIGURATION="Debug"
 
 if [[ -f "./release" ]]; then
@@ -7,5 +16,8 @@ if [[ -f "./release" ]]; then
 fi
 
 source ./configure.sh
+
+writeOktaConfigXml "./Okta.Xamarin/Okta.Xamarin.Android/Assets/OktaConfig.xml"
+writeOktaConfigPlist "./Okta.Xamarin/Okta.Xamarin.iOS/OktaConfig.plist"
 ./build.sh --target=AzureBuildTarget --configuration=${CONFIGURATION}
-./nuget_commit.sh
+./commit-from-azure.sh

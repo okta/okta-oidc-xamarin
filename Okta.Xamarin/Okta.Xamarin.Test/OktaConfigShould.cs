@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
+using Okta.Xamarin;
 
 namespace Okta.Xamarin.Test
 {

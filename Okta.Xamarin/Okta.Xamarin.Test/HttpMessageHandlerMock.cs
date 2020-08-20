@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Okta.Xamarin;
 
 namespace Okta.Xamarin.Test
 {
