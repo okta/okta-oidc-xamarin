@@ -204,6 +204,15 @@ Task("Build-iOS")
     {
         MSBuild(iOSProject, settings => 
             settings
+                .SetConfiguration("Release")
+                .WithTarget("Build")
+                .WithProperty("Platform", "iPhone")
+                .WithProperty("OutputPath", iOSOutputDirectory)
+                .WithProperty("TreatWarningsAsErrors", "false")
+                .SetVerbosity(Verbosity.Minimal));
+
+        MSBuild(iOSProject, settings => 
+            settings
                 .SetConfiguration("Debug")
                 .WithTarget("Build")
                 .WithProperty("Platform", "iPhoneSimulator")
