@@ -5,22 +5,22 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
-	public class OktaContext<Cl, Co> : OktaContext 
-		where Cl: IOidcClient, new()
-		where Co: IOktaConfig, new()
+	public class OktaContext<TClient, TConfig> : OktaContext 
+		where TClient: IOidcClient, new()
+		where TConfig: IOktaConfig, new()
 	{
-		public new Cl OidcClient { get; set; }
-		public new Co OktaConfig { get; set; }
+		public new TClient OidcClient { get; set; }
+		public new TConfig OktaConfig { get; set; }
 
-		public async Task<StateManager> SignIn(Co oktaConfig = default)
+		public async Task<StateManager> SignIn(TConfig oktaConfig = default)
 		{
-			return await SignIn(new Cl 
+			return await SignIn(new TClient 
 			{
 				Config = oktaConfig == null ? OktaConfig : oktaConfig 
 			});
 		}
 
-		public async Task<StateManager> SignIn(Cl oidcClient = default)
+		public async Task<StateManager> SignIn(TClient oidcClient = default)
 		{
 			oidcClient = oidcClient == null ? OidcClient: oidcClient;
 			return await SignIn((IOidcClient)oidcClient);
