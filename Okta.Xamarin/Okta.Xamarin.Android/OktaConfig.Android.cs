@@ -68,6 +68,14 @@ namespace Okta.Xamarin
 			return config;
 		}
 
+		public static OktaConfig LoadFromXmlStream(Stream xmlStream)
+		{
+			using(StreamReader reader = new StreamReader(xmlStream))
+			{
+				return ParseXml(reader.ReadToEnd());
+			}
+		}
+
 		/// <summary>
 		/// Instantiates a <see cref="OktaConfig"/> from an xml stream asynchronously and validates it.  Throws an exception if required fields are missing or invalid.
 		/// </summary>

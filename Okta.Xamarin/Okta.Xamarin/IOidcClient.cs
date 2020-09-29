@@ -7,34 +7,34 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
-	/// <summary>
-	/// An interface defining the cross-platform surface area of the OidcClient
-	/// </summary>
-	public interface IOidcClient
-	{
-		/// <summary>
-		/// The configuration for this Client.  Must be set in the constructor.
-		/// </summary>
-		IOktaConfig Config { get; }
+    /// <summary>
+    /// An interface defining the cross-platform surface area of the OidcClient
+    /// </summary>
+    public interface IOidcClient
+    {
+        /// <summary>
+        /// The configuration for this client instance.
+        /// </summary>
+        IOktaConfig Config { get; set; }
 
-		/// <summary>
-		/// Complete the authorization of a valid session obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see>.
-		/// </summary>
-		/// <param name="sessionToken">A valid session  token obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see></param>
-		/// <returns>In case of successful authorization, this Task will return a valid <see cref="StateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-		Task<StateManager> AuthenticateAsync(string sessionToken);
+        /// <summary>
+        /// Complete the authorization of a valid session obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see>.
+        /// </summary>
+        /// <param name="sessionToken">A valid session  token obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see></param>
+        /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaState"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
+        Task<OktaState> AuthenticateAsync(string sessionToken);
 
-		/// <summary>
-		/// Start the authorization flow.  This is an async method and should be awaited.
-		/// </summary>
-		/// <returns>In case of successful authorization, this Task will return a valid <see cref="StateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-		Task<StateManager> SignInWithBrowserAsync();
+        /// <summary>
+        /// Start the authorization flow.  This is an async method and should be awaited.
+        /// </summary>
+        /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaState"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
+        Task<OktaState> SignInWithBrowserAsync();
 
-		/// <summary>
-		/// This method will end the user's Okta session in the browser.  This is an async method and should be awaited.
-		/// </summary>
-		/// <param name="stateManager">The state manager associated with the login that you wish to log out</param>
-		/// <returns>Task which tracks the progress of the logout</returns>
-		Task SignOutOfOktaAsync(StateManager stateManager);
-	}
+        /// <summary>
+        /// This method will end the user's Okta session in the browser.  This is an async method and should be awaited.
+        /// </summary>
+        /// <param name="stateManager">The state manager associated with the login that you wish to log out</param>
+        /// <returns>Task which tracks the progress of the logout</returns>
+        Task<OktaState> SignOutOfOktaAsync(OktaState stateManager);
+    }
 }

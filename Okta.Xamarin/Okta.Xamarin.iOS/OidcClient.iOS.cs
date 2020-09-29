@@ -41,7 +41,7 @@ namespace Okta.Xamarin
 		/// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
 		public OidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config)
 		{
-			while (iOSViewController.PresentedViewController != null)
+			while (iOSViewController?.PresentedViewController != null)
 			{
 				iOSViewController = iOSViewController.PresentedViewController;
 			}
@@ -62,13 +62,19 @@ namespace Okta.Xamarin
 
 		}
 
+
 		/// <summary>
 		/// This is used to handle the callback from the Safari view controller after a user logs in.  You need to forward calls to AppDelegate.OpenUrl to this function.  Please see the documentation for more information.
 		/// </summary>
 		/// <returns><see langword="true"/> if this url can be handled by an <see cref="OidcClient"/>, or <see langword="false"/> if it is some other url which is not handled by the login flow.</returns>
-		public static bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
+		public static bool IsOktaCallback(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
 		{
-			if (OidcClient.CaptureRedirectUrl(new Uri(url.AbsoluteString)))
+			if (InterceptLoginCallback(new Uri(url.AbsoluteString)))
+			{
+				return true;
+			}
+
+			if (InterceptLogoutCallback(new Uri(url.AbsoluteString)))
 			{
 				return true;
 			}

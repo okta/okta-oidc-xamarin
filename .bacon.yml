@@ -6,4 +6,6 @@ test_suites:
       timeout: '15'
       criteria: MERGE
       queue_name: small
+      script_env:
+        BUILD_ENVIRONMENT: "BACON"        
       

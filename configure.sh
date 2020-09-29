@@ -75,32 +75,66 @@ function configureLinux(){
     echo '</ configure.sh.configureLinux>'
 }
 
+
+function writeOktaConfigXml(){
+    FILEPATH=$1
+    echo '<?xml version="1.0" encoding="utf-8" ?>' > ${FILEPATH}
+    echo '<Okta>' >> $FILEPATH
+    echo $'\t'"<ClientId>${OKTA_CLIENT_ID}</ClientId>" >> ${FILEPATH}
+    echo $'\t'"<OktaDomain>${OKTA_DOMAIN}</OktaDomain>" >> ${FILEPATH}
+    echo $'\t'"<RedirectUri>com.okta.xamarin.android:/callback</RedirectUri>" >> ${FILEPATH}
+    echo $'\t'"<PostLogoutRedirectUri>com.okta.xamarin.android:/logout</PostLogoutRedirectUri>" >> ${FILEPATH}
+    echo "</Okta>" >> ${FILEPATH}
+}
+
+function writeOktaConfigPlist(){
+    FILEPATH=$1
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > ${FILEPATH}
+    echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> ${FILEPATH}
+    echo '<plist version="1.0">' >> ${FILEPATH}
+    echo '<dict>' >> ${FILEPATH}
+    echo $'\t'"<key>ClientId</key>" >> ${FILEPATH}
+    echo $'\t'"<string>${OKTA_CLIENT_ID}</string>" >> ${FILEPATH}
+    echo $'\t'"<key>OktaDomain</key>" >> ${FILEPATH}
+    echo $'\t'"<string>${OKTA_DOMAIN}</string>" >> ${FILEPATH}
+    echo $'\t'"<key>RedirectUri</key>" >> ${FILEPATH}
+    echo $'\t'"<string>com.okta.xamarin.ios:/callback</string>" >> ${FILEPATH}
+    echo $'\t'"<key>PostLogoutRedirectUri</key>" >> ${FILEPATH}
+    echo $'\t'"<string>com.okta.xamarin.ios:/logout</string>" >> ${FILEPATH}
+    echo "</dict>" >> ${FILEPATH}
+    echo "</plist>" >> ${FILEPATH}
+}
+
 if [[ "${OSTYPE}" == "linux-gnu" ]]; then
-    export BUILD_ENV=linux
+    export BUILD_OS=linux
     configureLinux
 fi
 if [[ "${OSTYPE}" == "darwin"* ]]; then
-    export BUILD_ENV=mac
+    export BUILD_OS=mac
     configureMac
 fi
 if [[ "${OSTYPE}" == "cygwin" ]]; then
-    export BUILD_ENV=windows
+    export BUILD_OS=windows
     configureWindows
 fi
 if [[ "${OSTYPE}" == "msys" ]]; then
-    export BUILD_ENV=windows
+    export BUILD_OS=windows
     configureWindows
 fi
 if [[ "${OSTYPE}" == "freebsd"* ]]; then
-    export BUILD_ENV=mac
+    export BUILD_OS=mac
     configureMac
 fi
 
 if [[ -z ${CONFIGURED} ]]; then
     export GITCOMMIT=`git rev-parse --short HEAD`
     echo "OSTYPE: ${OSTYPE}"
-    echo "BUILD_ENV: ${BUILD_ENV}"
+    echo "BUILD_OS: ${BUILD_OS}"
     echo "GITCOMMIT=${GITCOMMIT}"
     echo ${GITCOMMIT} > ./commit
     export CONFIGURED=${GITCOMMIT}
+fi
+
+if [[ -z ${BUILD_ENVIRONMENT} ]]; then
+    export BUILD_ENVIRONMENT="BACON"
 fi

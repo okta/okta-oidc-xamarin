@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# if run from azure, this script will push nuget packages to github packages
-# if run from bacon, this script will push nuget packages to artifactory
+# if run from azure, this script pushes nuget packages to github packages
+# if run from bacon, this script pushes nuget packages to artifactory
 
 source ./configure.sh
 GITHUB_PACKAGE_SOURCE="https://nuget.pkg.github.com/okta/index.json"
@@ -28,4 +28,17 @@ if [ -d "./nuget/packages" ]; then
     done
 else
     echo "./nuget/packages: No nuget packages found";
+fi
+
+if [[ -f ./release ]]; then
+    echo 'Removing release file'
+    rm ./release
+    if [ ${BUILD_ENVIRONMENT} == "BACON" ]; then
+        VERSION=`cat ./nuget/semver/version`
+        echo "Creating release-${VERSION} branch"
+        git checkout -b release-v${VERSION}
+        git commit --author="bacon-ci <noreply@okta.com>" -am 'BACON: removed release file'
+        git push -u origin release-v${VERSION}
+        echo "Create a pull request for release-${VERSION} to merge to master."                
+    fi
 fi

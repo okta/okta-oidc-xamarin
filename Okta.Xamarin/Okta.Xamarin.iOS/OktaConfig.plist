@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ClientId</key>
+	<string>{ClientId}</string>
+	<key>OktaDomain</key>
+	<string>https://{yourOktaDomain}</string>
+	<key>RedirectUri</key>
+	<string>com.okta.xamarin.ios.login:/callback</string>
+	<key>PostLogoutRedirectUri</key>
+	<string>com.okta.xamarin.ios.logout:/callback</string>
+</dict>
+</plist>
