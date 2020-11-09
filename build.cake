@@ -72,7 +72,15 @@ Func<NuSpecContent[]> getAndroidFiles = ()=>
         new NuSpecContent {Source = "artifacts/Android/Okta.Xamarin.Android.dll", Target = "lib/MonoAndroid10"} 
     };
 };
-
+Func<NuSpecDependency[]> getAndroidDependencies = () =>
+{
+    // TODO: define a way to determine dependencies programmatically
+    return new [] {
+        new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
+        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
+        new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
+    }    
+}
 // iOS Nuget functions
 Func<string> getiOSVersion = () =>
 {
@@ -99,6 +107,15 @@ Func<NuSpecContent[]> getiOSFiles = () =>
     return new [] { 
         new NuSpecContent {Source = "artifacts/iOS/Okta.Xamarin.iOS.dll", Target = "lib/Xamarin.iOS10"} 
     };
+};
+Func<NuSpecDependency[]> getiOSDependencies = () =>
+{
+    // TODO: define way to determine dependencies programmatically
+    return new []{
+        new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
+        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
+        new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
+    }
 };
 
 Task("Clean")
@@ -182,7 +199,8 @@ Task("NugetPack-Android")
                                 RequireLicenseAcceptance= false, 
                                 Symbols                 = false, 
                                 NoPackageAnalysis       = true, 
-                                Files                   = getAndroidFiles(), 
+                                Files                   = getAndroidFiles(),
+                                Dependencies            = getAndroidDependencies(),
                                 BasePath                = ".", 
                                 OutputDirectory         = androidOutputDirectory 
                             }; 
@@ -242,6 +260,7 @@ Task("NugetPack-iOS")
                                 Symbols                 = false, 
                                 NoPackageAnalysis       = true, 
                                 Files                   = getiOSFiles(), 
+                                Dependencies            = getiOSDependencies(),
                                 BasePath                = ".", 
                                 OutputDirectory         = iOSOutputDirectory 
                             }; 
