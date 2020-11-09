@@ -209,11 +209,11 @@ Task("NugetPack-Common")
     .Does(() =>
     {
                 var nuGetPackSettings   = new NuGetPackSettings { 
-                                Id                      = "Okta.Xamarin.Android", 
+                                Id                      = "Okta.Xamarin", 
                                 Version                 = getCommonVersion(), 
                                 Authors                 = new[] {"Okta, Inc."},
                                 Owners                  = new[] {"Okta, Inc."},
-                                Description             = "Official Okta OIDC SDK for Xamarin Android applications.",
+                                Description             = "Official Okta OIDC SDK for Xamarin applications.",
                                 ProjectUrl              = new Uri("https://github.com/okta/okta-oidc-xamarin"),
                                 IconUrl                 = new Uri("https://raw.githubusercontent.com/okta/okta-sdk-dotnet/master/icon.png"),
                                 LicenseUrl              = new Uri("https://github.com/okta/okta-oidc-dotnet/blob/master/LICENSE.md"),
