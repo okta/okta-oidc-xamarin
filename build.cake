@@ -79,8 +79,8 @@ Func<NuSpecDependency[]> getAndroidDependencies = () =>
         new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
         new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
         new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
-    }    
-}
+    };    
+};
 // iOS Nuget functions
 Func<string> getiOSVersion = () =>
 {
@@ -115,7 +115,7 @@ Func<NuSpecDependency[]> getiOSDependencies = () =>
         new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
         new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
         new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
-    }
+    };
 };
 
 Task("Clean")
