@@ -45,6 +45,44 @@ var iPhoneSimulatorIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSIpaO
 // Tests.
 var testsProject = GetFiles("./Okta.Xamarin/Okta.Xamarin.Test/*.csproj").First();
 
+// Common Nuget functions
+Func<string> getCommonVersion = () =>
+{
+    var version = System.IO.File.ReadAllText("./nuget/Common/version");
+    if(configuration.Equals("Debug"))
+    {
+        version += $"-{gitCommit}";
+    }
+    return version;
+};
+Func<string[]> getCommonReleaseNotes = () =>
+{
+    // TODO: define a way to get release notes from the file system and/or git commits
+    return new string[]{"", ""}; 
+};
+Func<string[]> getCommonTags = () =>
+{
+    // TODO: define a way to get tags from the file system and/or git commits
+    return new string[]{"okta", "token", "authentication", "authorization", "oauth", "sso", "oidc"}; 
+};
+Func<NuSpecContent[]> getCommonFiles = ()=>
+{
+    // TODO: define algorithm to build NuSpecContent array from convention based relative path from artifacts dir
+    return new [] { 
+        new NuSpecContent {Source = "artifacts/Common/Okta.Xamarin.dll", Target = "lib/netstandard2.0"} 
+    };
+};
+Func<NuSpecDependency[]> getCommonDependencies = () =>
+{
+    // TODO: define a way to determine dependencies programmatically
+    return new [] {
+        new NuSpecDependency { Id = "Newtonsoft.Json", Version = "12.0.3" },
+        new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
+        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
+        new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
+    };    
+};
+// ---
 // Android Nuget functions
 Func<string> getAndroidVersion = () =>
 {
@@ -165,6 +203,35 @@ Task("Build-Common")
                 .WithProperty("TreatWarningsAsErrors", "false")
                 .SetVerbosity(Verbosity.Minimal));
     }); 
+
+Task("NugetPack-Common")
+    .IsDependentOn("Build-Common")
+    .Does(() =>
+    {
+                var nuGetPackSettings   = new NuGetPackSettings { 
+                                Id                      = "Okta.Xamarin.Android", 
+                                Version                 = getCommonVersion(), 
+                                Authors                 = new[] {"Okta, Inc."},
+                                Owners                  = new[] {"Okta, Inc."},
+                                Description             = "Official Okta OIDC SDK for Xamarin Android applications.",
+                                ProjectUrl              = new Uri("https://github.com/okta/okta-oidc-xamarin"),
+                                IconUrl                 = new Uri("https://raw.githubusercontent.com/okta/okta-sdk-dotnet/master/icon.png"),
+                                LicenseUrl              = new Uri("https://github.com/okta/okta-oidc-dotnet/blob/master/LICENSE.md"),
+                                Repository              = new NuGetRepository{Url=repositoryUrl, Type="Git"},
+                                Copyright               = "(c) 2020 Okta, Inc.",
+                                ReleaseNotes            = getCommonReleaseNotes(), 
+                                Tags                    = getCommonTags(), 
+                                RequireLicenseAcceptance= false, 
+                                Symbols                 = false, 
+                                NoPackageAnalysis       = true, 
+                                Files                   = getCommonFiles(),
+                                Dependencies            = getCommonDependencies(),
+                                BasePath                = ".", 
+                                OutputDirectory         = commonOutputDirectory 
+                            }; 
+
+        NuGetPack(nuGetPackSettings);
+    });
 
 Task("Build-Android")
     .IsDependentOn("Restore-Packages")
@@ -324,6 +391,8 @@ Task("iOSTarget")
 Task("NugetTarget")
     .IsDependentOn("Clean")
     .IsDependentOn("Run-Tests")
+    .IsDependentOn("Build-Common")
+    .IsDependentOn("NugetPack-Common")
     .IsDependentOn("Build-Android")
     .IsDependentOn("NugetPack-Android")
     .IsDependentOn("Build-iOS")

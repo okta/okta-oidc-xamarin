@@ -8,6 +8,16 @@ mkdir -p ./nuget/packages/
 mkdir -p ./apparchives/Android/
 mkdir -p ./apparchives/iOS/
 
+if [ -d "./artifacts/Common" ]; then
+    for NUGETPACKAGE in $(ls ./artifacts/Common/*.nupkg)
+    do
+        echo "copying ${NUGETPACKAGE} to ./nuget/packages/"
+        cp ${NUGETPACKAGE} ./nuget/packages/
+    done    
+else
+    echo "./artifacts/Common: Common packages NOT FOUND";
+fi
+
 if [ -d "./artifacts/Android" ]; then
     for NUGETPACKAGE in $(ls ./artifacts/Android/*.nupkg)
     do
