@@ -5,6 +5,7 @@ pool:
 trigger:
   - master
   - OKTA-*
+  - test-*
   - release-*
 
 steps:
