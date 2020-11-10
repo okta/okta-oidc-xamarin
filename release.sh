@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This script must be run from an integration branch.
-# It creates a new branch called release-<GITCOMMIT> where <GITCOMMIT> is
+# This script creates a new branch called release-<GITCOMMIT> where <GITCOMMIT> is
 # the commit to be released (which is the current commit)
 
 VERSION_COMPONENT=$1 # may specify 'major', 'minor' or 'patch' default is 'patch'
@@ -13,10 +12,6 @@ fi
 source ./configure.sh
 
 CURRENTBRANCH=`git branch --show-current`
-if [[ ${CURRENTBRANCH} != integration* ]]; then
-    echo "Release script must be run from an integration branch."
-    exit 1
-fi
 
 pushd ./nuget/semver
 echo "Incrementing '${VERSION_COMPONENT}' version"
