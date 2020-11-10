@@ -4,7 +4,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 
-namespace Okta.Xamarin.Droid
+namespace Okta.Xamarin.Android
 {
 	[Activity(Label = "LoginCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
 	[

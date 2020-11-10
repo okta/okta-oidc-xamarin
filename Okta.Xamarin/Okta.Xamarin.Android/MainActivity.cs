@@ -8,8 +8,9 @@ using Android.Widget;
 using Android.OS;
 using Android.Content;
 using Xamarin.Forms;
+using Okta.Xamarin.Droid;
 
-namespace Okta.Xamarin.Droid
+namespace Okta.Xamarin.Android
 {
     [Activity(Label = "Okta.Xamarin", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
