@@ -6,7 +6,7 @@ trigger:
   - master
   - OKTA-*
   - test-*
-  - *-rc
+  - "*-rc"
   - release-*
 
 steps:
