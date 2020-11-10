@@ -21,7 +21,7 @@ cp ./version ../Android/version
 cp ./version ../iOS/version
 RELEASE_VERSION=`./version.sh current`
 echo "Release version is ${RELEASE_VERSION}"
-git add .
+git add ..
 popd
 
 BRANCH_NAME=release-v${RELEASE_VERSION}
