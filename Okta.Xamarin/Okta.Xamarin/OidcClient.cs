@@ -63,16 +63,16 @@ namespace Okta.Xamarin
         /// <returns>Task which tracks the progress of the logout</returns>
         public Task<OktaState> SignOutOfOktaAsync(OktaState stateManager)
         {
-            validator.Validate(Config);
-            currentTask = new TaskCompletionSource<OktaState>();
-			if (!stateManager.IsAuthenticated)
-			{
-				currentTask.SetResult(stateManager);
-				return currentTask.Task;
+            validator.Validate(this.Config);
+            this.currentTask = new TaskCompletionSource<OktaState>();
+            if (!stateManager.IsAuthenticated)
+            {
+				this.currentTask.SetResult(stateManager);
+				return this.currentTask.Task;
 			}
-			GenerateStateCodeVerifierAndChallenge();
-            loggingOutClientsByState.Add(State, this);
-            this.LaunchBrowser(this.GenerateLogoutUrl(new LogoutOptions(stateManager, Config, State)));
+			this.GenerateStateCodeVerifierAndChallenge();
+            loggingOutClientsByState.Add(this.State, this);
+            this.LaunchBrowser(this.GenerateLogoutUrl(new LogoutOptions(stateManager, this.Config, this.State)));
             return currentTask.Task;
         }
 

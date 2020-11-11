@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
-    public class OktaContext<TClient, TConfig> : OktaContext 
+    /// <summary>
+    /// A high level container providing access to Okta functionality.
+    /// </summary>
+    /// <typeparam name="TClient"></typeparam>
+    /// <typeparam name="TConfig"></typeparam>
+    public class OktaContext<TClient, TConfig> : OktaContext
         where TClient: IOidcClient, new()
         where TConfig: IOktaConfig, new()
     {

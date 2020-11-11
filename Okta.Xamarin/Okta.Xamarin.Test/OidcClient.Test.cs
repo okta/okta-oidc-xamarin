@@ -5,6 +5,7 @@
 
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
@@ -56,7 +57,30 @@ namespace Okta.Xamarin
                 return this.State;
             }
         }
+        public string CodeVerifier_Internal
+        {
+	        get
+	        {
+		        return this.CodeVerifier;
+	        }
+        }
+        
+        public string CodeChallenge_Internal
+        {
+	        get
+	        {
+		        return this.CodeChallenge;
+	        }
+        }
 
+        public TaskCompletionSource<OktaState> CurrentTask_Accessor
+        {
+	        get
+	        {
+		        return this.currentTask;
+	        }
+        }
+        
         /// <summary>
         /// Allows setting a custom <see cref="HttpMessageHandler"/> for use by this client's <see cref="HttpClient"/>, in order to mock of HTTP requests
         /// </summary>

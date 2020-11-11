@@ -2,6 +2,6 @@
 <Okta>
 	<ClientId>{ClientId}</ClientId>
 	<OktaDomain>https://{yourOktaDomain}</OktaDomain>
-	<RedirectUri>com.okta.xamarin.android:/callback</RedirectUri>
-	<PostLogoutRedirectUri>com.okta.xamarin.android:/logout</PostLogoutRedirectUri>
+	<RedirectUri>com.okta.xamarin.android.login:/callback</RedirectUri>
+	<PostLogoutRedirectUri>com.okta.xamarin.android.logout:/callback</PostLogoutRedirectUri>
 </Okta>
