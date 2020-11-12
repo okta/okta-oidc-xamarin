@@ -61,6 +61,15 @@ function configureLinux(){
     # ensure that dotnet is installed, assumes host has yum (CentOS 7)
     echo 'Checking for dotnet'
     if ! [ -x "$(command -v dotnet)" ]; then
+        yum install -y ca-certificates
+        update-ca-trust force-enable
+        curl -O http://ca.okta.com/Okta-Global-CA.pem
+        curl -O http://ca.okta.com/Okta-Infrastructure-CA.pem
+        curl -O http://ca.okta.com/Okta-Internet-CA.pem
+        curl -O http://ca.okta.com/Okta-Root-CA.pem
+        chmod o+r *.pem
+        cp Okta-*.pem /etc/pki/ca-trust/source/anchors/
+        update-ca-trust extract
         rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
         yum -y install dotnet-sdk-3.1
     fi
