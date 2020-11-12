@@ -21,13 +21,14 @@ namespace Okta.Xamarin.UITest
             this.screenshots = new List<FileInfo>();
         }
 
-        [SetUp]
+		// TODO: move tests to samples-xamarin repository
+        //[SetUp] 
         public void BeforeEachTest()
         {
             app = AppInitializer.StartApp(platform);
         }
 
-        [Test]
+        //[Test]
         public void OpeningScreenHasSigninButton()
         {
             AppResult[] results = app.WaitForElement(c => c.Marked("AboutPageButtonSignIn"));
