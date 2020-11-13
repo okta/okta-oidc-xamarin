@@ -5,6 +5,8 @@ pool:
 trigger:
   - master
   - OKTA-*
+  - test-*
+  - "*-rc"
   - release-*
 
 steps:
@@ -21,4 +23,5 @@ steps:
     BUILD_ENVIRONMENT: "AZURE"
     GITHUB_USERNAME: $(GITHUB_USERNAME)
     GITHUB_ACCESS_TOKEN: $(GITHUB_ACCESS_TOKEN)
-
+    OKTA_CLIENT_ID: $(OKTA_CLIENT_ID)
+    OKTA_DOMAIN: $(OKTA_DOMAIN)

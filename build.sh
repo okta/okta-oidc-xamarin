@@ -4,15 +4,15 @@ CAKE_ARGUMENTS=()
 
 if [ -z "$1" ]; then
     source ./configure.sh
-    if [[ "${BUILD_ENV}" == "linux" ]]; then
+    if [[ "${BUILD_OS}" == "linux" ]]; then
         echo "Cake Target: CommonTarget"
         CAKE_ARGUMENTS+=("--target=CommonTarget")
     fi
-    if [[ "${BUILD_ENV}" == "windows" ]]; then
+    if [[ "${BUILD_OS}" == "windows" ]]; then
         echo "Cake Target: AndroidTarget"
         CAKE_ARGUMENTS+=("--target=AndroidTarget")
     fi
-    if [[ "${BUILD_ENV}" == "mac" ]]; then
+    if [[ "${BUILD_OS}" == "mac" ]]; then
         echo "Cake Target: iOSTarget"
         CAKE_ARGUMENTS+=("--target=iOSTarget")
     fi

@@ -7,5 +7,6 @@ if [[ -f "./release" ]]; then
 fi
 
 source ./configure.sh
-./build.sh --target=AzureBuildTarget --configuration=${CONFIGURATION}
-./nuget_commit.sh
+
+./build.sh --target=NugetTarget --configuration=${CONFIGURATION}
+./commit-from-azure.sh
