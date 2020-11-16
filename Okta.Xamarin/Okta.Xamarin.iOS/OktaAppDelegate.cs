@@ -9,6 +9,10 @@ using UIKit;
 
 namespace Okta.Xamarin.iOS
 {
+	/// <summary>
+	/// Okta specific app delegate that loads an instance of the specified generic application type T and initializes OktaContext when finished launching.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class OktaAppDelegate<T> : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate where T: global::Xamarin.Forms.Application, new()
 	{
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
@@ -35,6 +39,9 @@ namespace Okta.Xamarin.iOS
 		}
 	}
 
+	/// <summary>
+	/// Okta specific app delegate that initializes OktaContext when finished launching.
+	/// </summary>
 	public class OktaAppDelegate: global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
 	{        
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)

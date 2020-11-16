@@ -13,28 +13,51 @@ namespace Okta.Xamarin
     /// </summary>
     public class OktaState
     {
+        /// <summary>
+        /// Gets the token type.
+        /// </summary>
         public string TokenType { get; private set; }
+
+        /// <summary>
+        /// Gets the access token.
+        /// </summary>
         public string AccessToken { get; private set; }
+
+        /// <summary>
+        /// Gets the id token.
+        /// </summary>
         public string IdToken { get; private set; }
+
+        /// <summary>
+        /// Gets the refresh token.
+        /// </summary>
         public string RefreshToken { get; private set; }
+
+        /// <summary>
+        /// Gets the scope.
+        /// </summary>
         public string Scope { get; private set; }
+
+        /// <summary>
+        /// Gets the expiration time.
+        /// </summary>
         public DateTime Expires { get; private set; }
-		
+        
         #region CTors
         public OktaState()
         {
         }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OktaState"/> class.
-		/// </summary>
-		/// <param name="accessToken"></param>
-		/// <param name="tokenType"></param>
-		/// <param name="idToken"></param>
-		/// <param name="refreshToken"></param>
-		/// <param name="expiresIn"></param>
-		/// <param name="scope"></param>
-		public OktaState(string accessToken, string tokenType, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OktaState"/> class.
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="tokenType"></param>
+        /// <param name="idToken"></param>
+        /// <param name="refreshToken"></param>
+        /// <param name="expiresIn"></param>
+        /// <param name="scope"></param>
+        public OktaState(string accessToken, string tokenType, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
         {
             this.TokenType = tokenType;
             this.AccessToken = accessToken;
@@ -57,7 +80,6 @@ namespace Okta.Xamarin
             }
         }
 
-
         /// <summary>
         /// Stores the tokens securely in platform-specific secure storage.  This is an async method and should be awaited.
         /// </summary>
@@ -77,7 +99,10 @@ namespace Okta.Xamarin
             throw new NotImplementedException();
         }
 
-
+        /// <summary>
+        /// Revokes tokens associated with this OktaState.
+        /// </summary>
+        /// <returns></returns>
         public async Task RevokeAsync()
         {
             throw new NotImplementedException();
@@ -109,6 +134,5 @@ namespace Okta.Xamarin
         {
             throw new NotImplementedException();
         }
-
     }
 }

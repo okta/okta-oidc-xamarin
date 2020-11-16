@@ -18,6 +18,7 @@ namespace Okta.Xamarin.Android
         protected override void OnCreate(Bundle savedInstanceState)
         {
 			OktaContext.Init(new OidcClient(this, OktaConfig.LoadFromXmlStream(Assets.Open("OktaConfig.xml"))));
+			// TODO: change this to use .AddSignXXXCompletedListener methods.
 			OktaContext.Current.SignInCompleted += (sender, args) => Shell.Current.GoToAsync("//ProfilePage");
 			OktaContext.Current.SignOutCompleted += (sender, args) => Shell.Current.GoToAsync("//ProfilePage");
 
