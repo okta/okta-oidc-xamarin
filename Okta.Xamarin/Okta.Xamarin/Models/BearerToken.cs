@@ -1,57 +1,94 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using System;
+﻿// <copyright file="BearerToken.cs" company="Okta, Inc">
+// Copyright (c) 2020 - present Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
+
 using System.Collections.Generic;
-using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Okta.Xamarin.Models
 {
-	public class BearerToken
-	{
-		public BearerToken(string jwtToken)
-		{
-			if (string.IsNullOrEmpty(jwtToken))
-			{
-				return;
-			}
-			string[] segments = jwtToken.Split('.');
-			if(segments.Length != 3)
-			{
-				return;
-			}
-			Base64UrlEncodedHeader = segments[0];
-			Base64UrlEncodedPayload = segments[1];
-			Signature = segments[2];
-		}
+    /// <summary>
+    /// Represents a parsed Jwt (json web token) bearer token.
+    /// </summary>
+    public class BearerToken
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BearerToken"/> class.
+        /// </summary>
+        /// <param name="jwtToken">The jwt token to parse.</param>
+        public BearerToken(string jwtToken)
+        {
+            if (string.IsNullOrEmpty(jwtToken))
+            {
+                return;
+            }
 
-		public string Header 
-		{
-			get
-			{
-				return string.IsNullOrEmpty(Base64UrlEncodedHeader) ? "" : Base64UrlEncoder.Decode(Base64UrlEncodedHeader);
-			}
-		}
+            string[] segments = jwtToken.Split('.');
+            if (segments.Length != 3)
+            {
+                return;
+            }
 
-		public string Payload 
-		{
-			get
-			{
-				return string.IsNullOrEmpty(Base64UrlEncodedPayload) ? "" : Base64UrlEncoder.Decode(Base64UrlEncodedPayload);
-			}
-		}
+            this.Base64UrlEncodedHeader = segments[0];
+            this.Base64UrlEncodedPayload = segments[1];
+            this.Signature = segments[2];
+        }
 
-		public override string ToString()
-		{
-			return $"{Base64UrlEncodedHeader}.{Base64UrlEncodedPayload}.{Signature}";
-		}
+        /// <summary>
+        /// Gets the base64 url encoded header.
+        /// </summary>
+        public string Header
+        {
+            get
+            {
+                return string.IsNullOrEmpty(this.Base64UrlEncodedHeader) ? string.Empty : Base64UrlEncoder.Decode(this.Base64UrlEncodedHeader);
+            }
+        }
 
-		protected string Base64UrlEncodedHeader { get; set; }
-		protected string Base64UrlEncodedPayload { get; set; }
-		public string Signature { get; set; }
+        /// <summary>
+        /// Gets the base 64 url encoded payload.
+        /// </summary>
+        public string Payload
+        {
+            get
+            {
+                return string.IsNullOrEmpty(this.Base64UrlEncodedPayload) ? string.Empty : Base64UrlEncoder.Decode(this.Base64UrlEncodedPayload);
+            }
+        }
 
-		public Dictionary<string, object> GetClaims()
-		{
-			return JsonConvert.DeserializeObject<Dictionary<string, object>>(BearerTokenClaims.FromBearerToken(this).ToJson());
-		}
-	}
+        /// <summary>
+        /// Gets or sets the signature.
+        /// </summary>
+        public string Signature { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base 64 url encoded header.
+        /// </summary>
+        protected string Base64UrlEncodedHeader { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base 64 url encoded payload.
+        /// </summary>
+        protected string Base64UrlEncodedPayload { get; set; }
+
+        /// <summary>
+        /// Returns the base64 url encoded string representation of this BearerToken.
+        /// </summary>
+        /// <returns>jwt as string.</returns>
+        public override string ToString()
+        {
+            return $"{this.Base64UrlEncodedHeader}.{this.Base64UrlEncodedPayload}.{this.Signature}";
+        }
+
+        /// <summary>
+        /// Gets the claims.
+        /// </summary>
+        /// <returns>Dictionary.<string, object></returns>
+        public Dictionary<string, object> GetClaims()
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(BearerTokenClaims.FromBearerToken(this).ToJson());
+        }
+    }
 }
