@@ -97,7 +97,7 @@ To configure your iOS application do the following:
     ```
     Okta OAuth logout callback
     ```
-10. In the `URL Schemes` field, enter a value appropriate for your application.  This examples uses:
+10. In the `URL Schemes` field, enter a value appropriate for your application.  This example uses:
     ```
     my.app.logout
     ```
