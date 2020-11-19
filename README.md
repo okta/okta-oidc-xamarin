@@ -4,27 +4,7 @@
 
 > :warning: Beta alert! This library is in beta. See [release status](#release-status) for more information.
 
-This library is a Xamarin library for communicating with Okta as an OAuth 2.0 + OpenID Connect provider, and follows current best practice for native apps using [Authorization Code Flow + PKCE](https://developer.okta.com/authentication-guide/implementing-authentication/auth-code-pkce).
-
-You can learn more on the [Okta + .NET](https://developer.okta.com/code/xamarin/) page in our documentation.
-
-**Table of Contents**
-- [Release status](#release-status)
-- [Need help?](#need-help)
-- [Getting Started](#getting-started)
-- [Usage Guide](#usage-guide)
-- [Configuration Reference](#configuration-reference)
-  - [Okta.json](#oktajson)
-  - [Configuration object](#configuration-object)
-  - [Validating the config](#validating-the-config)
-- [Register a callback](#registering-callbacks)
-  - [Android](#android)
-  - [iOS](#ios)
-- [API Reference](#api-reference)
-  - [OidcClient](#oidcclient)
-    - [SignInWithBrowserAsync()](#signinwithbrowserasync)
-- [Contributing](#contributing)
-
+This library is a Xamarin library for communicating with Okta as an OAuth 2.0 + OpenID Connect provider, it follows current best practice for native apps using [Authorization Code Flow + PKCE](https://developer.okta.com/authentication-guide/implementing-authentication/auth-code-pkce).
 
 ## Release Status
 
@@ -34,7 +14,319 @@ This library uses semantic versioning and follows Okta's [library version policy
 | ------- | ------------------------- |
 | 1.x | :warning: Beta |
 
-The latest release can always be found on the [releases page](https://github.com/okta/okta-oidc-xamarin/releases).
+The latest release is found on the [releases page](https://github.com/okta/okta-oidc-xamarin/releases).
+
+## Usage Guide
+
+To use the Okta Xamarin Sdk do the following:
+
+1. Create an Okta account, also know as an _organization_, see [Developer Signup](https://developer.okta.com/signup/).
+2. In your `Okta Developer Console` add an application; follow the directions at [Set up your Application](https://developer.okta.com/docs/guides/implement-auth-code-pkce/setup-app/) and accept the defaults.
+3. In your `Okta Developer Console` register your application's login and logout redirect callbacks, see [Register Redirects](#register-redirects).
+4. Configure your application to use the values registered in the previous step, see [Configure Your Application](#configure-your-application).
+5. Add platform specific code, see [Platform Wiring](#platform-wiring).
+6. Call `OktaContext.Current.SignIn` to begin the login flow.
+
+### Register Redirects
+
+To register redirect URIs do the following:
+
+1. Sign in to your `Okta Developer Console` as an administrator.
+2. Click the `Applications` tab and select your application.  If you need to set up your application see [Set up your Application](https://developer.okta.com/docs/guides/implement-auth-code-pkce/setup-app/). 
+3. Ensure you are on the `General` tab, then go to `General Settings` and click `Edit`.
+4. Go to the `Login` section.
+5. Below `Login redirect URIs` click the `Add URI` button.
+6. Enter a value appropriate for your application, this example uses the following:
+    ```
+    my.app.login:/callback
+    ```
+7. Below `Logout redirect URIs` click the `Add URI` button.
+8. Enter a value appropriate for your application, this example uses the following:
+    ```
+    my.app.logout:/callback
+    ```
+9. Click `Save`.
+
+## Configure Your Application
+
+This section details how to configure your Okta Xamarin application.  These instructions assume you are using `Visual Studio` and were tested with `Visual Studio Community 2019` Version 16.8.0.
+
+### Android Configuration
+
+To configure your Android application do the following:
+
+1. In the `Assets` folder of your Xamarin Android project, create a file called `OktaConfig.xml`.
+2. Add the following content to the `OktaConfig.xml` file:
+    ```xml
+    <?xml version="1.0" encoding="utf-8" ?>
+    <Okta>
+        <ClientId>{ClientId}</ClientId>
+        <OktaDomain>https://{yourOktaDomain}</OktaDomain>
+        <RedirectUri>my.app.login:/callback</RedirectUri>
+        <PostLogoutRedirectUri>my.app.logout:/callback</PostLogoutRedirectUri>
+    </Okta>
+    ```
+    > Note: 
+    > - The value entered for RedirectURI **MUST** match the value entered in step 6 of [Register Redirects](#register-redirects).
+    > - The value entered for PostLogoutRedirectUri **MUST** match the value entere in step 8 of [Register Redirects](#register-redirects).
+3. Replace `{ClientId}` and `{yourOktaDomain}` with appropriate values for your application, see [Find your Application's credentials](https://developer.okta.com/docs/guides/find-your-app-credentials/findcreds/).
+4. Select the `OktaConfig.xml` file, then go to `View` -> `Properties Window`.
+5. In the Properties window set the following value:
+  - Build Action &mdash; `AndroidAsset`
+
+### iOS Configuration
+
+To configure your iOS application do the following:
+
+1. In your Xamarin iOS project, double click the `Info.plist` file to open Visual Studio's Info.plist file editor.
+2. Click the `Advanced` tab.
+3. Expand the `URL Types` section.
+4. Click the `Add URL Type` button.
+5. In the `Identifier` field, enter the following:
+    ```
+    Okta OAuth login callback
+    ```
+6. In the `URL Schemes` field, enter a value appropriate for your application.  This example uses:
+    ```
+    my.app.login
+    ```
+    > Note: the value entered here **MUST** match the **prefix** entered in step 6 of [Register Redirects](#register-redirects).
+7. In the `Role` dropdown select `Viewer`.
+8. Click the `Add URL Type` button again.
+9. In the `Identifier` field, enter the following:
+    ```
+    Okta OAuth logout callback
+    ```
+10. In the `URL Schemes` field, enter a value appropriate for your application.  This example uses:
+    ```
+    my.app.logout
+    ```
+    > Note: the value entered here **MUST** match the **prefix** entered in step 8 of [Register Redirects](#register-redirects).
+11. In the `Role` dropdown select `Viewer`.
+12. Save your changes.
+13. In the root of your Xamarin iOS project, create a file called `OktaConfig.plist`.
+14. Select the `OktaConfig.plist` file, then go to `View` -> `Properties Window`.
+15. In the Properties window set the following values:
+   - Build Action &mdash; `Content`
+   - Copy to Output Directory &mdash; `Copy always`
+16. Right click the `OktaConfig.plist` file and select `View Code`.
+17. Replace the contents of the `OktaConfig.plist` file with the following:
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+        <key>ClientId</key>
+        <string>{ClientId}</string>
+        <key>OktaDomain</key>
+        <string>https://{yourOktaDomain}</string>
+        <key>RedirectUri</key>
+        <string>my.app.login:/callback</string>
+        <key>PostLogoutRedirectUri</key>
+        <string>my.app.logout:/callback</string>
+    </dict>
+    </plist>
+    ```
+    > Note: 
+    > - The value entered for RedirectURI **MUST** match the value entered in step 6 of [Register Redirects](#register-redirects).
+    > - The value entered for PostLogoutRedirectUri **MUST** match the value entere in step 8 of [Register Redirects](#register-redirects).
+18. Replace `{ClientId}` and `{yourOktaDomain}` with appropriate values for your application, see [Find your Application's credentials](https://developer.okta.com/docs/guides/find-your-app-credentials/findcreds/).
+
+
+## Platform Wiring
+
+This section describes the minimal code necessary to handle Okta authentication related redirects when using the Okta Xamarin Sdk.  The examples shown here are based on `Xamarin.Forms` projects.
+
+### Android
+
+To handle Okta authentication redirects on Android do the following:
+
+1. In the `OnCreate` method of your `MainActivity` class initialize the `OktaContext` with the following code:
+    ```csharp
+    OktaContext.Init(new OidcClient(this, OktaConfig.LoadFromXmlStream(Assets.Open("OktaConfig.xml"))));
+    ```
+    > Ensure that your OktaContext calls are made prior to `base.OnCreate`.
+2. Additionally, in the `OnCreate` method of your `MainActivity` class add event handlers for the `SignInCompleted` and `SignOutCompleted` events, this example navigates to the `ProfilePage`, you should provide logic appropriate for your application:
+    ```csharp
+    OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+    OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+    ```
+    > Ensure that your OktaContext calls are made prior to `base.OnCreate`.  
+    > A complete example of a `MainActivity` class follows:
+    ```csharp    
+    [Activity(Label = "MainActivity", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            OktaContext.Init(new OidcClient(this, OktaConfig.LoadFromXmlStream(Assets.Open("OktaConfig.xml"))));
+            OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+            OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+
+            TabLayoutResource = Resource.Layout.Tabbar;
+            ToolbarResource = Resource.Layout.Toolbar;
+
+            base.OnCreate(savedInstanceState);
+
+            global::Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            LoadApplication(new App());
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] global::Android.Content.PM.Permission[] grantResults)
+        {
+            global::Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+    ```
+3. Create a new Activity to intercept Login redirects, this example uses `MyLoginCallbackInterceptorActivity`.
+4. Replace the activity implementation with the following code:
+    ```csharp
+    [Activity(Label = "MyLoginCallbackInterceptorActivity")]
+    [IntentFilter
+        (
+            actions: new[] { Intent.ActionView },
+            Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+            DataSchemes = new[] { "my.app.login" },
+            DataPath = "/callback"
+        )
+    ]
+    public class MyLoginCallbackInterceptorActivity : Activity
+    {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+            global::Android.Net.Uri uri_android = Intent.Data;
+
+            if (global::Okta.Xamarin.OidcClient.InterceptLoginCallback(new Uri(uri_android.ToString())))
+            {
+                this.Finish();
+            }
+
+            return;
+        }
+    }
+    ```
+    > Note that the value specified for `DataSchemes` **MUST** match the prefix entered in step 6 of [Register Redirects](#register-redirects) and the `DataPath` **MUST** match the suffix.
+5. Create a new Activity to intercept Logout redirects, this example uses `MyLogoutCallbackInterceptorActivity`.
+6. Replace the activity implementation with the following code:
+    ```csharp
+    [Activity(Label = "MyLogoutCallbackInterceptor")]
+    [
+        IntentFilter
+        (
+            actions: new[] { Intent.ActionView },
+            Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+            DataSchemes = new[] { "my.app.logout" },
+            DataPath = "/callback"
+        )
+    ]
+    public class MyLogoutCallbackInterceptor : Activity
+    {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+            global::Android.Net.Uri uri_android = Intent.Data;
+
+            if (global::Okta.Xamarin.OidcClient.InterceptLogoutCallback(new Uri(uri_android.ToString())))
+            {
+                this.Finish();
+            }
+
+            return;
+        }
+    }
+    ```
+     > Note that the value specified for `DataSchemes` **MUST** match the prefix entered in step 8 of [Register Redirects](#register-redirects) and the `DataPath` **MUST** match the suffix.
+
+### iOS
+
+To handle Okta authentication redirects on iOS do the following:
+
+1. Modify your `AppDelegate` class to extend `OktaAppDelegate<App>` (or `OktaAppDelegate` if you are not using Xamarin.Forms).
+2. In the `FinishedLaunching` method add event handlers for the `SignInCompleted` and `SignOutCompleted` events, this example navigates to the `ProfilePage`, you should provide logic appropriate for your application:
+    ```csharp
+    OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+    OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+    ```
+    > A complete AppDelegate example follows:
+    ```csharp
+    [Register("AppDelegate")]
+    public partial class AppDelegate : OktaAppDelegate<App>
+    {
+        public override bool FinishedLaunching(UIApplication app, NSDictionary options)
+        {
+            bool result = base.FinishedLaunching(app, options);
+            OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+            OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+
+            return result;
+        }
+    }
+    ```
+
+## API Reference
+
+### OktaContext.Current
+
+The `OktaContext.Current` singleton provides a top level entry point into Okta functionality.  To begin the login flow use the `SignIn` method:
+```csharp
+OktaContext.Current.SignIn();
+```
+
+Similarly, use the `SignOut` method to log a user out:
+```csharp
+OktaContext.Current.SignOut();
+```
+
+### SignInCompleted event
+
+The `OktaContext.Current.SignInCompleted` event is raised when the login flow completes.  To execute code when the `SignInCompleted` event is raised, add an event handler to the `OktaContext.Current.SignInCompleted` event.  This is done directly or using the static `AddSignInCompletedListener` method.
+
+```csharp
+// directly
+OktaContext.Current.SignInCompleted += (sender, args) => Console.WriteLine("SignIn completed");
+
+// using AddSignInCompletedListener
+OktaContext.AddSignInCompletedListener((sender, args) => Console.WriteLine("SignIn completed"));
+```
+
+### SignOutCompleted event
+The `OktaContext.Current.SignOutCompleted` event is raised when the logout flow completes.  To execute code when the `SignOutCompleted` event is raised, add an event handler to the `OktaContext.Current.SignOutCompleted` event.  This is done directly or using the static `AddSignOutCompletedListener` method.
+
+```csharp
+// directly
+OktaContext.Current.SignOutCompleted += (sender, args) => Console.WriteLine("SignOut completed");
+
+// using AddSignOutCompletedListener
+OktaContext.AddSignOutCompletedListener((sender, args) => Console.WriteLine("SignOut completed"));
+```
+
+### OktaState, BearerToken and BearerTokenClaims classes
+
+When the `SignInCompleted` event is raised the `EventArgs` parameter instance is of type `SignInEventArgs` which provides access to an instance of the `OktaState` class.  Use code similar to the following to read the authentication state and access the bearer token claims when sign in completes:
+
+```csharp
+OktaContext.AddSignInCompletedListener((sender, args) =>
+{
+    SignInEventArgs signInEventArgs = (SignInEventArgs)e;
+    OktaState oktaState = signInEventArgs.StateManager; //
+    BearerToken bearerToken = new BearerToken(oktaState.AccessToken);
+    BearerTokenClaims claims = BearerTokenClaims.FromBearerToken(bearerToken);
+
+    // Access claims properties
+    Console.WriteLine(claims.Issuer);
+    Console.WriteLine(claims.Subject);
+    Console.WriteLine(claims.Audience);
+    Console.WriteLine(claims.ExpirationTime);
+});
+```
+
+## Contributing
+
+We're happy to accept contributions and PRs! Please see the [contribution guide](CONTRIBUTING.md) to understand how to structure a contribution.
 
 ## Need help?
  
@@ -42,215 +334,3 @@ If you run into problems using the SDK, you can
  
 * Ask questions on the [Okta Developer Forums](https://devforum.okta.com/)
 * Post [issues](https://github.com/okta/okta-oidc-xamarin/issues) here on GitHub (for code errors)
-
-## Getting Started 
-
-The Okta.Xamarin SDK is compatible with [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
-
-Installing the Okta.Xamarin SDK into your project is simple. The easiest way to include this library into your project is through NuGet.
-
-### Android
-
-```cmd
-Install-Package Okta.Xamarin.Android
-```
-
-### iOS
-
-```cmd
-Install-Package Okta.Xamarin.iOS
-```
-
-You'll also need:
-
-- An Okta account, called an _organization_ (sign up for a free [developer organization](https://developer.okta.com/signup/) if you need one).
-- An Okta Application, configured as a Native App. This is done from the Okta Developer Console and you can find instructions [here](https://developer.okta.com/authentication-guide/implementing-authentication/auth-code-pkce). When following the wizard, use the default properties. They are designed to work with our sample applications.
-
-
-## Usage Guide
-
-1. [Register a callback](#registering-callbacks) (via ActivityCustomUrlSchemeInterceptor on Android or CFBundleURLTypes and AppDelegate on iOS) to allow the browser to call back to your app after login.
-2. [Create an `OktaConfig`](#configuration-reference) by loading a configuration file or specifying configuration details in code.
-3. [Create an `OidcClient`](#oidcclient), passing in `this` (a reference to the current Android Activity or iOS ViewController) and the config object
-4. When a user wants to sign in, [call `SignInWithBrowserAsync`](#signinwithbrowserasync) on the OidcClient.  This is an async function and must be awaited.
-5. Use the returned [`StateManager`](#statemanager) to get the access token and other login details.
-
-## Configuration Reference
-
-The entry point for the SDK is an instance of `Okta.Xamarin.OidcClient`.  When you instantiate an `OidcClient`, you need to include a configuration object by passing in a `Okta.Xamarin.OktaConfig`. 
-
-```csharp
-// Load configuration from a json file
-var config = await Okta.Xamarin.OktaConfig.LoadFromJsonFileAsync(/* path to .json file */)
-
-// Load configuration from an xml asset on Android
-var config = await Okta.Xamarin.OktaConfig.LoadFromXmlStreamAsync(Assets.Open("OktaConfig.xml")))
-
-// Load configuration from a plist file on iOS
-var config = Okta.Xamarin.OktaConfig.LoadFromPList(/* plist file name */)
-
-// Specify config manually
-var config = new Okta.Xamarin.OktaConfig() {
-    OktaDomain = "https://{yourOktaDomain}",
-    ClientId = "{clientId}",
-    RedirectUri = "{redirectUri}",
-    PostLogoutRedirectUri = "{postLogoutRedirectUri}",
-    Scope = "openid profile offline_access"
-};
-
-// Instantiate Okta.Xamarin.OidcClient with a configuration object
-var oidcClient = new Okta.Xamarin.OidcClient(this, config)
-
-```
-
-### Configuration file
-
-The easiest way to load configuration is to load a json file.  Additionally on Android you can use an xml file from your `Assets` directory, and on iOS you can use a plist.
-
-If loading an xml config from an Android Assets directory, the file's *build action* should be set to `AndroidAsset`.  Otherwise, set any config file as *build action*: `Content` and *copy to output directory*: `Copy always` or `Copy if newer`.
-
-Here is an example json file that will work in both Android and iOS:
-```json
-{
-    "OktaDomain": "https://{yourOktaDomain}",
-    "ClientId": "{clientId}",
-    "RedirectUri": "{yourOktaScheme}:/callback",
-    "PostLogoutRedirectUri": "{yourOktaScheme}:/logout",
-    "Scope": "openid profile offline_access"
-}
-```
-
-Here is the equivalent Android xml file:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Okta>
-    <OktaDomain>https://{yourOktaDomain}</OktaDomain>
-    <ClientId>{clientId}<ClientId>
-    <RedirectUri>{yourOktaScheme}:/callback</RedirectUri>
-    <PostLogoutRedirectUri>{yourOktaScheme}:/logout</PostLogoutRedirectUri>
-    <Scope>openid profile offline_access</Scope>
-</Okta>
-```
-
-And the equivalent iOS plist file:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>ClientId</key>
-    <string>{clientId}</string>
-    <key>OktaDomain</key>
-    <string>https://{yourOktaDomain}</string>
-    <key>RedirectUri</key>
-    <string>{yourOktaScheme}:/callback</string>
-    <key>PostLogoutRedirectUri</key>
-    <string>{yourOktaScheme}:/logout</string>
-    <key>Scope</key>
-    <string>openid profile offline_access</string>
-</dict>
-</plist>
-
-```
-
-
-### Configuration object
-
-Alternatively, you can create a configuration object in code ( `Okta.Xamarin.OktaConfig`) with the required values:
-
-```csharp
-var config = new Okta.Xamarin.OktaConfig() {
-    OktaDomain = "https://{yourOktaDomain}",
-    ClientId = "{clientId}",
-    RedirectUri = "{yourOktaScheme}:/callback",
-    PostLogoutRedirectUri = "{yourOktaScheme}:/logout",
-    Scope = "openid profile offline_access"
-}
-```
-
-### Validating the config
-
-You can use an OktaConfigValidator to ensure that a given configuration object is valid.  This is called automatically when using a config to instantiate an OidcClient, but in case you want to call it manually, here's how:
-
-```csharp
-OktaConfigValidator<OktaConfig> validator = new OktaConfigValidator<OktaConfig>();
-
-validator.Validate(myConfigObject);
-// throws an exception if the config is invalid
-```
-
-## Registering Callbacks
-
-The browser-based login is securely implemented on Android with Chrome Custom Tabs and on iOS through Safari ViewController.  In order to complete the flow, the browser must be able to redirect back to the application, which then needs to process the response.  You need to do a bit of work to hook all this up.
-
-In the following examples, assume we have a `RedirectUri` in our config as well as on the Okta application dashboard set to `com.myappnamespace.exampleapp:/callback`
-
-### Android
-
-Create a new Activity in your app.  Edit the code for your new activity to make it inherit from `Okta.Xamarin.Android.ActivityCustomUrlSchemeInterceptor` rather than Activity or AppCompatActivity.  On this class, you need to set the Activity attributes to `NoHistory = true, LaunchMode = LaunchMode.SingleTop` and also set the IntentFilter attribute to include the `DataSchemes` that matches the scheme of your RedirectUri (the part before the ":/", where "https" would normally go in a url) and `DataPath` that matches the path of your RedirectUri.
-
-Here is an example activity called `ExampleActivityCustomUrlSchemeInterceptor`:
-```csharp
-[Activity(Label = "ExampleActivityCustomUrlSchemeInterceptor", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
-[IntentFilter(actions: new[] { Intent.ActionView },
-    Categories = new[] {Intent.CategoryDefault,Intent.CategoryBrowsable},
-    DataSchemes = new[] {"com.myappnamespace.exampleapp"},
-    DataPath = "/callback" )]
-public class ExampleActivityCustomUrlSchemeInterceptor : ActivityCustomUrlSchemeInterceptor
-{ }
-```
-
-### iOS
-
-Modify your `Info.plist` to include a `CFBundleURLSchemes` under `CFBundleURLTypes`, which matches the scheme of your RedirectUri.
-
-Here is an example Info.plist:
-```xml
-<key>CFBundleURLTypes</key>
-<array>
-    <dict>
-        <key>CFBundleURLName</key>
-        <string>MyExample OAuth</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>com.myappnamespace.exampleapp</string>
-        </array>
-        <key>CFBundleURLTypes</key>
-        <string>Viewer</string>
-    </dict>
-</array>
-```
-
-In your `AppDelegate.cs`, override `OpenUrl` and pass its arguments to the static function `Okta.Xamarin.OidcClient.OpenUrl`.  This  returns `false` if it is not given a valid login RedirectUrl, so if you are deep linking other urls into your app for other functionality you can continue processing in that case.
-
-Here is an example OpenUrl to add to your AppDelegate.cs:
-```csharp
-public override bool OpenUrl(UIApplication application,NSUrl url,string sourceApplication,NSObject annotation)
-{
-    return Okta.Xamarin.OidcClient.OpenUrl(application, url, sourceApplication, annotation);
-}
-```
-
-
-## API Reference
-
-### OidcClient
-
-The `Okta.Xamarin.OidcClient` class contains methods for signing in, signing out, and authenticating sessions.
-
-#### SignInWithBrowserAsync()
-
-Start the authorization flow by simply calling `SignInWithBrowserAsync()`.  This is an async method and should be awaited.  In case of successful authorization, this operation will return valid `Okta.Xamarin.StateManager` object.  Clients are responsible for further storage and maintenance of the manager.
-
-```csharp
-StateManager stateManager = await oidcClient.SignInWithBrowserAsync();
-
-// stateManager.IsAuthenticated;
-// stateManager.AccessToken
-// stateManager.IdToken
-// stateManager.RefreshToken
-```
-
-## Contributing
-
-We're happy to accept contributions and PRs! Please see the [contribution guide](CONTRIBUTING.md) to understand how to structure a contribution.
