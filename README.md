@@ -16,13 +16,13 @@ This library uses semantic versioning and follows Okta's [library version policy
 
 The latest release is found on the [releases page](https://github.com/okta/okta-oidc-xamarin/releases).
 
-## Getting Started
+## Usage Guide
 
-To begin using the Okta Xamarin Sdk do the following:
+To use the Okta Xamarin Sdk do the following:
 
 1. Create an Okta account, also know as an _organization_, see [Developer Signup](https://developer.okta.com/signup/).
-2. In your Okta Developer Console add an application; follow the directions at [Set up your Application](https://developer.okta.com/docs/guides/implement-auth-code-pkce/setup-app/) and accept the defaults.
-3. In your Okta Developer Console register your application's login and logout redirect callbacks, see [Register Redirects](#register-redirects).
+2. In your `Okta Developer Console` add an application; follow the directions at [Set up your Application](https://developer.okta.com/docs/guides/implement-auth-code-pkce/setup-app/) and accept the defaults.
+3. In your `Okta Developer Console` register your application's login and logout redirect callbacks, see [Register Redirects](#register-redirects).
 4. Configure your application to use the values registered in the previous step, see [Configure Your Application](#configure-your-application).
 5. Add platform specific code, see [Platform Wiring](#platform-wiring).
 6. Call `OktaContext.Current.SignIn` to begin the login flow.
@@ -32,7 +32,7 @@ To begin using the Okta Xamarin Sdk do the following:
 To register redirect URIs do the following:
 
 1. Sign in to your `Okta Developer Console` as an administrator.
-2. Click the `Applications` tab and select your application.
+2. Click the `Applications` tab and select your application.  If you need to set up your application see [Set up your Application](https://developer.okta.com/docs/guides/implement-auth-code-pkce/setup-app/). 
 3. Ensure you are on the `General` tab, then go to `General Settings` and click `Edit`.
 4. Go to the `Login` section.
 5. Below `Login redirect URIs` click the `Add URI` button.
@@ -49,7 +49,7 @@ To register redirect URIs do the following:
 
 ## Configure Your Application
 
-This section details how to configure your Okta Xamarin application.  These instructions assume you are using `Visual Studio` and was tested with `Visual Studio Community 2019` Version 16.8.0.
+This section details how to configure your Okta Xamarin application.  These instructions assume you are using `Visual Studio` and were tested with `Visual Studio Community 2019` Version 16.8.0.
 
 ### Android Configuration
 
@@ -135,7 +135,7 @@ To configure your iOS application do the following:
 
 ## Platform Wiring
 
-This section describes the minimal code necessary to handle Okta authentication related redirects.  The examples shown here are based on `Xamarin.Forms` projects.
+This section describes the minimal code necessary to handle Okta authentication related redirects when using the Okta Xamarin Sdk.  The examples shown here are based on `Xamarin.Forms` projects.
 
 ### Android
 
@@ -271,7 +271,7 @@ To handle Okta authentication redirects on iOS do the following:
 
 ### OktaContext.Current
 
-The `OktaContext.Current` class instance provides a top level entry point into Okta functionality.  To begin the login flow use the `SignIn` method:
+The `OktaContext.Current` singleton provides a top level entry point into Okta functionality.  To begin the login flow use the `SignIn` method:
 ```csharp
 OktaContext.Current.SignIn();
 ```
