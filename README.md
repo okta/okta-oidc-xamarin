@@ -129,7 +129,7 @@ To configure your iOS application do the following:
     ```
     > Note: 
     > - The value entered for RedirectURI **MUST** match the value entered in step 6 of [Register Redirects](#register-redirects).
-    > - The value entered for PostLogoutRedirectUri **MUST** match the value entere in step 8 of [Register Redirects](#register-redirects).
+    > - The value entered for PostLogoutRedirectUri **MUST** match the value entered in step 8 of [Register Redirects](#register-redirects).
 18. Replace `{ClientId}` and `{yourOktaDomain}` with appropriate values for your application, see [Find your Application's credentials](https://developer.okta.com/docs/guides/find-your-app-credentials/findcreds/).
 
 
@@ -311,7 +311,7 @@ When the `SignInCompleted` event is raised the `EventArgs` parameter instance is
 ```csharp
 OktaContext.AddSignInCompletedListener((sender, args) =>
 {
-    SignInEventArgs signInEventArgs = (SignInEventArgs)e;
+    SignInEventArgs signInEventArgs = (SignInEventArgs)args;
     OktaState oktaState = signInEventArgs.StateManager; //
     BearerToken bearerToken = new BearerToken(oktaState.AccessToken);
     BearerTokenClaims claims = BearerTokenClaims.FromBearerToken(bearerToken);
