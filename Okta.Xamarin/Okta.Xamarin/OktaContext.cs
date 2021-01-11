@@ -1,4 +1,9 @@
-﻿using System;
+﻿// <copyright file="OktaContext.cs" company="Okta, Inc">
+// Copyright (c) 2020 - present Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,53 +13,10 @@ namespace Okta.Xamarin
     /// <summary>
     /// A high level container providing access to Okta functionality.
     /// </summary>
-    /// <typeparam name="TClient"></typeparam>
-    /// <typeparam name="TConfig"></typeparam>
-    public class OktaContext<TClient, TConfig> : OktaContext
-        where TClient: IOidcClient, new()
-        where TConfig: IOktaConfig, new()
-    {
-        /// <summary>
-        /// Gets or sets the default client.
-        /// </summary>
-        public new TClient OidcClient { get; set; }
-
-        /// <summary>
-        /// Gets or sets the default okta config.
-        /// </summary>
-        public new TConfig OktaConfig { get; set; }
-
-        /// <summary>
-        /// Sign in using the specified config.
-        /// </summary>
-        /// <param name="oktaConfig">The config to use.</param>
-        /// <returns>OktaState.</returns>
-        public async Task<OktaState> SignIn(TConfig oktaConfig = default)
-        {
-            return await this.SignIn(new TClient
-            {
-                Config = oktaConfig == null ? this.OktaConfig : oktaConfig,
-            });
-        }
-
-        /// <summary>
-        /// Sign in using the specified client.
-        /// </summary>
-        /// <param name="oidcClient">The client to use.</param>
-        /// <returns>OktaState.</returns>
-        public async Task<OktaState> SignIn(TClient oidcClient = default)
-        {
-            oidcClient = oidcClient == null ? OidcClient: oidcClient;
-            return await SignIn((IOidcClient)oidcClient);
-        }
-    }
-
-    /// <summary>
-    /// A high level container providing access to Okta functionality.
-    /// </summary>
     public class OktaContext
     {
         private static Lazy<OktaContext> current = new Lazy<OktaContext>(() => new OktaContext());
+
         /// <summary>
         /// The event that is raised when sign in is started.
         /// </summary>
@@ -74,6 +36,11 @@ namespace Okta.Xamarin
         /// The event that is raised when sign out completes.
         /// </summary>
         public event EventHandler<SignOutEventArgs> SignOutCompleted;
+
+        /// <summary>
+        /// The event that is raised when authentication fails.
+        /// </summary>
+        public event EventHandler<AuthenticationFailedEventArgs> AuthenticationFailed;
 
         /// <summary>
         /// Gets or sets the current global context.
@@ -151,21 +118,21 @@ namespace Okta.Xamarin
         /// <returns>OktaState.</returns>
         public virtual async Task<OktaState> SignIn(IOidcClient oidcClient = null)
         {
-            this.SignInStarted?.Invoke(this, new SignInEventArgs { StateManager = StateManager });
+            this.SignInStarted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
             oidcClient = oidcClient ?? this.OidcClient;
             this.StateManager = await oidcClient.SignInWithBrowserAsync();
-            this.SignInCompleted?.Invoke(this, new SignInEventArgs { StateManager = StateManager });
+            this.SignInCompleted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
             return this.StateManager;
         }
 
         /// <summary>
         /// Sign out using the specified client.
         /// </summary>
-        /// <param name="oidcClient">The client</param>
+        /// <param name="oidcClient">The client.</param>
         /// <returns>Task.</returns>
         public virtual async Task SignOut(IOidcClient oidcClient = null)
         {
-            this.SignOutStarted?.Invoke(this, new SignOutEventArgs{ StateManager = this.StateManager });
+            this.SignOutStarted?.Invoke(this, new SignOutEventArgs { StateManager = this.StateManager });
             oidcClient = oidcClient ?? this.OidcClient;
             this.StateManager = await oidcClient.SignOutOfOktaAsync(this.StateManager);
             this.SignOutCompleted?.Invoke(this, new SignOutEventArgs { StateManager = this.StateManager });

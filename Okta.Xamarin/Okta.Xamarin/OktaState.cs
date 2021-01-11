@@ -69,7 +69,7 @@ namespace Okta.Xamarin
         #endregion
 
         /// <summary>
-        /// Whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated
+        /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated
         /// </summary>
         public bool IsAuthenticated
         {
