@@ -51,6 +51,22 @@ namespace Okta.Xamarin
             set { current = new Lazy<OktaContext>(() => value); }
         }
 
+        OAuthException oAuthException;
+
+        public OAuthException OAuthException
+        {
+            get
+            {
+                return oAuthException;
+            }
+
+            set
+            {
+                this.oAuthException = value;
+                this.AuthenticationFailed?.Invoke(this, new AuthenticationFailedEventArgs(value));
+            }
+        }
+
         /// <summary>
         /// Gets or sets the default client.
         /// </summary>
@@ -120,7 +136,19 @@ namespace Okta.Xamarin
         {
             this.SignInStarted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
             oidcClient = oidcClient ?? this.OidcClient;
-            this.StateManager = await oidcClient.SignInWithBrowserAsync();
+            try
+            {
+                this.StateManager = await oidcClient.SignInWithBrowserAsync();
+                if (oidcClient.OAuthException != null)
+                {
+                    this.OAuthException = oidcClient.OAuthException;
+                }
+            }
+            catch (OAuthException ex)
+            {
+                this.OAuthException = ex;
+            }
+
             this.SignInCompleted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
             return this.StateManager;
         }

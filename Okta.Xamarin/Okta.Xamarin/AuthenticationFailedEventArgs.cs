@@ -11,5 +11,11 @@ namespace Okta.Xamarin
 {
     public class AuthenticationFailedEventArgs : EventArgs
     {
+        public AuthenticationFailedEventArgs(OAuthException oAuthException)
+        {
+            this.OAuthException = oAuthException;
+        }
+
+        public OAuthException OAuthException { get; set; }
     }
 }

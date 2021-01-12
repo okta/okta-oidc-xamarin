@@ -13,6 +13,11 @@ namespace Okta.Xamarin
     public interface IOidcClient
     {
         /// <summary>
+        /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
+        /// </summary>
+        OAuthException OAuthException{ get; }
+
+        /// <summary>
         /// The configuration for this client instance.
         /// </summary>
         IOktaConfig Config { get; set; }
