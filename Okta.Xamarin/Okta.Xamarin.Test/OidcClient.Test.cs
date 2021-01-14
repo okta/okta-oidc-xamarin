@@ -30,7 +30,7 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Creates a new client with the specified <see cref="OktaConfig"/>
+        /// Initializes a new instance of the <see cref="OidcClient"/> class using the specified <see cref="OktaConfig"/>.
         /// </summary>
         /// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
         public OidcClient(IOktaConfig config)
@@ -57,30 +57,31 @@ namespace Okta.Xamarin
                 return this.State;
             }
         }
+
         public string CodeVerifier_Internal
         {
-	        get
-	        {
-		        return this.CodeVerifier;
-	        }
+            get
+            {
+                return this.CodeVerifier;
+            }
         }
-        
+
         public string CodeChallenge_Internal
         {
-	        get
-	        {
-		        return this.CodeChallenge;
-	        }
+            get
+            {
+                return this.CodeChallenge;
+            }
         }
 
         public TaskCompletionSource<OktaState> CurrentTask_Accessor
         {
-	        get
-	        {
-		        return this.currentTask;
-	        }
+            get
+            {
+                return this.currentTask;
+            }
         }
-        
+
         /// <summary>
         /// Allows setting a custom <see cref="HttpMessageHandler"/> for use by this client's <see cref="HttpClient"/>, in order to mock of HTTP requests
         /// </summary>

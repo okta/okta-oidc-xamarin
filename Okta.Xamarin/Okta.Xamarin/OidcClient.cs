@@ -18,6 +18,23 @@ namespace Okta.Xamarin
     /// </summary>
     public partial class OidcClient : IOidcClient
     {
+        OAuthException oauthException;
+        /// <summary>
+        /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
+        /// </summary>
+        public OAuthException OAuthException 
+        {
+            get
+            {
+                return this.oauthException;
+            }
+
+            set
+            {
+                this.oauthException = value;
+            }
+        }
+
         /// <summary>
         /// The configuration for this Client.
         /// </summary>
@@ -28,7 +45,7 @@ namespace Okta.Xamarin
         /// </summary>
         internal static Dictionary<string, IOidcClient> authenticatorsByState = new Dictionary<string, IOidcClient>();
 
-		internal static Dictionary<string, IOidcClient> loggingOutClientsByState = new Dictionary<string, IOidcClient>();
+        internal static Dictionary<string, IOidcClient> loggingOutClientsByState = new Dictionary<string, IOidcClient>();
 
         /// <summary>
         /// The <see cref="HttpClient"/> for use in getting an auth token.  Microsoft guidance specifies that this should be reused for performance reasons.
@@ -67,10 +84,10 @@ namespace Okta.Xamarin
             this.currentTask = new TaskCompletionSource<OktaState>();
             if (!stateManager.IsAuthenticated)
             {
-				this.currentTask.SetResult(stateManager);
-				return this.currentTask.Task;
-			}
-			this.GenerateStateCodeVerifierAndChallenge();
+                this.currentTask.SetResult(stateManager);
+                return this.currentTask.Task;
+            }
+            this.GenerateStateCodeVerifierAndChallenge();
             loggingOutClientsByState.Add(this.State, this);
             this.LaunchBrowser(this.GenerateLogoutUrl(new LogoutOptions(stateManager, this.Config, this.State)));
             return currentTask.Task;
@@ -92,20 +109,22 @@ namespace Okta.Xamarin
         /// <param name="url">The full callback url that the user was directed to</param>
         /// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="OktaState"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
         private async Task ParseRedirectedUrl(Uri url) // TODO: refactor this implementation for readability and maintenance.
-		{
-			this.CloseBrowser();
+        {
+            this.CloseBrowser();
 
             var queryData = System.Web.HttpUtility.ParseQueryString(url.Query).ToDictionary();
 
             // check if there is an error
             if (queryData.ContainsKey("error"))
             {
-                currentTask.SetException(new OAuthException()
+                OAuthException = new OAuthException()
                 {
                     ErrorTitle = queryData["error"],
                     ErrorDescription = queryData.GetValueOrDefault("error_description"),
                     RequestUrl = url.ToString()
-                });
+                };
+
+                currentTask.SetException(OAuthException);
 
                 return;
             }
@@ -113,12 +132,14 @@ namespace Okta.Xamarin
             // confirm that the url matches the redirect url we expect
             if (!url.ToString().ToLower().StartsWith(Config.RedirectUri.ToLower()))
             {
-                currentTask.SetException(new OAuthException()
+                OAuthException = new OAuthException()
                 {
                     ErrorTitle = "RedirectUri mismatch",
                     ErrorDescription = $"Expected RedirectUri of {Config.RedirectUri}, got {url.ToString()} instead.",
                     RequestUrl = url.ToString()
-                });
+                };
+
+                currentTask.SetException(OAuthException);
 
                 return;
             }
@@ -127,24 +148,27 @@ namespace Okta.Xamarin
             string code = queryData["code"];
             if (string.IsNullOrWhiteSpace(code))
             {
-                currentTask.SetException(new OAuthException()
+                OAuthException = new OAuthException()
                 {
                     ErrorTitle = "No code returned in authorize request",
                     RequestUrl = url.ToString()
-                });
+                };
+
+                currentTask.SetException(OAuthException);
                 return;
             }
 
+            OAuthException = null;
             // now exchange authorization code for an access token
             await ExchangeAuthCodeForToken(code);
         }
 
-		private async Task SetEmptyState()
-		{
-			this.CloseBrowser();
-			loggingOutClientsByState.Remove(State);
-			currentTask.SetResult(new OktaState());
-		}
+        private async Task SetEmptyState()
+        {
+            this.CloseBrowser();
+            loggingOutClientsByState.Remove(State);
+            currentTask.SetResult(new OktaState());
+        }
 
         /// <summary>
         /// Exchange authorization code for an access token
@@ -173,27 +197,29 @@ namespace Okta.Xamarin
 
             if (data.ContainsKey("error"))
             {
-                currentTask.SetException(new OAuthException()
+                OAuthException = new OAuthException()
                 {
                     ErrorTitle = data["error"],
                     ErrorDescription = data.GetValueOrDefault("error_description"),
                     RequestUrl = this.Config.GetAccessTokenUrl(),
                     ExtraData = kvdata
-                });
+                };
+
+                currentTask.SetException(OAuthException);
 
                 return;
             }
 
-			// TODO: add a StateManager constructor that takes Dictionary<string, string>
-			OktaState stateManager = new OktaState(
-				data["access_token"],
-				data["token_type"],
-				data.GetValueOrDefault("id_token"),
-				data.GetValueOrDefault("refresh_token"),
-				data.ContainsKey("expires_in") ? (int?)(int.Parse(data["expires_in"])) : null,
-				data.GetValueOrDefault("scope") ?? this.Config.Scope);
+            // TODO: add a StateManager constructor that takes Dictionary<string, string>
+            OktaState stateManager = new OktaState(
+                data["access_token"],
+                data["token_type"],
+                data.GetValueOrDefault("id_token"),
+                data.GetValueOrDefault("refresh_token"),
+                data.ContainsKey("expires_in") ? (int?)(int.Parse(data["expires_in"])) : null,
+                data.GetValueOrDefault("scope") ?? this.Config.Scope);
 
-			currentTask.SetResult(stateManager);
+            currentTask.SetResult(stateManager);
         }
 
         /// <summary>
@@ -244,9 +270,9 @@ namespace Okta.Xamarin
 
         private string GenerateLogoutUrl(LogoutOptions logoutOptions)
         {
-			var baseUri = new Uri(this.Config.GetLogoutUrl());
-			var logoutUri = $"{baseUri.AbsoluteUri}{logoutOptions.ToQueryString(true)}";
-			return logoutUri;
+            var baseUri = new Uri(this.Config.GetLogoutUrl());
+            var logoutUri = $"{baseUri.AbsoluteUri}{logoutOptions.ToQueryString(true)}";
+            return logoutUri;
         }
 
         /// <summary>
@@ -329,35 +355,35 @@ namespace Okta.Xamarin
         public static bool InterceptLogoutCallback(Uri uri)
         {
             if (uri == null)
-			{
-				throw new ArgumentNullException(nameof(uri));
-			}
+            {
+                throw new ArgumentNullException(nameof(uri));
+            }
 
-			if (string.IsNullOrEmpty(uri.Query))
-			{
-				return false;
-			}
+            if (string.IsNullOrEmpty(uri.Query))
+            {
+                return false;
+            }
 
-			// get the state from the uri
-			string uriString = uri.Query.ToString();
-			var parsed = System.Web.HttpUtility.ParseQueryString(uriString);
-			string state = parsed["state"];
+            // get the state from the uri
+            string uriString = uri.Query.ToString();
+            var parsed = System.Web.HttpUtility.ParseQueryString(uriString);
+            string state = parsed["state"];
 
-			if (string.IsNullOrEmpty(state))
-			{
-				return false;
-			}
+            if (string.IsNullOrEmpty(state))
+            {
+                return false;
+            }
 
-			if (OidcClient.loggingOutClientsByState.ContainsKey(state))
-			{
-				_ = ((OidcClient)loggingOutClientsByState[state]).SetEmptyState();
-				return true;
-			}
-			else
-			{
-				// there is no client matching that state.  Rather than throw an error, return false, as it's possible the application is handling callbacks from multiple different universal links
-				return false;
-			}
+            if (OidcClient.loggingOutClientsByState.ContainsKey(state))
+            {
+                _ = ((OidcClient)loggingOutClientsByState[state]).SetEmptyState();
+                return true;
+            }
+            else
+            {
+                // there is no client matching that state.  Rather than throw an error, return false, as it's possible the application is handling callbacks from multiple different universal links
+                return false;
+            }
         }
         
         /// <summary>
