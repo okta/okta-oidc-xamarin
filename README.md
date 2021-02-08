@@ -213,7 +213,7 @@ To handle Okta authentication redirects on Android do the following:
 5. Create a new Activity to intercept Logout redirects, this example uses `MyLogoutCallbackInterceptorActivity`.
 6. Replace the activity implementation with the following code:
     ```csharp
-    [Activity(Label = "MyLogoutCallbackInterceptor")]
+    [Activity(Label = "MyLogoutCallbackInterceptor", LaunchMode = LaunchMode.SingleInstance)]
     [
         IntentFilter
         (
@@ -302,6 +302,17 @@ OktaContext.Current.SignOutCompleted += (sender, args) => Console.WriteLine("Sig
 
 // using AddSignOutCompletedListener
 OktaContext.AddSignOutCompletedListener((sender, args) => Console.WriteLine("SignOut completed"));
+```
+
+### AuthenticationFailed event
+The `OktaContext.Current.AuthenticationFailed` event is raised when an error response is received during the authentication process.  To execute code when the `AuthenticationFailed` event is raised, add an event handler to the `OktaContext.Current.AuthenticationFailed` event.
+
+```csharp
+OktaContext.Current.AuthenticationFailed += (sender, authenticationFailedEventArgs) =>
+{
+    authenticationFailedEventWasRaised = true;
+    oAuthException = authenticationFailedEventArgs.OAuthException;
+};
 ```
 
 ### OktaState, BearerToken and BearerTokenClaims classes
