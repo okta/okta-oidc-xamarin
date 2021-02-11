@@ -6,7 +6,7 @@ using Android.OS;
 
 namespace Okta.Xamarin.Android
 {
-	[Activity(Label = "LogoutCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
+	[Activity(Label = "LogoutCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleInstance)]
 	[
 		IntentFilter
 		(
@@ -25,6 +25,9 @@ namespace Okta.Xamarin.Android
 
 			if (OidcClient.InterceptLogoutCallback(new Uri(uri_android.ToString())))
 			{
+				var intent = new Intent(this, typeof(MainActivity));
+				intent.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
+				StartActivity(intent);
 				this.Finish();
 			}
 
