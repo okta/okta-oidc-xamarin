@@ -267,6 +267,26 @@ To handle Okta authentication redirects on iOS do the following:
     }
     ```
 
+## Refresh Tokens
+
+To receive a refresh token along with id and access tokens do the following:
+
+1. Ensure that `Refresh Token` is checked in the `Allowed grant types` section of your application.
+    - Sign in to the admin dashboard for your application.
+    - Click on `Applications` and go to `General Settings` > `Application` > `Allowed grant types`.
+    - Check the box next to `Refresh Token`.
+2. Specify the `offline_access` scope along with the default scopes in your config file.
+    - Android:
+      - Add the the following element inside the `Okta` element of the file `Assets/OktaConfig.xml`.
+        ```xml
+        <Scope>openid profile offline_access</Scope>
+        ```
+    - iOS:
+      - Add the `Scope` property to the OktaConfig.plist file.
+        - Property = `Scope`
+        - Type = `String`
+        - Value = `openid profile offline_access`
+
 ## API Reference
 
 ### OktaContext.Current
