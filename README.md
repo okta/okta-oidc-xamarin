@@ -213,7 +213,7 @@ To handle Okta authentication redirects on Android do the following:
 5. Create a new Activity to intercept Logout redirects, this example uses `MyLogoutCallbackInterceptorActivity`.
 6. Replace the activity implementation with the following code:
     ```csharp
-    [Activity(Label = "MyLogoutCallbackInterceptor")]
+    [Activity(Label = "MyLogoutCallbackInterceptor", LaunchMode = LaunchMode.SingleInstance)]
     [
         IntentFilter
         (
@@ -267,6 +267,26 @@ To handle Okta authentication redirects on iOS do the following:
     }
     ```
 
+## Refresh Tokens
+
+To receive a refresh token along with id and access tokens do the following:
+
+1. Ensure that `Refresh Token` is checked in the `Allowed grant types` section of your application.
+    - Sign in to the admin dashboard for your application.
+    - Click on `Applications` and go to `General Settings` > `Application` > `Allowed grant types`.
+    - Check the box next to `Refresh Token`.
+2. Specify the `offline_access` scope along with the default scopes in your config file.
+    - Android:
+      - Add the the following element inside the `Okta` element of the file `Assets/OktaConfig.xml`.
+        ```xml
+        <Scope>openid profile offline_access</Scope>
+        ```
+    - iOS:
+      - Add the `Scope` property to the OktaConfig.plist file.
+        - Property = `Scope`
+        - Type = `String`
+        - Value = `openid profile offline_access`
+
 ## API Reference
 
 ### OktaContext.Current
@@ -302,6 +322,17 @@ OktaContext.Current.SignOutCompleted += (sender, args) => Console.WriteLine("Sig
 
 // using AddSignOutCompletedListener
 OktaContext.AddSignOutCompletedListener((sender, args) => Console.WriteLine("SignOut completed"));
+```
+
+### AuthenticationFailed event
+The `OktaContext.Current.AuthenticationFailed` event is raised when an error response is received during the authentication process.  To execute code when the `AuthenticationFailed` event is raised, add an event handler to the `OktaContext.Current.AuthenticationFailed` event.
+
+```csharp
+OktaContext.Current.AuthenticationFailed += (sender, authenticationFailedEventArgs) =>
+{
+    authenticationFailedEventWasRaised = true;
+    oAuthException = authenticationFailedEventArgs.OAuthException;
+};
 ```
 
 ### OktaState, BearerToken and BearerTokenClaims classes
