@@ -277,7 +277,7 @@ To receive a refresh token along with id and access tokens do the following:
     - Check the box next to `Refresh Token`.
 2. Specify the `offline_access` scope along with the default scopes in your config file.
     - Android:
-      - Add the the following element inside the `Okta` element of the file `Assets/OktaConfig.xml`.
+      - Add the following element inside the `Okta` element of the file `Assets/OktaConfig.xml`.
         ```xml
         <Scope>openid profile offline_access</Scope>
         ```
