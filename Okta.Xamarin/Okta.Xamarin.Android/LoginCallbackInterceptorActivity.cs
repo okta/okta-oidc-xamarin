@@ -6,7 +6,7 @@ using Android.OS;
 
 namespace Okta.Xamarin.Android
 {
-	[Activity(Label = "LoginCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
+	[Activity(Label = "LoginCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleInstance)]
 	[
 		IntentFilter
 		(
@@ -23,8 +23,11 @@ namespace Okta.Xamarin.Android
 			base.OnCreate(savedInstanceState);
 			global::Android.Net.Uri uri_android = Intent.Data;
 
-			if (await OidcClient.InterceptLoginCallbackAsync(new Uri(uri_android.ToString())))
+			if (OidcClient.InterceptLoginCallback(new Uri(uri_android.ToString())))
 			{
+				var intent = new Intent(this, typeof(MainActivity));
+				intent.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
+				StartActivity(intent);
 				this.Finish();
 			}
 

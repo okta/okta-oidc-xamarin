@@ -184,7 +184,7 @@ To handle Okta authentication redirects on Android do the following:
 3. Create a new Activity to intercept Login redirects, this example uses `MyLoginCallbackInterceptorActivity`.
 4. Replace the activity implementation with the following code:
     ```csharp
-    [Activity(Label = "MyLoginCallbackInterceptorActivity", LaunchMode = LaunchMode.SingleInstance)]
+    [Activity(Label = "MyLoginCallbackInterceptorActivity", LaunchMode = LaunchMode.SingleTask)]
     [IntentFilter
         (
             actions: new[] { Intent.ActionView },
@@ -213,7 +213,7 @@ To handle Okta authentication redirects on Android do the following:
 5. Create a new Activity to intercept Logout redirects, this example uses `MyLogoutCallbackInterceptorActivity`.
 6. Replace the activity implementation with the following code:
     ```csharp
-    [Activity(Label = "MyLogoutCallbackInterceptor", LaunchMode = LaunchMode.SingleInstance)]
+    [Activity(Label = "MyLogoutCallbackInterceptor", LaunchMode = LaunchMode.SingleTask)]
     [
         IntentFilter
         (
