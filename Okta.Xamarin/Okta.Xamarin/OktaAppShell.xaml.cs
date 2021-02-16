@@ -13,11 +13,12 @@ namespace Okta.Xamarin
             InitializeComponent();
             Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
             Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
+            Routing.RegisterRoute(nameof(DiagnosticsPage), typeof(DiagnosticsPage));
         }
 
         private async void OnSignOutClicked(object sender, EventArgs e)
         {
-			OktaContext.Current.SignOut();
+            _ = OktaContext.Current.SignOutAsync();
         }
     }
 }

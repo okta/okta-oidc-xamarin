@@ -29,7 +29,7 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="oktaConfig">The config to use.</param>
         /// <returns>OktaState.</returns>
-        public async Task<OktaState> SignIn(TConfig oktaConfig = default)
+        public async Task<OktaStateManager> SignIn(TConfig oktaConfig = default)
         {
             return await this.SignIn(new TClient
             {
@@ -42,10 +42,10 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="oidcClient">The client to use.</param>
         /// <returns>OktaState.</returns>
-        public async Task<OktaState> SignIn(TClient oidcClient = default)
+        public async Task<OktaStateManager> SignIn(TClient oidcClient = default)
         {
             oidcClient = oidcClient == null ? this.OidcClient : oidcClient;
-            return await this.SignIn((IOidcClient)oidcClient);
+            return await this.SignInAsync((IOidcClient)oidcClient);
         }
     }
 }

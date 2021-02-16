@@ -5,15 +5,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Okta.Xamarin;
-using Newtonsoft.Json;
 
 namespace Okta.Xamarin.Test
 {
-    public class OidcClientShould
+	public class OidcClientShould
     {
         [Fact]
         public void FailWithInvalidConfig()
@@ -110,7 +107,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public async void SuccessfullyGetAccessToken()
+        public void SuccessfullyGetAccessToken()
         {
             OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
@@ -130,7 +127,7 @@ namespace Okta.Xamarin.Test
             client.OnLaunchBrowser = new Action<string>(url =>
                 OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=" + client.State_Internal)));
 
-            OktaState state = await client.SignInWithBrowserAsync();
+            OktaStateManager state = client.SignInWithBrowserAsync().Result;
 
             Assert.Equal("access_token_example", state.AccessToken);
 
@@ -140,16 +137,16 @@ namespace Okta.Xamarin.Test
         [Fact]
         public void CorrectlySetIsAuthenticated()
         {
-            OktaState stateWithNoToken = new OktaState(null, "test");
+            OktaStateManager stateWithNoToken = new OktaStateManager(null, "test");
             Assert.False(stateWithNoToken.IsAuthenticated);
 
-            OktaState stateWithTokenAndExpInPast = new OktaState("test", "test", null, null, -100);
+            OktaStateManager stateWithTokenAndExpInPast = new OktaStateManager("test", "test", null, null, -100);
             Assert.False(stateWithTokenAndExpInPast.IsAuthenticated);
 
-            OktaState stateWithNoExp = new OktaState("test", "test");
+            OktaStateManager stateWithNoExp = new OktaStateManager("test", "test");
             Assert.True(stateWithNoExp.IsAuthenticated);
 
-            OktaState stateWithExpInFuture = new OktaState("test", "test", null, null, 100);
+            OktaStateManager stateWithExpInFuture = new OktaStateManager("test", "test", null, null, 100);
             Assert.True(stateWithExpInFuture.IsAuthenticated);
         }
 
@@ -200,7 +197,7 @@ namespace Okta.Xamarin.Test
                 oAuthException = authenticationFailedEventArgs.OAuthException;
             };
 
-            await OktaContext.Current.SignIn(client);
+            await OktaContext.Current.SignInAsync(client);
 
             Assert.True(authenticationFailedEventWasRaised.Value, "AuthenticationFailed event was not raised as expected.");
             Assert.NotNull(oAuthException);
@@ -267,7 +264,7 @@ namespace Okta.Xamarin.Test
             Assert.True(string.IsNullOrEmpty(client.CodeChallenge_Internal));
             Assert.True(string.IsNullOrEmpty(client.CodeVerifier_Internal));
             
-            client.SignOutOfOktaAsync(new OktaState("testAccessToken", "testTokenType"));
+            client.SignOutOfOktaAsync(new OktaStateManager("testAccessToken", "testTokenType"));
             
             Assert.False(string.IsNullOrEmpty(client.State_Internal));
             Assert.False(string.IsNullOrEmpty(client.CodeChallenge_Internal));
@@ -280,7 +277,7 @@ namespace Okta.Xamarin.Test
             bool? browserLaunched = false;
             OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
             client.OnLaunchBrowser = (url) => browserLaunched = true;
-            client.SignOutOfOktaAsync(new OktaState("testAccessToken", "testTokenType"));
+            client.SignOutOfOktaAsync(new OktaStateManager("testAccessToken", "testTokenType"));
             Assert.True(browserLaunched);
         }
         
@@ -290,7 +287,7 @@ namespace Okta.Xamarin.Test
             bool? browserLaunched = false;
             OidcClient client = new OidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
             client.OnLaunchBrowser = (url) => browserLaunched = true;
-            client.SignOutOfOktaAsync(new OktaState(string.Empty, string.Empty));
+            client.SignOutOfOktaAsync(new OktaStateManager(string.Empty, string.Empty));
             Assert.False(browserLaunched);
         }
     }

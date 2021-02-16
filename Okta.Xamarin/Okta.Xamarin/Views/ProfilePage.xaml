@@ -29,6 +29,12 @@
                             Command="{Binding SignOutCommand}"
                             BackgroundColor="{StaticResource Primary}"
                             TextColor="White" />
+
+            <Button AutomationId="ProfilePageButtonGoToDiagnostics"
+                    Margin="0,10,0,0" Text="Diagnostics"
+                            Command="{Binding GoToDiagnosticsCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
         </StackLayout>
     </ScrollView>
 </ContentPage>
