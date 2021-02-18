@@ -4,6 +4,7 @@
 // </copyright>
 
 using FluentAssertions;
+using System;
 using Xunit;
 
 namespace Okta.Xamarin.Test
@@ -41,5 +42,28 @@ namespace Okta.Xamarin.Test
             retrievedAccessToken.Should().Be(testAccessToken);
             retrievedRefreshToken.Should().Be(testRefreshToken);
         }
-    }
+
+		[Fact]
+		public void ClearState()
+		{
+			string testAccessToken = "test access token";
+			string testRefreshToken = "test refresh token";
+			string testIdToken = "test id token";
+			string testScope = "test scope";
+			TestOktaStateManager testOktaStateManager = new TestOktaStateManager(testAccessToken, testIdToken, testRefreshToken, 300 /* seconds */, testScope);
+			testOktaStateManager.AccessToken.Should().Be(testAccessToken);
+			testOktaStateManager.IdToken.Should().Be(testIdToken);
+			testOktaStateManager.RefreshToken.Should().Be(testRefreshToken);
+			testOktaStateManager.Scope.Should().Be(testScope);
+			testOktaStateManager.Expires.Should().NotBeNull();
+
+			testOktaStateManager.Clear();
+
+			testOktaStateManager.AccessToken.Should().BeNullOrEmpty();
+			testOktaStateManager.IdToken.Should().BeNullOrEmpty();
+			testOktaStateManager.RefreshToken.Should().BeNullOrEmpty();
+			testOktaStateManager.Scope.Should().BeNullOrEmpty();
+			testOktaStateManager.Expires.Should().BeNull();
+		}
+	}
 }

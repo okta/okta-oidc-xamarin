@@ -46,7 +46,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets the expiration time.
         /// </summary>
-        public DateTime Expires { get; private set; }
+        public DateTime? Expires { get; private set; }
 
         public IOktaConfig Config { get; set; }
 
@@ -201,11 +201,15 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Removes the local authentication state by removing cached tokens in the keychain. A full sign out should consist of calling <see cref="OidcClient.SignOutOfOktaAsync"/>, then <see cref="RevokeAsync"/>, and then <see cref="Clear"/>.
+        /// Removes the local authentication state. A full sign out should consist of calling <see cref="OidcClient.SignOutOfOktaAsync"/>, then <see cref="RevokeAsync"/>, and then <see cref="Clear"/>.
         /// </summary>
         public void Clear()
         {
-            throw new NotImplementedException();
+            AccessToken = string.Empty;
+            IdToken = string.Empty;
+            RefreshToken = string.Empty;
+            Scope = string.Empty;
+            Expires = null;
         }
 
         protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)

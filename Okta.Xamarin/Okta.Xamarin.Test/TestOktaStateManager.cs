@@ -10,12 +10,12 @@ namespace Okta.Xamarin.Test
     public class TestOktaStateManager: OktaStateManager
     {
         public TestOktaStateManager() : base() { }
-        public TestOktaStateManager(string accessToken, string tokenType, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
-        : base(accessToken, tokenType, idToken, refreshToken, expiresIn, scope) 
+        public TestOktaStateManager(string accessToken, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
+        : base(accessToken, null, idToken, refreshToken, expiresIn, scope) 
         {
         }
 
-        public TestOktaStateManager(string accessToken, string refreshToken) : this(accessToken, null, null, refreshToken) { }
+        public TestOktaStateManager(string accessToken, string refreshToken) : this(accessToken, null, refreshToken) { }
 
         public int GetBasePathCallCount{ get; set; }
         public string CallGetBasePath()
