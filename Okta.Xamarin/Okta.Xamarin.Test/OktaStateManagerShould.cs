@@ -13,23 +13,6 @@ namespace Okta.Xamarin.Test
     public class OktaStateManagerShould
     {
         [Fact]
-        public void GetBasePath()
-        {
-            string testDomain = "https://test.domain.com";
-            TestOktaStateManager testOktaStateManager = new TestOktaStateManager
-            {
-                Config = new OktaConfig
-                {
-                    OktaDomain = testDomain
-                }
-            };
-            string expected = $"{testDomain}/oauth2/v1";
-            string actual = testOktaStateManager.CallGetBasePath();
-
-            actual.Should().Be(expected);
-        }
-
-        [Fact]
         public void GetToken()
         {
             string testAccessToken = "test access token";
@@ -43,27 +26,27 @@ namespace Okta.Xamarin.Test
             retrievedRefreshToken.Should().Be(testRefreshToken);
         }
 
-		[Fact]
-		public void ClearState()
-		{
-			string testAccessToken = "test access token";
-			string testRefreshToken = "test refresh token";
-			string testIdToken = "test id token";
-			string testScope = "test scope";
-			TestOktaStateManager testOktaStateManager = new TestOktaStateManager(testAccessToken, testIdToken, testRefreshToken, 300 /* seconds */, testScope);
-			testOktaStateManager.AccessToken.Should().Be(testAccessToken);
-			testOktaStateManager.IdToken.Should().Be(testIdToken);
-			testOktaStateManager.RefreshToken.Should().Be(testRefreshToken);
-			testOktaStateManager.Scope.Should().Be(testScope);
-			testOktaStateManager.Expires.Should().NotBeNull();
+        [Fact]
+        public void ClearState()
+        {
+            string testAccessToken = "test access token";
+            string testRefreshToken = "test refresh token";
+            string testIdToken = "test id token";
+            string testScope = "test scope";
+            TestOktaStateManager testOktaStateManager = new TestOktaStateManager(testAccessToken, testIdToken, testRefreshToken, 300 /* seconds */, testScope);
+            testOktaStateManager.AccessToken.Should().Be(testAccessToken);
+            testOktaStateManager.IdToken.Should().Be(testIdToken);
+            testOktaStateManager.RefreshToken.Should().Be(testRefreshToken);
+            testOktaStateManager.Scope.Should().Be(testScope);
+            testOktaStateManager.Expires.Should().NotBeNull();
 
-			testOktaStateManager.Clear();
+            testOktaStateManager.Clear();
 
-			testOktaStateManager.AccessToken.Should().BeNullOrEmpty();
-			testOktaStateManager.IdToken.Should().BeNullOrEmpty();
-			testOktaStateManager.RefreshToken.Should().BeNullOrEmpty();
-			testOktaStateManager.Scope.Should().BeNullOrEmpty();
-			testOktaStateManager.Expires.Should().BeNull();
-		}
-	}
+            testOktaStateManager.AccessToken.Should().BeNullOrEmpty();
+            testOktaStateManager.IdToken.Should().BeNullOrEmpty();
+            testOktaStateManager.RefreshToken.Should().BeNullOrEmpty();
+            testOktaStateManager.Scope.Should().BeNullOrEmpty();
+            testOktaStateManager.Expires.Should().BeNull();
+        }
+    }
 }

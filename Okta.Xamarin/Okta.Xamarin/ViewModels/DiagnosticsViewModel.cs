@@ -4,6 +4,9 @@
 // </copyright>
 
 using Okta.Xamarin.Views;
+using System;
+using System.Security.Claims;
+using Xamarin.Forms;
 
 namespace Okta.Xamarin.ViewModels
 {
@@ -13,22 +16,81 @@ namespace Okta.Xamarin.ViewModels
         {
             this.Page = diagnosticsPage;
             this.StateManager = OktaContext.Current.StateManager;
+            OktaContext.Current.GetUserCompleted += (sender, args) =>
+            {
+				this.userInfo = args.UserInfo;
+				this.ClaimsPrincipal = args.UserInfo as ClaimsPrincipal; // user info may be Dictionary<string, object> or ClaimsPrincipal or generic type; will be null if incorrect 'as' cast
+			};
         }
 
         protected DiagnosticsPage Page { get; }
 
         public RevokeAccessTokenCommand RevokeAccessTokenCommand => new RevokeAccessTokenCommand();
 
-        OktaStateManager stateManager;
+        public GetClaimsPrincipalCommand GetClaimsPrincipalCommand => new GetClaimsPrincipalCommand();
 
-        public OktaStateManager StateManager
+		public GetUserCommand GetUserCommand => new GetUserCommand();
+
+        IOktaStateManager stateManager;
+
+        public IOktaStateManager StateManager
         {
             get { return stateManager; }
-            
+
             set
             {
                 stateManager = value;
                 OnPropertyChanged(nameof(StateManager));
+            }
+        }
+
+        object userInfo;
+
+        public object UserInfo
+        {
+            get
+            {
+                return userInfo;
+            }
+
+            set
+            {
+                userInfo = value;
+                OnPropertyChanged(nameof(UserInfo));
+            }
+        }
+
+        ClaimsPrincipal claimsPrincipal;
+
+        public string UserName
+        {
+            get
+            {
+                return ClaimsPrincipal?.Identity?.Name;
+            }
+        }
+
+        public ClaimsPrincipal ClaimsPrincipal
+        {
+            get { return claimsPrincipal; }
+
+            set
+            {
+                claimsPrincipal = value;
+                OnPropertyChanged(nameof(ClaimsPrincipal));
+                OnPropertyChanged(nameof(UserName));
+            }
+        }
+
+        string introspectResponse;
+
+        public string IntrospectResponseJson
+        {
+            get{ return introspectResponse; }
+            set
+            {
+                introspectResponse = value;
+                OnPropertyChanged(nameof(IntrospectResponseJson));
             }
         }
     }

@@ -8,7 +8,7 @@ using Android.Support.CustomTabs;
 
 namespace Okta.Xamarin
 {
-	public partial class OidcClient
+	public class AndroidOidcClient : OidcClient
 	{
 		/// <summary>
 		/// Stores a reference to the current Android <see cref="Context"/>, for use in launching the browser for login
@@ -19,7 +19,7 @@ namespace Okta.Xamarin
 		/// Launches a Chrome custom tab to the specified url
 		/// </summary>
 		/// <param name="url">The url to launch in a Chrome custom tab</param>
-		private void LaunchBrowser(string url)
+		protected override void LaunchBrowser(string url)
 		{
 			CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
 			CustomTabsIntent customTabsIntent = builder.Build();
@@ -31,7 +31,7 @@ namespace Okta.Xamarin
 		/// </summary>
 		/// <param name="context">A reference to the current Android <see cref="Context"/>, for use in launching the browser for login</param>
 		/// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
-		public OidcClient(Context context, IOktaConfig config)
+		public AndroidOidcClient(Context context, IOktaConfig config)
 		{
 			this.AndroidContext = context;
 			this.Config = config;
@@ -41,7 +41,7 @@ namespace Okta.Xamarin
 		/// <summary>
 		/// Called by the cross-platform code to close the browser used for login after the redirect.  On android this is handled automatically, so an implementation is not needed.
 		/// </summary>
-		private void CloseBrowser()
+		protected override void CloseBrowser()
 		{
 			// not needed on Android
 		}

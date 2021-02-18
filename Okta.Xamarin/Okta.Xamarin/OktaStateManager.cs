@@ -3,10 +3,12 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Okta.Xamarin
@@ -14,9 +16,33 @@ namespace Okta.Xamarin
     /// <summary>
     /// Tracks the current login state, including any access tokens, refresh tokens, scope, etc.
     /// </summary>
-    public class OktaStateManager
+    public class OktaStateManager : IOktaStateManager
     {
-        private HttpClient client = new HttpClient();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OktaStateManager"/> class.
+        /// </summary>
+        public OktaStateManager()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OktaStateManager"/> class.
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="tokenType"></param>
+        /// <param name="idToken"></param>
+        /// <param name="refreshToken"></param>
+        /// <param name="expiresIn"></param>
+        /// <param name="scope"></param>
+        public OktaStateManager(string accessToken, string tokenType, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
+        {
+            this.TokenType = tokenType;
+            this.AccessToken = accessToken;
+            this.IdToken = idToken;
+            this.RefreshToken = refreshToken;
+            this.Expires = expiresIn.HasValue ? DateTime.UtcNow.AddSeconds(expiresIn.Value) : DateTime.MaxValue;
+            this.Scope = scope;
+        }
 
         /// <summary>
         /// Gets the token type.
@@ -50,30 +76,7 @@ namespace Okta.Xamarin
 
         public IOktaConfig Config { get; set; }
 
-        #region CTors
-        public OktaStateManager()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OktaStateManager"/> class.
-        /// </summary>
-        /// <param name="accessToken"></param>
-        /// <param name="tokenType"></param>
-        /// <param name="idToken"></param>
-        /// <param name="refreshToken"></param>
-        /// <param name="expiresIn"></param>
-        /// <param name="scope"></param>
-        public OktaStateManager(string accessToken, string tokenType, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
-        {
-            this.TokenType = tokenType;
-            this.AccessToken = accessToken;
-            this.IdToken = idToken;
-            this.RefreshToken = refreshToken;
-            this.Expires = expiresIn.HasValue ? DateTime.UtcNow.AddSeconds(expiresIn.Value) : DateTime.MaxValue;
-            this.Scope = scope;
-        }
-        #endregion
+        public IOidcClient Client { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated
@@ -88,9 +91,24 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Gets or sets the last response received from the API.
+        /// Gets or sets the last response received from the API. Primarily for debugging.
         /// </summary>
         public HttpResponseMessage LastApiResponse { get; set; }
+
+        public string GetIdToken()
+        {
+            return GetToken(Xamarin.TokenType.IdToken);
+        }
+
+        public string GetAccessToken()
+        {
+            return GetToken(Xamarin.TokenType.AccessToken);
+        }
+
+        public string GetRefreshToken()
+        {
+            return GetToken(Xamarin.TokenType.RefreshToken);
+        }
 
         /// <summary>
         /// Gets the token of the specified type.
@@ -101,20 +119,21 @@ namespace Okta.Xamarin
         {
             switch (tokenType)
             {
+                case Xamarin.TokenType.Invalid:
                 case Xamarin.TokenType.AccessToken:
                     return AccessToken;
-                    break;
+                case Xamarin.TokenType.IdToken:
+                    return IdToken;
                 case Xamarin.TokenType.RefreshToken:
                 default:
                     return RefreshToken;
-                    break;
             }
         }
 
         /// <summary>
         /// Stores the tokens securely in platform-specific secure storage.  This is an async method and should be awaited.
         /// </summary>
-        /// <returns>Task which tracks the progress of the save</returns>
+        /// <returns>Task which tracks the progress of the save.</returns>
         public async Task WriteToSecureStorageAsync()
         {
             throw new NotImplementedException();
@@ -133,53 +152,19 @@ namespace Okta.Xamarin
         /// <summary>
         /// Revokes tokens associated with this OktaState.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task.</returns>
         public virtual async Task RevokeAsync(TokenType tokenType)
         {
             switch (tokenType)
             {
                 case Xamarin.TokenType.AccessToken:
-                    await RevokeAccessTokenAsync();
+                    await Client.RevokeAccessTokenAsync(AccessToken);
                     break;
                 case Xamarin.TokenType.RefreshToken:
                 default:
-                    await RevokeRefreshTokenAsync();
+                    await Client.RevokeRefreshTokenAsync(AccessToken, RefreshToken);
                     break;
             }
-        }
-
-        /// <summary>
-        /// Revokes the access token.
-        /// </summary>
-        /// <returns>Task</returns>
-        protected async Task RevokeAccessTokenAsync()
-        {
-            _ = await PerformRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
-                {
-                    {"Bearer", AccessToken }
-                }, new Dictionary<string, string>
-                {
-                    { "token", AccessToken },
-                    { "token_type_hint", "access_token" },
-                    { "client_id", Config.ClientId }
-                });
-        }
-
-        /// <summary>
-        /// Revokes the refresh token.
-        /// </summary>
-        /// <returns>Task</returns>
-        protected async Task RevokeRefreshTokenAsync()
-        {
-            _ = await PerformRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
-                {
-                    {"Bearer", AccessToken }
-                }, new Dictionary<string, string>
-                {
-                    { "token", RefreshToken },
-                    { "token_type_hint", "refresh_token" },
-                    { "client_id", Config.ClientId }
-                });
         }
 
         /// <summary>
@@ -192,12 +177,33 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Gets an instance of the generic type T representing the current user.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the response as.</typeparam>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>T.</returns>
+        public async Task<T> GetUserAsync<T>(string authorizationServerId = "default")
+        {
+            return await Client.GetUserAsync<T>(AccessToken, authorizationServerId);
+        }
+
+        /// <summary>
+        /// Gets information about the current user.
+        /// </summary>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default")
+        {
+            return await Client.GetUserAsync(AccessToken, authorizationServerId);
+        }
+
+        /// <summary>
         /// Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.  This is an async method and should be awaited.
         /// </summary>
         /// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user</returns>
-        public async Task<System.Security.Claims.ClaimsPrincipal> GetUserAsync()
+        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default")
         {
-            throw new NotImplementedException();
+            return await Client.GetClaimsPincipalAsync(AccessToken, authorizationServerId);
         }
 
         /// <summary>
@@ -210,38 +216,6 @@ namespace Okta.Xamarin
             RefreshToken = string.Empty;
             Scope = string.Empty;
             Expires = null;
-        }
-
-        protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)
-        {
-            return await PerformRequestAsync(httpMethod, path, headers, formUrlEncodedContent.Select(kvp => kvp).ToArray());
-        }
-
-        protected virtual async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, params KeyValuePair<string, string>[] formUrlEncodedContent)
-        {
-            FormUrlEncodedContent content = null;
-            if((bool)formUrlEncodedContent?.Any())
-            {
-                content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
-            }
-            if (!path.StartsWith("/"))
-            {
-                path = $"/{path}";
-            }
-
-            var request = new HttpRequestMessage(httpMethod, $"{GetBasePath()}{path}")
-            {
-                Content = content
-            };
-            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-            LastApiResponse = response;
-            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return responseText;
-        }
-
-        protected virtual string GetBasePath()
-        {
-            return $"{Config?.OktaDomain}/oauth2/v1";
         }
     }
 }

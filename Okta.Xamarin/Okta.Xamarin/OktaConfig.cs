@@ -15,7 +15,7 @@ namespace Okta.Xamarin
     /// <summary>
     /// Stores configuration for the Okta OIDC client
     /// </summary>
-    public partial class OktaConfig : IOktaConfig
+    public class OktaConfig : IOktaConfig
     {
 
         /// <summary>

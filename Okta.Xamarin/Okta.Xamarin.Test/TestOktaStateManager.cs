@@ -17,13 +17,6 @@ namespace Okta.Xamarin.Test
 
         public TestOktaStateManager(string accessToken, string refreshToken) : this(accessToken, null, refreshToken) { }
 
-        public int GetBasePathCallCount{ get; set; }
-        public string CallGetBasePath()
-        {
-            ++this.GetBasePathCallCount;
-            return base.GetBasePath();
-        }
-
         public int RevokeAsyncCallCount { get; set; }
 
         public override Task RevokeAsync(TokenType tokenType)

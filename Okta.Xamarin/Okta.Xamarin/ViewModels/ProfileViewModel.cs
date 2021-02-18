@@ -73,9 +73,9 @@ namespace Okta.Xamarin.ViewModels
             }
         }
 
-        OktaStateManager stateManager;
+        IOktaStateManager stateManager;
 
-        public override OktaStateManager StateManager 
+        public override IOktaStateManager StateManager 
         {
             get { return stateManager; }
 

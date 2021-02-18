@@ -11,14 +11,14 @@ namespace Okta.Xamarin
 	/// <summary>
 	/// Stores configuration for the Okta iOS OIDC client
 	/// </summary>
-	public partial class OktaConfig : IOktaConfig
+	public class iOsOktaConfig : OktaConfig
 	{
 		/// <summary>
 		/// Converts an iOS-typed NSDictionary into an OktaConfig, casting or parsing each field and then validating the resulting config.
 		/// </summary>
 		/// <param name="dict">The <see cref="NSDictionary"/> to convert from</param>
 		/// <returns>An <see cref="OktaConfig"/> with config values filled and validated</returns>
-		private static OktaConfig FromNSDictionary(NSDictionary dict)
+		public static OktaConfig FromNSDictionary(NSDictionary dict)
 		{
 			OktaConfig config = new OktaConfig();
 

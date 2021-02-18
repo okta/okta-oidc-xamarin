@@ -78,22 +78,19 @@
     <PackageReference Include="System.Net.Http">
       <Version>4.3.4</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Android.Support.CustomTabs">
+      <Version>28.0.0.3</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="4.8.0.1560" />
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Okta.Xamarin\OidcClient.cs">
-      <Link>OidcClient.cs</Link>
-    </Compile>
-    <Compile Include="..\Okta.Xamarin\OktaConfig.cs">
-      <Link>OktaConfig.cs</Link>
-    </Compile>
     <Compile Include="ActivityCustomUrlSchemeInterceptor.cs" />
     <Compile Include="LoginCallbackInterceptorActivity.cs" />
     <Compile Include="LogoutCallbackInterceptorActivity.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="OidcClient.Android.cs" />
-    <Compile Include="OktaConfig.Android.cs" />
+    <Compile Include="AndroidOidcClient.cs" />
+    <Compile Include="AndroidOktaConfig.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -139,12 +136,6 @@
     <AndroidResource Include="Resources\drawable\tab_feed.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Okta.Xamarin\Okta.Xamarin.csproj">
-      <Project>{F4056B13-CE8C-4FD7-B079-A030A1053D33}</Project>
-      <Name>Okta.Xamarin</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\Okta_Logo_Large.png" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +143,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\tab_profile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Okta.Xamarin\Okta.Xamarin.csproj">
+      <Project>{f4056b13-ce8c-4fd7-b079-a030a1053d33}</Project>
+      <Name>Okta.Xamarin</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

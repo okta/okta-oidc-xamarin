@@ -22,7 +22,7 @@ namespace Okta.Xamarin.iOS
 			LoadApplication(new T());
 			bool result = base.FinishedLaunching(app, options);
 
-			OktaContext.Init(new OidcClient(Window.RootViewController, OktaConfig.LoadFromPList("OktaConfig.plist")));
+			OktaContext.Init(new iOsOidcClient(Window.RootViewController, iOsOktaConfig.LoadFromPList("OktaConfig.plist")));
 
 			return result;
 		}
@@ -35,7 +35,7 @@ namespace Okta.Xamarin.iOS
 			NSObject annotation
 		)
 		{
-			return OidcClient.IsOktaCallback(application, url, sourceApplication, annotation);
+			return iOsOidcClient.IsOktaCallback(application, url, sourceApplication, annotation);
 		}
 	}
 
@@ -51,7 +51,7 @@ namespace Okta.Xamarin.iOS
 
 			bool result = base.FinishedLaunching(app, options);
 
-			OktaContext.Init(new OidcClient(Window.RootViewController, OktaConfig.LoadFromPList("OktaConfig.plist")));
+			OktaContext.Init(new iOsOidcClient(Window.RootViewController, iOsOktaConfig.LoadFromPList("OktaConfig.plist")));
 
 			return result;
 		}
@@ -64,7 +64,7 @@ namespace Okta.Xamarin.iOS
 			NSObject annotation
 		)
 		{
-			return OidcClient.IsOktaCallback(application, url, sourceApplication, annotation);
+			return iOsOidcClient.IsOktaCallback(application, url, sourceApplication, annotation);
 		}
 	}
 }

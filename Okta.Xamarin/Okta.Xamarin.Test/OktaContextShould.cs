@@ -7,7 +7,9 @@ using FluentAssertions;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Okta.Xamarin.Test
@@ -54,7 +56,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public async void RaiseRevokeTokenEvents()
+        public void RaiseRevokeTokenEvents()
         {
             string testAccessToken = "test access token";
             string testRefreshToken = "test refresh token";
@@ -64,10 +66,28 @@ namespace Okta.Xamarin.Test
             OktaContext.Current.RevokingToken += (sender, args) => revokingTokenRaised = true;
             OktaContext.Current.RevokedToken += (sender, args) => revokedTokenRaised = true;
 
-            await OktaContext.Current.RevokeTokenAsync(TokenType.AccessToken);
+            OktaContext.Current.RevokeTokenAsync(TokenType.AccessToken).Wait();
 
             revokedTokenRaised.Should().BeTrue();
             revokingTokenRaised.Should().BeTrue();
+        }
+
+        [Fact]
+        public void RaiseGetUserEvents()
+        {
+            IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
+            Task<ClaimsPrincipal> testClaimsPrincipal = Task.FromResult(new ClaimsPrincipal());
+            testStateManager.GetClaimsPrincipalAsync().Returns(testClaimsPrincipal);
+            OktaContext.Current.StateManager = testStateManager;
+            bool? getUserStartedRaised = false;
+            bool? getUserCompletedRaised = false;
+            OktaContext.Current.GetUserStarted += (sender, args) => getUserStartedRaised = true;
+            OktaContext.Current.GetUserCompleted += (sender, args) => getUserCompletedRaised = true;
+
+            OktaContext.Current.GetClaimsPrincipalAsync().Wait();
+
+            getUserStartedRaised.Should().BeTrue();
+            getUserCompletedRaised.Should().BeTrue();
         }
     }
 }
