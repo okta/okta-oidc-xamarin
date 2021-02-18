@@ -258,6 +258,7 @@ namespace Okta.Xamarin
             this.RevokedToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType });
         }
 
+<<<<<<< HEAD
         public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType)
         {
             string token = this.StateManager.GetToken(tokenType);
@@ -267,6 +268,8 @@ namespace Okta.Xamarin
             return result;
         }
 
+=======
+>>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
         /// <summary>
         /// Gets an instance of the generic type T representing the current user.
         /// </summary>

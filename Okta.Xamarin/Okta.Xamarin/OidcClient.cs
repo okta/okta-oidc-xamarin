@@ -44,6 +44,8 @@ namespace Okta.Xamarin
         /// </summary>
         public IOktaConfig Config { get; set; }
 
+        protected HttpResponseMessage LastApiResponse { get; set; }
+
         /// <summary>
         /// Gets or sets the last API response, primarily for debugging.
         /// </summary>
@@ -117,6 +119,7 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+<<<<<<< HEAD
         /// Gets introspection details.
         /// </summary>
         /// <param name="options">IntrospectionOptions</param>
@@ -297,6 +300,127 @@ namespace Okta.Xamarin
         /// <returns>HttpRequestMessage</returns>
         protected HttpRequestMessage GetHttpRequestMessage(HttpMethod method, string path, Dictionary<string, string> headers)
         {
+=======
+        /// Gets information about the current user.
+        /// </summary>
+        /// <param name="accessToken">The access token used to authorize the request.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> GetUserAsync(string accessToken, string authorizationServerId = "default")
+        {
+            return await GetUserAsync<Dictionary<string, object>>(accessToken, authorizationServerId);
+        }
+
+        /// <summary>
+        /// Gets an instance of the generic type T representing the current user.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the response as.</typeparam>
+        /// <param name="accessToken">The access token used to authorize the request.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>T.</returns>
+        public async Task<T> GetUserAsync<T>(string accessToken, string authorizationServerId = "default")
+        {
+            string userInfoJson = await GetUserInfoJsonAsync(accessToken, authorizationServerId);
+            return JsonConvert.DeserializeObject<T>(userInfoJson);
+        }
+
+        /// <summary>
+        /// Gets a claims principal representing the current user.
+        /// </summary>
+        /// <param name="accessToken">The access token used to authorize the request.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>ClaimsPrincipal</returns>
+        public async Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken, string authorizationServerId = "default")
+        {
+            string userInfoJson = await GetUserInfoJsonAsync(accessToken, authorizationServerId);
+
+            UserInfo userInfo = JsonConvert.DeserializeObject<UserInfo>(userInfoJson); // OKTA-371439 added to ensure proper mapping of all claims to ClaimsPrincipal
+
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(userInfo.ToClaims(), "Okta");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            return claimsPrincipal;
+        }
+
+        protected async Task<string> GetUserInfoJsonAsync(string accessToken, string authorizationServerId = "default")
+        {
+            return await PerformAuthorizationServerRequestAsync(HttpMethod.Get, "/userinfo", new Dictionary<string, string>
+            {
+                {"Authorization", $"Bearer {accessToken}" }
+            }, authorizationServerId);
+        }
+
+        protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers)
+        {
+            return await PerformRequestAsync(httpMethod, path, headers, new Dictionary<string, string>());
+        }
+
+        protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)
+        {
+            return await PerformRequestAsync(httpMethod, path, headers, formUrlEncodedContent.Select(kvp => kvp).ToArray());
+        }
+
+        protected virtual async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, params KeyValuePair<string, string>[] formUrlEncodedContent)
+        {
+            FormUrlEncodedContent content = null;
+            if ((bool)formUrlEncodedContent?.Any())
+            {
+                content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = $"/{path}";
+            }
+
+            var request = GetHttpRequestMessage(httpMethod, $"{GetBasePath()}{path}", headers);
+            request.Content = content;
+
+            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+            LastApiResponse = response;
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+
+        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = "default", params KeyValuePair<string, string>[] formUrlEncodedContent)
+        {
+            FormUrlEncodedContent content = null;
+            if ((bool)formUrlEncodedContent?.Any())
+            {
+                content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = $"/{path}";
+            }
+
+            var request = GetHttpRequestMessage(httpMethod, $"{GetAuthorizationServerBasePath(authorizationServerId)}{path}", headers);
+            request.Content = content;
+
+            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+            LastApiResponse = response;
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+
+        protected virtual string GetBasePath()
+        {
+            return $"{Config?.OktaDomain}/oauth2/v1";
+        }
+
+        protected virtual string GetAuthorizationServerBasePath(string authorizationServerId = "default")
+        {
+            return $"{Config?.OktaDomain}/oauth2/{authorizationServerId}/v1";
+        }
+
+        /// <summary>
+        /// Gets a request message.
+        /// </summary>
+        /// <param name="method">The http method.</param>
+        /// <param name="path">The path.</param>
+        /// <param name="headers">The headers.</param>
+        /// <returns>HttpRequestMessage</returns>
+        protected HttpRequestMessage GetHttpRequestMessage(HttpMethod method, string path, Dictionary<string, string> headers)
+        {
+>>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
             HttpRequestMessage requestMessage = new HttpRequestMessage(method, path);
             requestMessage.Headers.Add("Accept", "application/json");
             requestMessage.Headers.Add("User-Agent", OktaXamarinUserAgent.Value);

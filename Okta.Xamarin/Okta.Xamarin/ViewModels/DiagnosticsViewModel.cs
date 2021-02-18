@@ -5,7 +5,6 @@
 
 using Okta.Xamarin.Views;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using Xamarin.Forms;
 

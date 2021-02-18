@@ -77,7 +77,10 @@ namespace Okta.Xamarin
         public IOktaConfig Config { get; set; }
 
         public IOidcClient Client { get; set; }
+<<<<<<< HEAD
 
+=======
+>>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
 
         /// <summary>
         /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated
@@ -95,6 +98,21 @@ namespace Okta.Xamarin
         /// Gets or sets the last response received from the API. Primarily for debugging.
         /// </summary>
         public HttpResponseMessage LastApiResponse { get => Client?.LastApiResponse; }
+
+        public string GetIdToken()
+        {
+            return GetToken(Xamarin.TokenType.IdToken);
+        }
+
+        public string GetAccessToken()
+        {
+            return GetToken(Xamarin.TokenType.AccessToken);
+        }
+
+        public string GetRefreshToken()
+        {
+            return GetToken(Xamarin.TokenType.RefreshToken);
+        }
 
         public string GetIdToken()
         {
@@ -196,6 +214,7 @@ namespace Okta.Xamarin
         public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default")
         {
             return await Client.GetUserAsync(AccessToken, authorizationServerId);
+<<<<<<< HEAD
         }
 
         /// <summary>
@@ -210,12 +229,18 @@ namespace Okta.Xamarin
                 TokenType = tokenType,
                 AuthorizationServerId = authorizationServerId,
             });
+=======
+>>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
         }
 
         /// <summary>
         /// Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.  This is an async method and should be awaited.
         /// </summary>
+<<<<<<< HEAD
         /// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user.</returns>
+=======
+        /// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user</returns>
+>>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
         public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default")
         {
             return await Client.GetClaimsPincipalAsync(AccessToken, authorizationServerId);
