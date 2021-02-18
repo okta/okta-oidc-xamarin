@@ -7,10 +7,10 @@ using System;
 
 namespace Okta.Xamarin
 {
-	/// <summary>
-	/// Represents data relevant to introspection events.
-	/// </summary>
-	public class IntrospectEventArgs : EventArgs
+    /// <summary>
+    /// Represents data relevant to introspection events.
+    /// </summary>
+    public class IntrospectEventArgs : EventArgs
     {
         /// <summary>
         /// Gets or sets the token.
@@ -26,5 +26,10 @@ namespace Okta.Xamarin
         /// Gets or sets the state manager.
         /// </summary>
         public IOktaStateManager StateManager { get; set; }
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public object Result { get; set; }
     }
 }

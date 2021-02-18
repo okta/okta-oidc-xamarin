@@ -89,5 +89,24 @@ namespace Okta.Xamarin.Test
             getUserStartedRaised.Should().BeTrue();
             getUserCompletedRaised.Should().BeTrue();
         }
+
+        [Fact]
+        public void RaiseIntrospectionEvents()
+        {
+            IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
+            Task<Dictionary<string, object>> testIntrospectResponse = Task.FromResult(new Dictionary<string, object>());
+            testStateManager.IntrospectAsync(Arg.Any<TokenType>()).Returns(testIntrospectResponse);
+            OktaContext.Current.StateManager = testStateManager;
+
+            bool? introspectStartedRaised = false;
+            bool? introspectCompletedRaised = false;
+            OktaContext.Current.IntrospectStarted += (sender, args) => introspectStartedRaised = true;
+            OktaContext.Current.IntrospectCompleted += (sender, args) => introspectCompletedRaised = true;
+
+            OktaContext.Current.IntrospectAsync(TokenType.AccessToken).Wait();
+
+            introspectStartedRaised.Should().BeTrue();
+            introspectCompletedRaised.Should().BeTrue();
+        }
     }
 }

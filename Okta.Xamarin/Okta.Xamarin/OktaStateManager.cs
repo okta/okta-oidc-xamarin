@@ -78,6 +78,7 @@ namespace Okta.Xamarin
 
         public IOidcClient Client { get; set; }
 
+
         /// <summary>
         /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated
         /// </summary>
@@ -93,7 +94,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the last response received from the API. Primarily for debugging.
         /// </summary>
-        public HttpResponseMessage LastApiResponse { get; set; }
+        public HttpResponseMessage LastApiResponse { get => Client?.LastApiResponse; }
 
         public string GetIdToken()
         {
@@ -198,9 +199,23 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Gets information about the state of the specified token.
+        /// </summary>
+        /// <returns>Dictoinary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType, string authorizationServerId = "default")
+        {
+            return await Client.IntrospectAsync(new IntrospectOptions
+            {
+                Token = GetToken(tokenType),
+                TokenType = tokenType,
+                AuthorizationServerId = authorizationServerId,
+            });
+        }
+
+        /// <summary>
         /// Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.  This is an async method and should be awaited.
         /// </summary>
-        /// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user</returns>
+        /// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user.</returns>
         public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default")
         {
             return await Client.GetClaimsPincipalAsync(AccessToken, authorizationServerId);

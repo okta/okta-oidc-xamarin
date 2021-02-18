@@ -44,7 +44,10 @@ namespace Okta.Xamarin
         /// </summary>
         public IOktaConfig Config { get; set; }
 
-        protected HttpResponseMessage LastApiResponse { get; set; }
+        /// <summary>
+        /// Gets or sets the last API response, primarily for debugging.
+        /// </summary>
+        public HttpResponseMessage LastApiResponse { get; private set; }
 
         /// <summary>
         /// Maintains a list of all currently active Clients, by state.  This is used after the intent/universal link callback from login to continue the state machine.
@@ -114,6 +117,45 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Gets introspection details.
+        /// </summary>
+        /// <param name="options">IntrospectionOptions</param>
+        /// <returns>Dicationary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> IntrospectAsync(IntrospectOptions options)
+        {
+            return await IntrospectAsync(options.TokenType, options.Token, options.AuthorizationServerId);
+        }
+
+        /// <summary>
+        /// Gets introspection details.
+        /// </summary>
+        /// <param name="accessToken">The access token used to authroize the request.</param>
+        /// <param name="tokenType">The type of the token to introspect.</param>
+        /// <param name="token">The target of introspection.</param>
+        /// <param name="authorizationServerId">Authorization server ID.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType, string token, string authorizationServerId = "default")
+        {
+            string tokenHint;
+            switch (tokenType)
+            {
+                case Xamarin.TokenType.IdToken:
+                    tokenHint = "id_token";
+                    break;
+                case Xamarin.TokenType.RefreshToken:
+                    tokenHint = "refresh_token";
+                    break;
+                case Xamarin.TokenType.Invalid:
+                case Xamarin.TokenType.AccessToken:
+                default:
+                    tokenHint = "access_token";
+                    break;
+            }
+
+            return await IntrospectAsync(token, tokenHint, authorizationServerId);
+        }
+
+        /// <summary>
         /// Gets information about the current user.
         /// </summary>
         /// <param name="accessToken">The access token used to authorize the request.</param>
@@ -154,6 +196,23 @@ namespace Okta.Xamarin
             return claimsPrincipal;
         }
 
+        protected async Task<string> GetIntrospectJsonAsync(string token, string tokenTypeHint, string authorizationServerId = "default")
+        {
+            return await PerformAuthorizationServerRequestAsync(HttpMethod.Post, $"/introspect?client_id={Config.ClientId}", new Dictionary<string, string>(),
+                new Dictionary<string, string>
+                {
+                    { "token", token },
+                    { "token_type_hint", tokenTypeHint },
+                    { "client_id", Config.ClientId }
+                }, authorizationServerId);
+        }
+
+        protected async Task<Dictionary<string, object>> IntrospectAsync(string token, string tokenTypeHint, string authorizationServerId = "default")
+        {
+            string responseJson = await GetIntrospectJsonAsync(token, tokenTypeHint, authorizationServerId);
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson);
+        }
+
         protected async Task<string> GetUserInfoJsonAsync(string accessToken, string authorizationServerId = "default")
         {
             return await PerformAuthorizationServerRequestAsync(HttpMethod.Get, "/userinfo", new Dictionary<string, string>
@@ -191,6 +250,11 @@ namespace Okta.Xamarin
             HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
             LastApiResponse = response;
             return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+
+        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent, string authorizationServerId = "default")
+        {
+            return await PerformAuthorizationServerRequestAsync(httpMethod, path, headers, authorizationServerId, formUrlEncodedContent.ToArray());
         }
 
         protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = "default", params KeyValuePair<string, string>[] formUrlEncodedContent)

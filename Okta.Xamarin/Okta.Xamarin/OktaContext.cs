@@ -258,6 +258,15 @@ namespace Okta.Xamarin
             this.RevokedToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType });
         }
 
+		public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType)
+		{
+			string token = this.StateManager.GetToken(tokenType);
+			this.IntrospectStarted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenType = tokenType });
+			Dictionary<string, object> result = await this.StateManager.IntrospectAsync(tokenType);
+			this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenType = tokenType, Result = result });
+			return result;
+		}
+
         /// <summary>
         /// Gets an instance of the generic type T representing the current user.
         /// </summary>

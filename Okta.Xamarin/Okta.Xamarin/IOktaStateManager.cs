@@ -20,13 +20,15 @@ namespace Okta.Xamarin
 
         IOktaConfig Config { get; set; }
 
+        IOidcClient Client { get; set; }
+
         DateTime? Expires { get; }
 
         string IdToken { get; }
 
         bool IsAuthenticated { get; }
 
-        HttpResponseMessage LastApiResponse { get; set; }
+        HttpResponseMessage LastApiResponse { get; }
 
         string RefreshToken { get; }
 
@@ -38,11 +40,13 @@ namespace Okta.Xamarin
 
         string GetToken(TokenType tokenType);
 
-		Task<T> GetUserAsync<T>(string authorizationServerId = "default");
+        Task<T> GetUserAsync<T>(string authorizationServerId = "default");
 
-		Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default");
+        Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default");
 
-		Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default");
+        Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default");
+
+        Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType, string authorizationServerId = "default");
 
         Task<string> RenewAsync();
 

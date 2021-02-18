@@ -4,6 +4,7 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -14,6 +15,11 @@ namespace Okta.Xamarin
     /// </summary>
     public interface IOidcClient
     {
+		/// <summary>
+		/// Gets or sets the last API response, primarily for debugging.
+		/// </summary>
+		HttpResponseMessage LastApiResponse { get; }
+
         /// <summary>
         /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
         /// </summary>
@@ -84,5 +90,22 @@ namespace Okta.Xamarin
         /// <param name="authorizationServerId">The authorization server id or null.</param>
         /// <returns>Task{ClaimsPrincipal}.</returns>
         Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken, string authorizationServerId = "default");
+
+        /// <summary>
+        /// Gets information about the state of the specified token.
+        /// </summary>
+        /// <param name="options">IntrospectionOptions.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        Task<Dictionary<string, object>> IntrospectAsync(IntrospectOptions options);
+
+        /// <summary>
+        /// Gets information about the state of the specified token.
+        /// </summary>
+        /// <param name="accessToken">The token used to authorize the request.</param>
+        /// <param name="tokenType">The type of the token to introspect.</param>
+        /// <param name="token">The token to introspect.</param>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType, string token, string authorizationServerId = "default");
     }
 }

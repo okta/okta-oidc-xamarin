@@ -11,11 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Okta.Xamarin\OidcClient.cs" Link="OidcClient.cs" />
-    <Compile Include="..\Okta.Xamarin\OktaConfig.cs" Link="OktaConfig.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
 

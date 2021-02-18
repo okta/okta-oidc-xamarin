@@ -5,6 +5,7 @@
 
 using Okta.Xamarin.Views;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Xamarin.Forms;
 
@@ -18,9 +19,13 @@ namespace Okta.Xamarin.ViewModels
             this.StateManager = OktaContext.Current.StateManager;
             OktaContext.Current.GetUserCompleted += (sender, args) =>
             {
-				this.userInfo = args.UserInfo;
-				this.ClaimsPrincipal = args.UserInfo as ClaimsPrincipal; // user info may be Dictionary<string, object> or ClaimsPrincipal or generic type; will be null if incorrect 'as' cast
-			};
+                this.UserInfo = args.UserInfo;
+                this.ClaimsPrincipal = args.UserInfo as ClaimsPrincipal; // user info may be Dictionary<string, object> or ClaimsPrincipal or generic type; will be null if incorrect 'as' cast
+            };
+            OktaContext.Current.IntrospectCompleted += (sender, args) =>
+            {
+                this.Page.DisplayData(args.Result as Dictionary<string, object>, "Introspection");
+            };
         }
 
         protected DiagnosticsPage Page { get; }
@@ -29,7 +34,9 @@ namespace Okta.Xamarin.ViewModels
 
         public GetClaimsPrincipalCommand GetClaimsPrincipalCommand => new GetClaimsPrincipalCommand();
 
-		public GetUserCommand GetUserCommand => new GetUserCommand();
+        public GetUserCommand GetUserCommand => new GetUserCommand();
+
+        public Command<string> IntrospectCommand => new Command<string>(async (tokenType) => await OktaContext.Current.IntrospectAsync((TokenType)Enum.Parse(typeof(TokenType), tokenType)));
 
         IOktaStateManager stateManager;
 
@@ -62,14 +69,6 @@ namespace Okta.Xamarin.ViewModels
 
         ClaimsPrincipal claimsPrincipal;
 
-        public string UserName
-        {
-            get
-            {
-                return ClaimsPrincipal?.Identity?.Name;
-            }
-        }
-
         public ClaimsPrincipal ClaimsPrincipal
         {
             get { return claimsPrincipal; }
@@ -78,7 +77,6 @@ namespace Okta.Xamarin.ViewModels
             {
                 claimsPrincipal = value;
                 OnPropertyChanged(nameof(ClaimsPrincipal));
-                OnPropertyChanged(nameof(UserName));
             }
         }
 
