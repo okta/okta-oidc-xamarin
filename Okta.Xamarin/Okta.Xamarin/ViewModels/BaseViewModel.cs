@@ -52,5 +52,17 @@ namespace Okta.Xamarin.ViewModels
             changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        public virtual OktaStateManager StateManager { get; set; }
+
+        protected void OnSignInCompleted(object sender, EventArgs e)
+        {
+            this.StateManager = ((SignInEventArgs)e).StateManager;
+        }
+
+        protected void OnSignOutCompleted(object sender, EventArgs e)
+        {
+            this.StateManager = ((SignOutEventArgs)e).StateManager;
+        }
     }
 }

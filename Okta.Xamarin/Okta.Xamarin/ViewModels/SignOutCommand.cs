@@ -8,7 +8,7 @@ namespace Okta.Xamarin.ViewModels
 	public class SignOutCommand : Command
 	{
 		public SignOutCommand()
-			: base(async () => await OktaContext.Current.SignOut())
+			: base(async () => await OktaContext.Current.SignOutAsync())
 		{
 		}
 	}

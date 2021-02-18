@@ -42,6 +42,10 @@ namespace Okta.Xamarin
         /// </summary>
         public event EventHandler<AuthenticationFailedEventArgs> AuthenticationFailed;
 
+        public event EventHandler<RevokeTokenEventArgs> RevokingToken;
+
+        public event EventHandler<RevokeTokenEventArgs> RevokedToken;
+
         /// <summary>
         /// Gets or sets the current global context.
         /// </summary>
@@ -80,7 +84,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the default state.
         /// </summary>
-        public OktaState StateManager { get; set; } // TODO: rename this to OktaState
+        public OktaStateManager StateManager { get; set; } 
 
         /// <summary>
         /// Convenience method to add a listener to the OktaContext.Current.SignInStarted event.
@@ -119,6 +123,15 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RevokedToken event.
+        /// </summary>
+        /// <param name="tokenRevokedEventHandler">The event handler.</param>
+        public static void AddTokenRevokedListener(EventHandler<RevokeTokenEventArgs> tokenRevokedEventHandler)
+        {
+            Current.RevokedToken += tokenRevokedEventHandler;
+        }
+
+        /// <summary>
         /// Initialize OktaContext.Current with the specified default client.
         /// </summary>
         /// <param name="oidcClient">The client.</param>
@@ -132,10 +145,11 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="oidcClient">The client.</param>
         /// <returns>OktaState.</returns>
-        public virtual async Task<OktaState> SignIn(IOidcClient oidcClient = null)
+        public virtual async Task<OktaStateManager> SignInAsync(IOidcClient oidcClient = null)
         {
             this.SignInStarted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
             oidcClient = oidcClient ?? this.OidcClient;
+            this.OktaConfig = oidcClient.Config;
             try
             {
                 this.StateManager = await oidcClient.SignInWithBrowserAsync();
@@ -158,12 +172,27 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="oidcClient">The client.</param>
         /// <returns>Task.</returns>
-        public virtual async Task SignOut(IOidcClient oidcClient = null)
+        public virtual async Task SignOutAsync(IOidcClient oidcClient = null)
         {
             this.SignOutStarted?.Invoke(this, new SignOutEventArgs { StateManager = this.StateManager });
             oidcClient = oidcClient ?? this.OidcClient;
             this.StateManager = await oidcClient.SignOutOfOktaAsync(this.StateManager);
             this.SignOutCompleted?.Invoke(this, new SignOutEventArgs { StateManager = this.StateManager });
+        }
+
+        /// <summary>
+        /// Revoke token of the specified type.
+        /// </summary>
+        /// <param name="tokenType">The type of token to revoke</param>
+        /// <returns>Task</returns>
+        public virtual async Task RevokeTokenAsync(TokenType tokenType)
+        {
+            string token = this.StateManager.GetToken(tokenType);
+            this.RevokingToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType, Token = token });
+
+            await this.StateManager.RevokeAsync(tokenType);
+
+            this.RevokedToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType });
         }
     }
 }

@@ -60,12 +60,12 @@ namespace Okta.Xamarin
         /// <summary>
         /// Start the authorization flow.  This is an async method and should be awaited.
         /// </summary>
-        /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaState"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-        public Task<OktaState> SignInWithBrowserAsync()
+        /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaStateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
+        public Task<OktaStateManager> SignInWithBrowserAsync()
         {
             validator.Validate(Config);
 
-            currentTask = new TaskCompletionSource<OktaState>();
+            currentTask = new TaskCompletionSource<OktaStateManager>();
             GenerateStateCodeVerifierAndChallenge();
             authenticatorsByState.Add(State, this);
             this.LaunchBrowser(this.GenerateAuthorizeUrl());
@@ -78,10 +78,10 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="stateManager">The state manager associated with the login that you wish to log out</param>
         /// <returns>Task which tracks the progress of the logout</returns>
-        public Task<OktaState> SignOutOfOktaAsync(OktaState stateManager)
+        public Task<OktaStateManager> SignOutOfOktaAsync(OktaStateManager stateManager)
         {
             validator.Validate(this.Config);
-            this.currentTask = new TaskCompletionSource<OktaState>();
+            this.currentTask = new TaskCompletionSource<OktaStateManager>();
             if (!stateManager.IsAuthenticated)
             {
                 this.currentTask.SetResult(stateManager);
@@ -97,8 +97,8 @@ namespace Okta.Xamarin
         /// Complete the authorization of a valid session obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see>.
         /// </summary>
         /// <param name="sessionToken">A valid session  token obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see></param>
-        /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaState"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-        public async Task<OktaState> AuthenticateAsync(string sessionToken)
+        /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaStateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
+        public async Task<OktaStateManager> AuthenticateAsync(string sessionToken)
         {
             throw new NotImplementedException();
         }
@@ -107,7 +107,7 @@ namespace Okta.Xamarin
         /// After a user logs in and is redirected back to the app via an intent or universal link, this method is called to parse the returned token and continue the flow
         /// </summary>
         /// <param name="url">The full callback url that the user was directed to</param>
-        /// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="OktaState"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
+        /// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="OktaStateManager"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
         private async Task ParseRedirectedUrl(Uri url) // TODO: refactor this implementation for readability and maintenance.
         {
             this.CloseBrowser();
@@ -163,18 +163,18 @@ namespace Okta.Xamarin
             await ExchangeAuthCodeForToken(code);
         }
 
-        private async Task SetEmptyState()
+        private async Task ClearStateAsync()
         {
             this.CloseBrowser();
             loggingOutClientsByState.Remove(State);
-            currentTask.SetResult(new OktaState());
+            currentTask.SetResult(new OktaStateManager());
         }
 
         /// <summary>
         /// Exchange authorization code for an access token
         /// </summary>
         /// <param name="code">The authorization code received from the login</param>
-        /// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="OktaState"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
+        /// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="OktaStateManager"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
         private async Task ExchangeAuthCodeForToken(string code)
         {
             List<KeyValuePair<string, string>> kvdata = new List<KeyValuePair<string, string>>
@@ -211,13 +211,16 @@ namespace Okta.Xamarin
             }
 
             // TODO: add a StateManager constructor that takes Dictionary<string, string>
-            OktaState stateManager = new OktaState(
-                data["access_token"],
-                data["token_type"],
-                data.GetValueOrDefault("id_token"),
-                data.GetValueOrDefault("refresh_token"),
-                data.ContainsKey("expires_in") ? (int?)(int.Parse(data["expires_in"])) : null,
-                data.GetValueOrDefault("scope") ?? this.Config.Scope);
+            OktaStateManager stateManager = new OktaStateManager(
+				data["access_token"],
+				data["token_type"],
+				data.GetValueOrDefault("id_token"),
+				data.GetValueOrDefault("refresh_token"),
+				data.ContainsKey("expires_in") ? (int?)(int.Parse(data["expires_in"])) : null,
+				data.GetValueOrDefault("scope") ?? this.Config.Scope)
+			{
+				Config = Config
+			};
 
             currentTask.SetResult(stateManager);
         }
@@ -241,7 +244,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Tracks the current state machine used by <see cref="SignInWithBrowserAsync"/> across the login callback
         /// </summary>
-        private TaskCompletionSource<OktaState> currentTask;
+        private TaskCompletionSource<OktaStateManager> currentTask;
 
         /// <summary>
         /// Generates a cryptographically random <see cref="State"/> and <see cref="CodeVerifier"/>, and computes the <see cref="CodeChallenge"/> for use in PKCE
@@ -376,7 +379,7 @@ namespace Okta.Xamarin
 
             if (OidcClient.loggingOutClientsByState.ContainsKey(state))
             {
-                _ = ((OidcClient)loggingOutClientsByState[state]).SetEmptyState();
+                _ = ((OidcClient)loggingOutClientsByState[state]).ClearStateAsync();
                 return true;
             }
             else

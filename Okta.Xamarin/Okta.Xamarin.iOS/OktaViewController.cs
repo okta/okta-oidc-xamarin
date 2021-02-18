@@ -62,7 +62,7 @@ namespace Okta.Xamarin.iOS
 			client = new OidcClient(this, config);
 		}
 
-		public async Task<OktaState> SignIn(IOktaConfig oktaConfig = default)
+		public async Task<OktaStateManager> SignIn(IOktaConfig oktaConfig = default)
 		{
 			oktaConfig = oktaConfig ?? OktaConfig.LoadFromPList("OktaConfig.plist");
 			OidcClient oidcClient = new OidcClient(this, oktaConfig);

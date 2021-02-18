@@ -10,7 +10,7 @@ namespace Okta.Xamarin
         {
         }
 
-        public LogoutOptions(OktaState stateManager, IOktaConfig oktaConfig, string state)
+        public LogoutOptions(OktaStateManager stateManager, IOktaConfig oktaConfig, string state)
         {
             this.IdTokenHint = stateManager.IdToken;
             this.PostLogoutRedirectUri = oktaConfig.PostLogoutRedirectUri;

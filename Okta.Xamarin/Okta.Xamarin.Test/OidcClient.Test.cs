@@ -74,7 +74,7 @@ namespace Okta.Xamarin
             }
         }
 
-        public TaskCompletionSource<OktaState> CurrentTask_Accessor
+        public TaskCompletionSource<OktaStateManager> CurrentTask_Accessor
         {
             get
             {

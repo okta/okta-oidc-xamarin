@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Okta.Xamarin.Views.DiagnosticsPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label AutomationId="LabelDiagnosticsHeader" Text="Diagnostics" FontSize="Medium" />
+            <Label AutomationId="LabelDiagnosticsMessage" x:Name="Message" Text="" FontSize="Default" />
+
+            <Button AutomationId="ProfilePageButtonRevokeAccesstoken"
+                    Margin="5,10,5,0" Text="Revoke Access Token"
+                            Command="{Binding RevokeAccessTokenCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
