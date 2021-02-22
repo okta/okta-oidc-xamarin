@@ -27,11 +27,11 @@ namespace Okta.Xamarin.Views
                 OktaStateManager = getUserEventArgs.StateManager;
                 SetMessage($"Got User: {OktaStateManager.LastApiResponse?.StatusCode}");
             });
-			OktaContext.AddIntrospectCompletedListener((sender, introspectEventArgs) =>
-			{
-				OktaStateManager = introspectEventArgs.StateManager;
-				SetMessage($"Introspect completed: {OktaStateManager.LastApiResponse?.StatusCode}");
-			});
+            OktaContext.AddIntrospectCompletedListener((sender, introspectEventArgs) =>
+            {
+                OktaStateManager = introspectEventArgs.StateManager;
+                SetMessage($"Introspect completed: {OktaStateManager.LastApiResponse?.StatusCode}");
+            });
         }
 
         public IOktaStateManager OktaStateManager
