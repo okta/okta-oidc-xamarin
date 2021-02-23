@@ -215,7 +215,6 @@ namespace Okta.Xamarin
 
         public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
         {
-            string refreshToken = RefreshToken;
             RenewResponse renewResponse = await Client.RenewAsync<RenewResponse>(RefreshToken, refreshIdToken, authorizationServerId);
             RenewResponse = renewResponse;
             TokenType = renewResponse.TokenType;
