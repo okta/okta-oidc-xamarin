@@ -5,6 +5,7 @@
 
 using Okta.Xamarin.Views;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Xamarin.Forms;
 
@@ -16,6 +17,8 @@ namespace Okta.Xamarin.ViewModels
         {
             this.Page = diagnosticsPage;
             this.StateManager = OktaContext.Current.StateManager;
+
+            // TODO: refactor this so handlers are only attached once.
             OktaContext.Current.GetUserCompleted += (sender, args) =>
             {
                 this.UserInfo = args.UserInfo;
@@ -23,7 +26,11 @@ namespace Okta.Xamarin.ViewModels
             };
             OktaContext.Current.IntrospectCompleted += (sender, args) =>
             {
-                this.Page.DisplayData(args.Result as Dictionary<string, object>, "Introspection");
+                this.Page.DisplayData(args.Response as Dictionary<string, object>, "Introspection");
+            };
+            OktaContext.Current.RenewCompleted += (sender, args) =>
+            {
+                this.Page.DisplayData(args.Response.ToDictionary(), "Renewal");
             };
         }
 
@@ -35,7 +42,9 @@ namespace Okta.Xamarin.ViewModels
 
         public GetUserCommand GetUserCommand => new GetUserCommand();
 
-        public Command<string> IntrospectCommand => new Command<string>(async (tokenType) => await OktaContext.Current.IntrospectAsync((TokenType)Enum.Parse(typeof(TokenType), tokenType)));
+        public Command<string> IntrospectCommand => new Command<string>(async (tokenType) => await OktaContext.Current.IntrospectAsync((TokenKind)Enum.Parse(typeof(TokenKind), tokenType)));
+
+        public Command<string> RenewCommand => new Command<string>(async (refreshIdToken) => await OktaContext.Current.RenewAsync(refreshIdToken.Equals("True")));
 
         IOktaStateManager stateManager;
 

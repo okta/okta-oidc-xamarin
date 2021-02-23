@@ -18,7 +18,7 @@ namespace Okta.Xamarin.Views
             InitializeComponent();
             BindingContext = new DiagnosticsViewModel(this);
             OktaContext.AddTokenRevokedListener((sender, revokeTokenEventArgs) =>
-            {           
+            {
                 OktaStateManager = revokeTokenEventArgs.StateManager;
                 SetMessage($"Token revoked: {OktaStateManager.LastApiResponse?.StatusCode}");
             });

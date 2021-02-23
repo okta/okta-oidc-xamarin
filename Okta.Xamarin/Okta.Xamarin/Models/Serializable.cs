@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
@@ -30,6 +31,11 @@ namespace Okta.Xamarin.Models
         {
             return JsonConvert.SerializeObject(this);
         }
+
+		public Dictionary<string, object> ToDictionary()
+		{
+			return JsonConvert.DeserializeObject<Dictionary<string, object>>(ToJson());
+		}
 
         /// <summary>
         /// Gets the values of the current instance as query string.

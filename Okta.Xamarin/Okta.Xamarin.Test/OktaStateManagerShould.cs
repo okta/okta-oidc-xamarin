@@ -19,8 +19,8 @@ namespace Okta.Xamarin.Test
             string testRefreshToken = "test refresh token";
             TestOktaStateManager testOktaStateManager = new TestOktaStateManager(testAccessToken, testRefreshToken);
 
-            string retrievedAccessToken = testOktaStateManager.GetToken(TokenType.AccessToken);
-            string retrievedRefreshToken = testOktaStateManager.GetToken(TokenType.RefreshToken);
+            string retrievedAccessToken = testOktaStateManager.GetToken(TokenKind.AccessToken);
+            string retrievedRefreshToken = testOktaStateManager.GetToken(TokenKind.RefreshToken);
 
             retrievedAccessToken.Should().Be(testAccessToken);
             retrievedRefreshToken.Should().Be(testRefreshToken);

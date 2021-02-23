@@ -66,10 +66,10 @@ namespace Okta.Xamarin
 
         string GetLogoutUrl();
 
-		/// <summary>
-		/// Gets the Access Token Url used for retrieving a token, which is constructed from the <see cref="OktaDomain"/> and <see cref="AuthorizationServerId"/>.
-		/// </summary>
-		/// <returns>The computed Access Token Url used for retrieving a token</returns>
-		string GetAccessTokenUrl();
+        /// <summary>
+        /// Gets the Access Token Url used for retrieving a token, which is constructed from the <see cref="OktaDomain"/> and <see cref="AuthorizationServerId"/>.
+        /// </summary>
+        /// <returns>The computed Access Token Url used for retrieving a token</returns>
+        string GetAccessTokenUrl();
     }
 }

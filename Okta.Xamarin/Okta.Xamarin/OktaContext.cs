@@ -46,12 +46,12 @@ namespace Okta.Xamarin
         /// <summary>
         /// The event that is raised when revoking a token is started.
         /// </summary>
-        public event EventHandler<RevokeTokenEventArgs> RevokingToken;
+        public event EventHandler<RevokeEventArgs> RevokeStarted;
 
         /// <summary>
         /// The event that is raised when a token revocation completes.
         /// </summary>
-        public event EventHandler<RevokeTokenEventArgs> RevokedToken;
+        public event EventHandler<RevokeEventArgs> RevokeCompleted;
 
         /// <summary>
         /// The event that is raised when getting user.
@@ -72,6 +72,16 @@ namespace Okta.Xamarin
         /// The event that is raised when introspection completes.
         /// </summary>
         public event EventHandler<IntrospectEventArgs> IntrospectCompleted;
+
+        /// <summary>
+        /// The event that is raised when token renewal (refresh) is started.
+        /// </summary>
+        public event EventHandler<RenewEventArgs> RenewStarted;
+
+        /// <summary>
+        /// The event that is raised when token renewal (refresh) completes.
+        /// </summary>
+        public event EventHandler<RenewEventArgs> RenewCompleted;
 
         /// <summary>
         /// Gets or sets the current global context.
@@ -153,9 +163,9 @@ namespace Okta.Xamarin
         /// Convenience method to add a listener to the OktaContext.Current.RevokedToken event.
         /// </summary>
         /// <param name="tokenRevokedEventHandler">The event handler.</param>
-        public static void AddTokenRevokedListener(EventHandler<RevokeTokenEventArgs> tokenRevokedEventHandler)
+        public static void AddTokenRevokedListener(EventHandler<RevokeEventArgs> tokenRevokedEventHandler)
         {
-            Current.RevokedToken += tokenRevokedEventHandler;
+            Current.RevokeCompleted += tokenRevokedEventHandler;
         }
 
         /// <summary>
@@ -248,28 +258,34 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="tokenType">The type of token to revoke</param>
         /// <returns>Task</returns>
-        public virtual async Task RevokeTokenAsync(TokenType tokenType)
+        public virtual async Task RevokeTokenAsync(TokenKind tokenType)
         {
             string token = this.StateManager.GetToken(tokenType);
-            this.RevokingToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType, Token = token });
+            this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenType, Token = token });
 
             await this.StateManager.RevokeAsync(tokenType);
 
-            this.RevokedToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType });
+            this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenType });
         }
 
-<<<<<<< HEAD
-        public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType)
+        public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType)
         {
             string token = this.StateManager.GetToken(tokenType);
             this.IntrospectStarted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenType = tokenType });
             Dictionary<string, object> result = await this.StateManager.IntrospectAsync(tokenType);
-            this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenType = tokenType, Result = result });
+            this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenType = tokenType, Response = result });
             return result;
         }
 
-=======
->>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
+        public virtual async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
+        {
+            this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+            RenewResponse result = await this.StateManager.RenewAsync(refreshIdToken, authorizationServerId);
+            this.RenewCompleted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, Response = result, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+
+            return result;
+        }
+
         /// <summary>
         /// Gets an instance of the generic type T representing the current user.
         /// </summary>

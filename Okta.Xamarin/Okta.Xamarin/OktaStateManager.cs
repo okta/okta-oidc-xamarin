@@ -45,9 +45,9 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Gets the token type.
+        /// Gets the type of the AccessToken, for example "Bearer".
         /// </summary>
-        public string TokenType { get; private set; } // TODO: delete this
+        public string TokenType { get; private set; }
 
         /// <summary>
         /// Gets the access token.
@@ -74,13 +74,11 @@ namespace Okta.Xamarin
         /// </summary>
         public DateTime? Expires { get; private set; }
 
+        public RenewResponse RenewResponse { get; private set; }
+
         public IOktaConfig Config { get; set; }
 
         public IOidcClient Client { get; set; }
-<<<<<<< HEAD
-
-=======
->>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
 
         /// <summary>
         /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated
@@ -101,32 +99,17 @@ namespace Okta.Xamarin
 
         public string GetIdToken()
         {
-            return GetToken(Xamarin.TokenType.IdToken);
+            return GetToken(Xamarin.TokenKind.IdToken);
         }
 
         public string GetAccessToken()
         {
-            return GetToken(Xamarin.TokenType.AccessToken);
+            return GetToken(Xamarin.TokenKind.AccessToken);
         }
 
         public string GetRefreshToken()
         {
-            return GetToken(Xamarin.TokenType.RefreshToken);
-        }
-
-        public string GetIdToken()
-        {
-            return GetToken(Xamarin.TokenType.IdToken);
-        }
-
-        public string GetAccessToken()
-        {
-            return GetToken(Xamarin.TokenType.AccessToken);
-        }
-
-        public string GetRefreshToken()
-        {
-            return GetToken(Xamarin.TokenType.RefreshToken);
+            return GetToken(Xamarin.TokenKind.RefreshToken);
         }
 
         /// <summary>
@@ -134,16 +117,16 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="tokenType">The token type.</param>
         /// <returns>string</returns>
-        public string GetToken(TokenType tokenType)
+        public string GetToken(TokenKind tokenType)
         {
             switch (tokenType)
             {
-                case Xamarin.TokenType.Invalid:
-                case Xamarin.TokenType.AccessToken:
+                case Xamarin.TokenKind.Invalid:
+                case Xamarin.TokenKind.AccessToken:
                     return AccessToken;
-                case Xamarin.TokenType.IdToken:
+                case Xamarin.TokenKind.IdToken:
                     return IdToken;
-                case Xamarin.TokenType.RefreshToken:
+                case Xamarin.TokenKind.RefreshToken:
                 default:
                     return RefreshToken;
             }
@@ -172,27 +155,18 @@ namespace Okta.Xamarin
         /// Revokes tokens associated with this OktaState.
         /// </summary>
         /// <returns>Task.</returns>
-        public virtual async Task RevokeAsync(TokenType tokenType)
+        public virtual async Task RevokeAsync(TokenKind tokenType)
         {
             switch (tokenType)
             {
-                case Xamarin.TokenType.AccessToken:
+                case Xamarin.TokenKind.AccessToken:
                     await Client.RevokeAccessTokenAsync(AccessToken);
                     break;
-                case Xamarin.TokenType.RefreshToken:
+                case Xamarin.TokenKind.RefreshToken:
                 default:
                     await Client.RevokeRefreshTokenAsync(AccessToken, RefreshToken);
                     break;
             }
-        }
-
-        /// <summary>
-        /// Renew expired tokens by exchanging a refresh token for new ones.  Make sure to include the <c>offline_access</c> scope in your configuration.  
-        /// </summary>
-        /// <returns>Returns the new access token, also accessible in <see cref="AccessToken"/></returns>
-        public async Task<string> RenewAsync()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -214,14 +188,13 @@ namespace Okta.Xamarin
         public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default")
         {
             return await Client.GetUserAsync(AccessToken, authorizationServerId);
-<<<<<<< HEAD
         }
 
         /// <summary>
         /// Gets information about the state of the specified token.
         /// </summary>
         /// <returns>Dictoinary{string, object}.</returns>
-        public async Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType, string authorizationServerId = "default")
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType, string authorizationServerId = "default")
         {
             return await Client.IntrospectAsync(new IntrospectOptions
             {
@@ -229,21 +202,31 @@ namespace Okta.Xamarin
                 TokenType = tokenType,
                 AuthorizationServerId = authorizationServerId,
             });
-=======
->>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
         }
 
         /// <summary>
         /// Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.  This is an async method and should be awaited.
         /// </summary>
-<<<<<<< HEAD
         /// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user.</returns>
-=======
-        /// <returns>A Task with a<see cref="System.Security.Claims.ClaimsPrincipal"/> representing the current user</returns>
->>>>>>> a19d93c... OKTA-363618: statemanager.getuser implementation
         public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default")
         {
             return await Client.GetClaimsPincipalAsync(AccessToken, authorizationServerId);
+        }
+
+        public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
+        {
+            string refreshToken = RefreshToken;
+            RenewResponse renewResponse = await Client.RenewAsync<RenewResponse>(RefreshToken, refreshIdToken, authorizationServerId);
+            RenewResponse = renewResponse;
+            TokenType = renewResponse.TokenType;
+            AccessToken = renewResponse.AccessToken;
+            RefreshToken = renewResponse.RefreshToken;
+            if(refreshIdToken && !string.IsNullOrEmpty(renewResponse?.IdToken))
+            {
+                IdToken = renewResponse.IdToken;
+            }
+
+            return renewResponse;
         }
 
         /// <summary>

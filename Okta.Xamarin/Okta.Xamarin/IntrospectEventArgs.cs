@@ -20,7 +20,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the token type.
         /// </summary>
-        public TokenType TokenType { get; set; }
+        public TokenKind TokenType { get; set; }
 
         /// <summary>
         /// Gets or sets the state manager.
@@ -30,6 +30,6 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public object Result { get; set; }
+        public object Response { get; set; }
     }
 }

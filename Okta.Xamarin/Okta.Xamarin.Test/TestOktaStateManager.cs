@@ -19,7 +19,7 @@ namespace Okta.Xamarin.Test
 
         public int RevokeAsyncCallCount { get; set; }
 
-        public override Task RevokeAsync(TokenType tokenType)
+        public override Task RevokeAsync(TokenKind tokenType)
         {
             return Task.Run(() => ++RevokeAsyncCallCount);
         }

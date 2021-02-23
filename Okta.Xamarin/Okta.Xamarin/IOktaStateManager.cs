@@ -38,7 +38,7 @@ namespace Okta.Xamarin
 
         void Clear();
 
-        string GetToken(TokenType tokenType);
+        string GetToken(TokenKind tokenType);
 
         Task<T> GetUserAsync<T>(string authorizationServerId = "default");
 
@@ -46,11 +46,11 @@ namespace Okta.Xamarin
 
         Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default");
 
-        Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType, string authorizationServerId = "default");
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType, string authorizationServerId = "default");
 
-        Task<string> RenewAsync();
+        Task<RenewResponse> RenewAsync(bool renewIdToken = false, string authorizationServerId = "default");
 
-        Task RevokeAsync(TokenType tokenType);
+        Task RevokeAsync(TokenKind tokenType);
 
         Task WriteToSecureStorageAsync();
     }

@@ -5,7 +5,7 @@
 
 namespace Okta.Xamarin
 {
-    public enum TokenType
+    public enum TokenKind
     {
         Invalid,
         IdToken,

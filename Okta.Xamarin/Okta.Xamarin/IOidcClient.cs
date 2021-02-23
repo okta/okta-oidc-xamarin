@@ -15,10 +15,10 @@ namespace Okta.Xamarin
     /// </summary>
     public interface IOidcClient
     {
-		/// <summary>
-		/// Gets or sets the last API response, primarily for debugging.
-		/// </summary>
-		HttpResponseMessage LastApiResponse { get; }
+        /// <summary>
+        /// Gets or sets the last API response, primarily for debugging.
+        /// </summary>
+        HttpResponseMessage LastApiResponse { get; }
 
         /// <summary>
         /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
@@ -101,11 +101,12 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets information about the state of the specified token.
         /// </summary>
-        /// <param name="accessToken">The token used to authorize the request.</param>
         /// <param name="tokenType">The type of the token to introspect.</param>
         /// <param name="token">The token to introspect.</param>
         /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>Dictionary{string, object}.</returns>
-        Task<Dictionary<string, object>> IntrospectAsync(TokenType tokenType, string token, string authorizationServerId = "default");
-    }
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType, string token, string authorizationServerId = "default");
+
+		Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default");
+	}
 }

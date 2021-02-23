@@ -22,7 +22,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the type of the target token.
         /// </summary>
-        public TokenType TokenType{ get; set; } 
+        public TokenKind TokenType{ get; set; } 
 
         /// <summary>
         /// Gets or sets the authorization server id.
