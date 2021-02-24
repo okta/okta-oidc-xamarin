@@ -123,7 +123,7 @@ namespace Okta.Xamarin
         /// <returns>Dicationary{string, object}.</returns>
         public async Task<Dictionary<string, object>> IntrospectAsync(IntrospectOptions options)
         {
-            return await IntrospectAsync(options.TokenType, options.Token, options.AuthorizationServerId);
+            return await IntrospectAsync(options.TokenKind, options.Token, options.AuthorizationServerId);
         }
 
         /// <summary>

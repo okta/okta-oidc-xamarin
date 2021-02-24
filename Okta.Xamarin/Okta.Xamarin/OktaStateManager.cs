@@ -199,7 +199,7 @@ namespace Okta.Xamarin
             return await Client.IntrospectAsync(new IntrospectOptions
             {
                 Token = GetToken(tokenType),
-                TokenType = tokenType,
+                TokenKind = tokenType,
                 AuthorizationServerId = authorizationServerId,
             });
         }
