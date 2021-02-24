@@ -10,6 +10,7 @@ namespace Okta.Xamarin
 {
 	public class OktaXamarinUserAgent
     {
-        public static string Value => new Lazy<string>(() => $"Okta-Xamarin-Sdk/{Assembly.GetExecutingAssembly().GetName().Version}").Value;
+        private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/{Assembly.GetExecutingAssembly().GetName().Version}");
+        public static string Value => userAgent.Value;
     }
 }
