@@ -230,10 +230,13 @@ To handle Okta authentication redirects on Android do the following:
             base.OnCreate(savedInstanceState);
             global::Android.Net.Uri uri_android = Intent.Data;
 
-            if (global::Okta.Xamarin.OidcClient.InterceptLogoutCallback(new Uri(uri_android.ToString())))
-            {
-                this.Finish();
-            }
+            if (global::Okta.Xamarin.OidcClient.InterceptLoginCallback(new Uri(uri_android.ToString())))
+			{
+				var intent = new Intent(this, typeof(MainActivity));
+				intent.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
+				StartActivity(intent);
+				this.Finish();
+			}
 
             return;
         }
