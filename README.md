@@ -333,7 +333,7 @@ OktaContext.Current.RenewAsync(TokenKind.AccessToken);
 
 #### RevokeAsync
 
-Calls the revocation endpoint to revoke the specified token kind of token.  See also, [RevokeStarted event](#renewstarted-event) and [RevokeCompleted event](#revokecompleted-event).
+Calls the revocation endpoint to revoke the specified token kind of token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
 
 ```csharp
 OktaContext.Current.RevokeAsync();
