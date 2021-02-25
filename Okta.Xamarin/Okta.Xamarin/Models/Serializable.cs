@@ -32,10 +32,14 @@ namespace Okta.Xamarin.Models
             return JsonConvert.SerializeObject(this);
         }
 
-		public Dictionary<string, object> ToDictionary()
-		{
-			return JsonConvert.DeserializeObject<Dictionary<string, object>>(ToJson());
-		}
+        /// <summary>
+        /// Returns a Dictionary representation of the current instance.
+        /// </summary>
+        /// <returns>Dictionary{string, object}.</returns>
+        public Dictionary<string, object> ToDictionary()
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(ToJson());
+        }
 
         /// <summary>
         /// Gets the values of the current instance as query string.
