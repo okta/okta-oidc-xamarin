@@ -331,7 +331,7 @@ See [Refresh Tokens](#refresh-tokens) to ensure your app is configured properly 
 OktaContext.Current.RenewAsync(TokenKind.AccessToken);
 ```
 
-### RevokeAsync
+#### RevokeAsync
 
 Calls the revocation endpoint to revoke the specified token kind of token.  See also, [RevokeStarted event](#renewstarted-event) and [RevokeCompleted event](#revokecompleted-event).
 
@@ -385,6 +385,18 @@ OktaContext.Current.SignInCompleted += (sender, signInEventArgs) => Console.Writ
 
 // using AddSignInCompletedListener
 OktaContext.AddSignInCompletedListener((sender, signInEventArgs) => Console.WriteLine("SignIn completed"));
+```
+
+#### SignOutStarted event
+
+The `OktaContext.Current.SignOutStarted` event is raised when the logout flow begins. To execute code when the `SignOutStarted` event is raised, add an event handler to the `OktaContext.Current.SignOutStarted` event.  This is done directly or using the static `AddSignOutStartedListener` method.
+
+```csharp
+// directly
+OktaContext.Current.SignOutStarted += (sender, signOutEventArgs) => Console.WriteLine("SignOut completed");
+
+// using AddSignOutStartedListener
+OktaContext.AddSignOutStartedListener((sender, signOutEventArgs) => Console.WriteLine("SignOut completed"));
 ```
 
 #### SignOutCompleted event
