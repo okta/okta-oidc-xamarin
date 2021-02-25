@@ -174,7 +174,7 @@ namespace Okta.Xamarin
         /// <param name="revokeStartedEventHandler">The event handler.</param>
         public static void AddRevokeStartedListener(EventHandler<RevokeEventArgs> revokeStartedEventHandler)
         {
-            Current.RevokeCompleted += revokeStartedEventHandler;
+            Current.RevokeStarted += revokeStartedEventHandler;
         }
 
         /// <summary>
