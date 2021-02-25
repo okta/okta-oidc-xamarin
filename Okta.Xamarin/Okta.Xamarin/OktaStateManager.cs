@@ -173,7 +173,7 @@ namespace Okta.Xamarin
         /// Gets an instance of the generic type T representing the current user.
         /// </summary>
         /// <typeparam name="T">The type to deserialize the response as.</typeparam>
-        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>T.</returns>
         public async Task<T> GetUserAsync<T>(string authorizationServerId = "default")
         {
@@ -183,7 +183,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets information about the current user.
         /// </summary>
-        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>Dictionary{string, object}.</returns>
         public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default")
         {
@@ -193,13 +193,15 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets information about the state of the specified token.
         /// </summary>
+        /// <param name="tokenKind">The kind of token.</param>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>Dictoinary{string, object}.</returns>
-        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType, string authorizationServerId = "default")
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string authorizationServerId = "default")
         {
             return await Client.IntrospectAsync(new IntrospectOptions
             {
-                Token = GetToken(tokenType),
-                TokenKind = tokenType,
+                Token = GetToken(tokenKind),
+                TokenKind = tokenKind,
                 AuthorizationServerId = authorizationServerId,
             });
         }
@@ -213,6 +215,12 @@ namespace Okta.Xamarin
             return await Client.GetClaimsPincipalAsync(AccessToken, authorizationServerId);
         }
 
+        /// <summary>
+        /// Renews tokens.
+        /// </summary>
+        /// <param name="refreshIdToken">A value indicating whether to also renew the ID token.</param>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
+        /// <returns></returns>
         public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
         {
             RenewResponse renewResponse = await Client.RenewAsync<RenewResponse>(RefreshToken, refreshIdToken, authorizationServerId);
