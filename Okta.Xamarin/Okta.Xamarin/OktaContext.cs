@@ -268,6 +268,11 @@ namespace Okta.Xamarin
             this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind });
         }
 
+        /// <summary>
+        /// Gets information about the specified kind of token.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token to introspect.</param>
+        /// <returns>Dictionary{string, object}.</returns>
         public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind)
         {
             string token = this.StateManager.GetToken(tokenKind);

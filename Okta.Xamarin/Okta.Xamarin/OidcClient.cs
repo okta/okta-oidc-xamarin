@@ -632,7 +632,6 @@ namespace Okta.Xamarin
         {
             _ = await PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
                 {
-                    //{"Authorization", $"Bearer {accessToken}" }
                 }, new Dictionary<string, string>
                 {
                     { "token", accessToken },
@@ -645,7 +644,6 @@ namespace Okta.Xamarin
         {
             _ = await PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
                 {
-                    //{"Authorization", $"Bearer {accessToken}" }
                 }, new Dictionary<string, string>
                 {
                     { "token", refreshToken },
