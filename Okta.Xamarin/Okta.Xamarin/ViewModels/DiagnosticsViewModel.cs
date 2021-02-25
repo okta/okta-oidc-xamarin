@@ -18,7 +18,7 @@ namespace Okta.Xamarin.ViewModels
             this.Page = diagnosticsPage;
             this.StateManager = OktaContext.Current.StateManager;
 
-            // TODO: refactor this so handlers are only attached once.
+            // TODO: refactor this so handlers are only attached once. OKTA-373403
             OktaContext.Current.GetUserCompleted += (sender, args) =>
             {
                 this.UserInfo = args.UserInfo;
@@ -38,7 +38,7 @@ namespace Okta.Xamarin.ViewModels
 
         public RevokeAccessTokenCommand RevokeAccessTokenCommand => new RevokeAccessTokenCommand();
 
-		public RevokeRefreshTokenCommand RevokeRefreshTokenCommand => new RevokeRefreshTokenCommand();
+        public RevokeRefreshTokenCommand RevokeRefreshTokenCommand => new RevokeRefreshTokenCommand();
 
         public GetClaimsPrincipalCommand GetClaimsPrincipalCommand => new GetClaimsPrincipalCommand();
 
