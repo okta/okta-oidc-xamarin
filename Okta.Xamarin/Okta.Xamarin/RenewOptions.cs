@@ -5,6 +5,9 @@
 
 namespace Okta.Xamarin
 {
+    /// <summary>
+    /// Options for token renewal.
+    /// </summary>
     public class RenewOptions
     {
         public RenewOptions()
@@ -12,10 +15,19 @@ namespace Okta.Xamarin
             AuthorizationServerId = "default";
         }
 
+        /// <summary>
+        /// Gets or sets the refresh token.
+        /// </summary>
         public string RefreshToken { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the id token is refreshed.
+        /// </summary>
         public bool RefreshIdToken { get; set; }
 
+        /// <summary>
+        /// Gets or sets the authorization server ID.
+        /// </summary>
         public string AuthorizationServerId { get; set; }
     }
 }
