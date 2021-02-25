@@ -301,49 +301,138 @@ Similarly, use the `SignOut` method to log a user out:
 OktaContext.Current.SignOut();
 ```
 
-### SignInCompleted event
+#### SignInStarted event
+The `OktaContext.Current.SignInStarted` event is raised before the login flow begins.  To execute code when the `SignInStarted` event is raised, add an event handler to the `OktaContext.Current.SignInStarted event.  This is done directly or using the static `AddSignInStartedListener` method.
+
+```csharp
+// directly
+OktaContext.Current.SignInStarted += (sender, signInEventArgs) => Console.WriteLine("SignIn started");
+
+// using AddSignInStartedListener
+OktaContext.AddSignInStartedListener((sender, signInEventArgs) => Console.WriteLine("SignIn started"));
+```
+
+#### SignInCompleted event
 
 The `OktaContext.Current.SignInCompleted` event is raised when the login flow completes.  To execute code when the `SignInCompleted` event is raised, add an event handler to the `OktaContext.Current.SignInCompleted` event.  This is done directly or using the static `AddSignInCompletedListener` method.
 
 ```csharp
 // directly
-OktaContext.Current.SignInCompleted += (sender, args) => Console.WriteLine("SignIn completed");
+OktaContext.Current.SignInCompleted += (sender, signInEventArgs) => Console.WriteLine("SignIn completed");
 
 // using AddSignInCompletedListener
-OktaContext.AddSignInCompletedListener((sender, args) => Console.WriteLine("SignIn completed"));
+OktaContext.AddSignInCompletedListener((sender, signInEventArgs) => Console.WriteLine("SignIn completed"));
 ```
 
-### SignOutCompleted event
+#### SignOutCompleted event
 The `OktaContext.Current.SignOutCompleted` event is raised when the logout flow completes.  To execute code when the `SignOutCompleted` event is raised, add an event handler to the `OktaContext.Current.SignOutCompleted` event.  This is done directly or using the static `AddSignOutCompletedListener` method.
 
 ```csharp
 // directly
-OktaContext.Current.SignOutCompleted += (sender, args) => Console.WriteLine("SignOut completed");
+OktaContext.Current.SignOutCompleted += (sender, signOutEventArgs) => Console.WriteLine("SignOut completed");
 
 // using AddSignOutCompletedListener
-OktaContext.AddSignOutCompletedListener((sender, args) => Console.WriteLine("SignOut completed"));
+OktaContext.AddSignOutCompletedListener((sender, signOutEventArgs) => Console.WriteLine("SignOut completed"));
 ```
 
-### AuthenticationFailed event
+#### AuthenticationFailed event
 The `OktaContext.Current.AuthenticationFailed` event is raised when an error response is received during the authentication process.  To execute code when the `AuthenticationFailed` event is raised, add an event handler to the `OktaContext.Current.AuthenticationFailed` event.
 
 ```csharp
+// directly
 OktaContext.Current.AuthenticationFailed += (sender, authenticationFailedEventArgs) =>
 {
-    authenticationFailedEventWasRaised = true;
     oAuthException = authenticationFailedEventArgs.OAuthException;
+
+    // ... additional custom logic 
 };
+
+// using AddAuthenticationFailedListener
+OktaContext.AddAuthenticationFailedListener((sender, authenticationFailedEventArgs) =>
+{
+    oAuthException = authenticationFailedEventArgs.OAuthException;    
+
+    // ... additional custom logic     
+})
+```
+
+#### RevokeStarted event
+The `OktaContext.Current.RevokeStarted` event is raised before token revocation begins.  To execute code when the `RevokeStarted` event is raised, add an event handler to the `OktaContext.Current.RevokeStarted` event.
+
+```csharp
+// directly
+OktaContext.Current.RevokeStarted += (sender, revokeEventArgs) =>
+{
+    string token = revokeEventArgs.Token;
+    TokenKind kindOfToken = revokeEventArgs.TokenKind; 
+
+    // ... additional custom logic  
+}
+
+// using AddRevokeStartedListener
+OktaContext.AddRevokeStartedListener((sender, revokeEventArgs) => 
+{
+    string token = revokeEventArgs.Token;
+    TokenKind kindOfToken = revokeEventArgs.TokenKind; 
+
+    // ... additional custom logic  
+})
+```
+
+#### RevokeCompleted event
+The `OktaContext.Current.RevokeCompleted` event is raised token revocation completes.  To execute code when the `RevokeCompleted` event is raised, add an event handler to the `OktaContext.Current.RevokeCompleted` event.
+
+```csharp
+// directly
+OktaContext.Current.RevokeCompleted += (sender, revokeEventArgs) =>
+{
+    string token = revokeEventArgs.Token;
+    TokenKind kindOfToken = revokeEventArgs.TokenKind; 
+    
+    // ... additional custom logic  
+}
+
+// using AddRevokeStartedListener
+OktaContext.AddRevokeCompletedListener((sender, revokeEventArgs) => 
+{
+    string token = revokeEventArgs.Token;
+    TokenKind kindOfToken = revokeEventArgs.TokenKind; 
+
+    // ... additional custom logic  
+})
+```
+
+#### GetUserStarted event
+The `OktaContext.Current.GetUserStarted` event is raised before user information is retrieved.  To execute code when the `GetUserStarted` event is raised, add an event handler to the `OktaContext.Current.GetUserStarted` event.
+
+```csharp
+// directly
+OktaContext.Current.GetUserStarted += (sender, getUserEventArgs) =>
+{
+    string token = revokeEventArgs.Token;
+    TokenKind kindOfToken = revokeEventArgs.TokenKind; 
+    
+    // ... additional custom logic  
+}
+
+// using AddRevokeStartedListener
+OktaContext.AddGetUserStartedListener((sender, getUserEventArgs) => 
+{
+    object userInfo = getUserEventArgs.UserInfo; // object type varies depending on which variation of the GetUser method is used
+
+    // ... additional custom logic  
+})
 ```
 
 ### OktaState, BearerToken and BearerTokenClaims classes
 
-When the `SignInCompleted` event is raised the `EventArgs` parameter instance is of type `SignInEventArgs` which provides access to an instance of the `OktaState` class.  Use code similar to the following to read the authentication state and access the bearer token claims when sign in completes:
+When the `SignInCompleted` event is raised the `EventArgs` parameter instance is of type `SignInEventArgs` which provides access to an instance of the `OktaStateManager` class.  Use code similar to the following to read the authentication state and access the bearer token claims when sign in completes:
 
 ```csharp
 OktaContext.AddSignInCompletedListener((sender, args) =>
 {
     SignInEventArgs signInEventArgs = (SignInEventArgs)args;
-    OktaState oktaState = signInEventArgs.StateManager; //
+    IOktaStateManager oktaState = signInEventArgs.StateManager; //
     BearerToken bearerToken = new BearerToken(oktaState.AccessToken);
     BearerTokenClaims claims = BearerTokenClaims.FromBearerToken(bearerToken);
 
@@ -354,6 +443,8 @@ OktaContext.AddSignInCompletedListener((sender, args) =>
     Console.WriteLine(claims.ExpirationTime);
 });
 ```
+
+### 
 
 ## Contributing
 

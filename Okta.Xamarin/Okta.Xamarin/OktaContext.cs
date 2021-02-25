@@ -121,7 +121,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the default state.
         /// </summary>
-        public IOktaStateManager StateManager { get; set; } 
+        public IOktaStateManager StateManager { get; set; }
 
         /// <summary>
         /// Convenience method to add a listener to the OktaContext.Current.SignInStarted event.
@@ -139,6 +139,15 @@ namespace Okta.Xamarin
         public static void AddSignInCompletedListener(EventHandler<SignInEventArgs> signInCompletedEventHandler)
         {
             Current.SignInCompleted += signInCompletedEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.AuthenticationFailed event.
+        /// </summary>
+        /// <param name="authenticationFailedEventHandler">The event handler.</param>
+        public static void AddAuthenticationFailedListener(EventHandler<AuthenticationFailedEventArgs> authenticationFailedEventHandler)
+        {
+            Current.AuthenticationFailed += authenticationFailedEventHandler;
         }
 
         /// <summary>
@@ -162,10 +171,19 @@ namespace Okta.Xamarin
         /// <summary>
         /// Convenience method to add a listener to the OktaContext.Current.RevokedToken event.
         /// </summary>
-        /// <param name="tokenRevokedEventHandler">The event handler.</param>
-        public static void AddTokenRevokedListener(EventHandler<RevokeEventArgs> tokenRevokedEventHandler)
+        /// <param name="revokeStartedEventHandler">The event handler.</param>
+        public static void AddRevokeStartedListener(EventHandler<RevokeEventArgs> revokeStartedEventHandler)
         {
-            Current.RevokeCompleted += tokenRevokedEventHandler;
+            Current.RevokeCompleted += revokeStartedEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RevokeCompleted event.
+        /// </summary>
+        /// <param name="revokeCompletedEventHandler">The event handler.</param>
+        public static void AddRevokeCompletedListener(EventHandler<RevokeEventArgs> revokeCompletedEventHandler)
+        {
+            Current.RevokeCompleted += revokeCompletedEventHandler;
         }
 
         /// <summary>
@@ -256,8 +274,8 @@ namespace Okta.Xamarin
         /// <summary>
         /// Revoke token of the specified type.
         /// </summary>
-        /// <param name="tokenKind">The type of token to revoke</param>
-        /// <returns>Task</returns>
+        /// <param name="tokenKind">The type of token to revoke.</param>
+        /// <returns>Task.</returns>
         public virtual async Task RevokeTokenAsync(TokenKind tokenKind)
         {
             string token = this.StateManager.GetToken(tokenKind);
@@ -282,6 +300,12 @@ namespace Okta.Xamarin
             return result;
         }
 
+        /// <summary>
+        /// Renew tokens.
+        /// </summary>
+        /// <param name="refreshIdToken">A value indicating whether to renew the ID token, the default is false.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public virtual async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
         {
             this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
@@ -294,6 +318,8 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets an instance of the generic type T representing the current user.
         /// </summary>
+        /// <typeparam name="T">T</typeparam>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task<T> GetUserAsync<T>()
         {
             this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });

@@ -10,9 +10,12 @@ namespace Okta.Xamarin
     /// </summary>
     public class RenewOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenewOptions"/> class.
+        /// </summary>
         public RenewOptions()
         {
-            AuthorizationServerId = "default";
+            this.AuthorizationServerId = "default";
         }
 
         /// <summary>

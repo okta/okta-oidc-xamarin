@@ -18,7 +18,7 @@ namespace Okta.Xamarin
         public string Token { get; set; }
 
         /// <summary>
-        /// Gets or sets the token type.
+        /// Gets or sets the kind of token.
         /// </summary>
         public TokenKind TokenKind { get; set; }
 
