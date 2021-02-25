@@ -290,11 +290,11 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Revoke token of the specified type.
+        /// Revoke token of the specified kind.
         /// </summary>
         /// <param name="tokenKind">The type of token to revoke.</param>
         /// <returns>Task.</returns>
-        public virtual async Task RevokeTokenAsync(TokenKind tokenKind)
+        public virtual async Task RevokeAsync(TokenKind tokenKind)
         {
             string token = this.StateManager.GetToken(tokenKind);
             this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
@@ -375,6 +375,16 @@ namespace Okta.Xamarin
         public void Clear()
         {
             this.StateManager.Clear();
+        }
+
+        /// <summary>
+        /// Gets the token of the specified kind from the state manager.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token to get.</param>
+        /// <returns>token as string.</returns>
+        public string GetToken(TokenKind tokenKind)
+        {
+            return this.StateManager.GetToken(tokenKind);
         }
     }
 }

@@ -100,6 +100,7 @@ namespace Okta.Xamarin
                 this.currentTask.SetResult(stateManager);
                 return this.currentTask.Task;
             }
+
             this.GenerateStateCodeVerifierAndChallenge();
             loggingOutClientsByState.Add(this.State, this);
             this.LaunchBrowser(this.GenerateLogoutUrl(new LogoutOptions(stateManager, this.Config, this.State)));

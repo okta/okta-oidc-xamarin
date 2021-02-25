@@ -293,37 +293,69 @@ To receive a refresh token along with id and access tokens do the following:
 
 The `OktaContext.Current` singleton provides a top level entry point into Okta functionality.  
 
-#### SignIn
+#### SignInAsync
 
-Signs a user in.
+Signs a user in. See also, [SignInStarted event](#signinstarted-event) and [SignInCompleted event](#signincompleted-event).
 ```csharp
-OktaContext.Current.SignIn();
+await OktaContext.Current.SignInAsync();
 ```
 
-#### SignOut
+#### SignOutAsync
 
-Signs a user out.
+Signs a user out. See also, [SignOutStarted event](#signoutstarted-event) and [SignOutCompleted event](#signoutcompleted-event).
 
 ```csharp
-OktaContext.Current.SignOut();
+await OktaContext.Current.SignOutAsync();
 ```
 
-#### GetUser
+#### IntrospectAsync
 
-Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information.
+Calls the introspection endpoint to inspect the validity of the specified token. See also, [IntrospectStarted event](#introspectstarted-event) and [IntrospectCompleted event](#introspectcompleted-event).
 
 ```csharp
-OktaContext.Current.GetUser();
+await OktaContext.Current.IntrospectAsync(TokenKind.AccessToken);
+```
+
+#### RenewAsync
+
+Since access tokens are traditionally short-lived, you can renew expired tokens by exchanging a refresh token for new ones. 
+See [Refresh Tokens](#refresh-tokens) to ensure your app is configured properly for this flow.  See also, [RenewStarted event](#renewstarted-event) and [RenewCompleted event](#renewcompleted-event).
+
+```csharp
+OktaContext.Current.RenewAsync(TokenKind.AccessToken);
+```
+
+### RevokeAsync
+
+Calls the revocation endpoint to revoke the specified token kind of token.  See also, [RevokeStarted event](#renewstarted-event) and [RevokeCompleted event](#revokecompleted-event).
+
+```csharp
+OktaContext.Current.RevokeAsync();
+```
+
+#### GetUserAsync
+
+Calls the OpenID Connect UserInfo endpoint with the stored access token to return user claim information. See also, [GetUserStarted event](#getuserstarted-event) and [GetUserCompleted event](#getusercompleted-event).
+
+```csharp
+OktaContext.Current.GetUserAsync();
 ```
 
 #### Clear
 
-Removes the local authentication state by removing tokens from the state manager.
+Removes the local authentication state by removing tokens from the state manager. 
 
 ```csharp
 OktaContext.Clear();
 ```
 
+#### GetToken
+
+Gets the token of the specified kind from the state manager.
+
+```csharp
+OktaContext.GetToken(TokenKind.AccessToken);
+```
 
 #### SignInStarted event
 

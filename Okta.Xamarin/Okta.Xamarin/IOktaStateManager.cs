@@ -38,7 +38,7 @@ namespace Okta.Xamarin
 
         void Clear();
 
-        string GetToken(TokenKind tokenType);
+        string GetToken(TokenKind tokenKind);
 
         Task<T> GetUserAsync<T>(string authorizationServerId = "default");
 

@@ -66,7 +66,7 @@ namespace Okta.Xamarin.Test
             OktaContext.Current.RevokeStarted += (sender, args) => revokingTokenRaised = true;
             OktaContext.Current.RevokeCompleted += (sender, args) => revokedTokenRaised = true;
 
-            OktaContext.Current.RevokeTokenAsync(TokenKind.AccessToken).Wait();
+            OktaContext.Current.RevokeAsync(TokenKind.AccessToken).Wait();
 
             revokedTokenRaised.Should().BeTrue();
             revokingTokenRaised.Should().BeTrue();

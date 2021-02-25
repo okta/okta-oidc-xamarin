@@ -30,8 +30,8 @@ namespace Okta.Xamarin
         [JsonProperty("AuthorizeUri", Required = Required.Always)]
         public string AuthorizeUri { get; set; }
 
-		[JsonProperty("LogoutUri", Required = Required.AllowNull)]
-		public string LogoutUri { get; set; }
+        [JsonProperty("LogoutUri", Required = Required.AllowNull)]
+        public string LogoutUri { get; set; }
 
         /// <summary>
         /// The location Okta should redirect to process a login. This is typically something like "{yourAppScheme}:/callback".  Required.
@@ -154,33 +154,38 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets the Authorize Url used for logging in, which is either the <see cref="AuthorizeUri"/> if specified, or constructed from the <see cref="OktaDomain"/> and <see cref="AuthorizationServerId"/>.
         /// </summary>
-        /// <returns>The computed Authorize Url used for logging in</returns>
+        /// <returns>The computed Authorize Url used for logging in.</returns>
         public string GetAuthorizeUrl()
         {
             if (string.IsNullOrEmpty(AuthorizeUri))
             {
                 return $"{OktaDomain}/oauth2/{AuthorizationServerId}/v1/authorize";
             }
+
             return AuthorizeUri;
         }
 
+        /// <summary>
+        /// Gets the logout url used for loggin a user out.
+        /// </summary>
+        /// <returns>The computed logout url used for logging out.</returns>
         public string GetLogoutUrl()
         {
             if (string.IsNullOrEmpty(LogoutUri))
             {
                 return $"{OktaDomain}/oauth2/{AuthorizationServerId}/v1/logout";
-			}
-			return LogoutUri;
-		}
+            }
 
-		/// <summary>
-		/// Gets the Access Token Url used for retrieving a token, which is constructed from the <see cref="OktaDomain"/> and <see cref="AuthorizationServerId"/>.
-		/// </summary>
-		/// <returns>The computed Access Token Url used for retrieving a token</returns>
-		public string GetAccessTokenUrl()
+            return LogoutUri;
+        }
+
+        /// <summary>
+        /// Gets the Access Token Url used for retrieving a token, which is constructed from the <see cref="OktaDomain"/> and <see cref="AuthorizationServerId"/>.
+        /// </summary>
+        /// <returns>The computed Access Token Url used for retrieving a token</returns>
+        public string GetAccessTokenUrl()
         {
             return $"{OktaDomain}/oauth2/{AuthorizationServerId}/v1/token";
         }
-
     }
 }
