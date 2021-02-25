@@ -130,14 +130,14 @@ namespace Okta.Xamarin
         /// Gets introspection details.
         /// </summary>
         /// <param name="accessToken">The access token used to authroize the request.</param>
-        /// <param name="tokenType">The type of the token to introspect.</param>
+        /// <param name="tokenKind">The type of the token to introspect.</param>
         /// <param name="token">The target of introspection.</param>
         /// <param name="authorizationServerId">Authorization server ID.</param>
         /// <returns>Dictionary{string, object}.</returns>
-        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType, string token, string authorizationServerId = "default")
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string token, string authorizationServerId = "default")
         {
             string tokenHint;
-            switch (tokenType)
+            switch (tokenKind)
             {
                 case Xamarin.TokenKind.IdToken:
                     tokenHint = "id_token";
