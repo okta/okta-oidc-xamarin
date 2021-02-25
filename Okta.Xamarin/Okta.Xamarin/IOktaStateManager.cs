@@ -46,7 +46,7 @@ namespace Okta.Xamarin
 
         Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default");
 
-        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType, string authorizationServerId = "default");
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokeKind, string authorizationServerId = "default");
 
         Task<RenewResponse> RenewAsync(bool renewIdToken = false, string authorizationServerId = "default");
 

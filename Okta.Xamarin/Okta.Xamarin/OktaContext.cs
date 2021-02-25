@@ -214,12 +214,30 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Convenience method to add a listene to the OktaContenxt.Current.InstrospectCompleted event.
+        /// Convenience method to add a listener to the OktaContenxt.Current.InstrospectCompleted event.
         /// </summary>
         /// <param name="introspectEventHandler">The event handler.</param>
         public static void AddIntrospectCompletedListener(EventHandler<IntrospectEventArgs> introspectEventHandler)
         {
             Current.IntrospectCompleted += introspectEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RenewStarted event.
+        /// </summary>
+        /// <param name="renewEventHandler">The event handler.</param>
+        public static void AddRenewStartedListener(EventHandler<RenewEventArgs> renewEventHandler)
+        {
+            Current.RenewStarted += renewEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RenewStarted event.
+        /// </summary>
+        /// <param name="renewEventHandler">The event handler.</param>
+        public static void AddRenewCompletedListener(EventHandler<RenewEventArgs> renewEventHandler)
+        {
+            Current.RenewCompleted += renewEventHandler;
         }
 
         /// <summary>
@@ -349,6 +367,14 @@ namespace Okta.Xamarin
             ClaimsPrincipal claimsPrincipal = await this.StateManager.GetClaimsPrincipalAsync();
             this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = claimsPrincipal });
             return claimsPrincipal;
+        }
+
+        /// <summary>
+        /// Clears the local authentication state by removing tokens from the state manager.
+        /// </summary>
+        public void Clear()
+        {
+            this.StateManager.Clear();
         }
     }
 }
