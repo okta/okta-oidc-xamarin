@@ -639,26 +639,12 @@ namespace Okta.Xamarin
 
         public async Task RevokeAccessTokenAsync(string accessToken)
         {
-            _ = await PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
-                {
-                }, new Dictionary<string, string>
-                {
-                    { "token", accessToken },
-                    { "token_type_hint", "access_token" },
-                    { "client_id", Config.ClientId }
-                });
+            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", accessToken }, { "token_type_hint", "access_token" }, { "client_id", this.Config.ClientId } });
         }
 
         public async Task RevokeRefreshTokenAsync(string accessToken, string refreshToken)
         {
-            _ = await PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
-                {
-                }, new Dictionary<string, string>
-                {
-                    { "token", refreshToken },
-                    { "token_type_hint", "refresh_token" },
-                    { "client_id", Config.ClientId }
-                });
+            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", refreshToken }, { "token_type_hint", "refresh_token" }, { "client_id", this.Config.ClientId } });
         }
     }
 }
