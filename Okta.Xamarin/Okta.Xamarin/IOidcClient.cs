@@ -98,23 +98,23 @@ namespace Okta.Xamarin
         /// <returns>Dictionary{string, object}.</returns>
         Task<Dictionary<string, object>> IntrospectAsync(IntrospectOptions options);
 
-		/// <summary>
-		/// Gets information about the state of the specified token.
-		/// </summary>
-		/// <param name="tokenKind">The type of the token to introspect.</param>
-		/// <param name="token">The token to introspect.</param>
-		/// <param name="authorizationServerId">The authorization server ID.</param>
-		/// <returns>Dictionary{string, object}.</returns>
-		Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string token, string authorizationServerId = "default");
+        /// <summary>
+        /// Gets information about the state of the specified token.
+        /// </summary>
+        /// <param name="tokenKind">The type of the token to introspect.</param>
+        /// <param name="token">The token to introspect.</param>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string token, string authorizationServerId = "default");
 
         /// <summary>
         /// Renews tokens.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="refreshToken"></param>
-        /// <param name="refreshIdToken"></param>
-        /// <param name="authorizationServerId"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Type to return</typeparam>
+        /// <param name="refreshToken">The refresh token</param>
+        /// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>T.</returns>
         Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default");
     }
 }
