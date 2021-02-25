@@ -5,9 +5,9 @@ using Xamarin.Forms;
 
 namespace Okta.Xamarin.ViewModels
 {
-	public class RevokeAccessTokenCommand : Command
-	{
-		public RevokeAccessTokenCommand() : base(async () => await OktaContext.Current.RevokeTokenAsync(TokenType.AccessToken))
-		{ }
-	}
+    public class RevokeAccessTokenCommand : Command
+    {
+        public RevokeAccessTokenCommand() : base(async () => await OktaContext.Current.RevokeTokenAsync(TokenType.AccessToken))
+        { }
+    }
 }

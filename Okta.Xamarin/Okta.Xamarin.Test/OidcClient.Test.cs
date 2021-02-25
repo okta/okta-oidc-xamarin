@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
-    public partial class OidcClient
+    public class TestOidcClient  : OidcClient
     {
         /// <summary>
         /// A hook that is called when launching the browser
@@ -24,7 +24,7 @@ namespace Okta.Xamarin
         /// Launches a browser to the specified url
         /// </summary>
         /// <param name="url">The url to launch in a Chrome custom tab</param>
-        private void LaunchBrowser(string url)
+        protected override void LaunchBrowser(string url)
         {
             OnLaunchBrowser?.Invoke(url);
         }
@@ -33,7 +33,7 @@ namespace Okta.Xamarin
         /// Initializes a new instance of the <see cref="OidcClient"/> class using the specified <see cref="OktaConfig"/>.
         /// </summary>
         /// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
-        public OidcClient(IOktaConfig config)
+        public TestOidcClient(IOktaConfig config)
         {
             this.Config = config;
             validator.Validate(Config);
@@ -42,7 +42,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Called to close the browser used for login after the redirect
         /// </summary>
-        private void CloseBrowser()
+        protected override void CloseBrowser()
         {
             OnCloseBrowser?.Invoke();
         }
@@ -74,7 +74,7 @@ namespace Okta.Xamarin
             }
         }
 
-        public TaskCompletionSource<OktaStateManager> CurrentTask_Accessor
+        public TaskCompletionSource<IOktaStateManager> CurrentTask_Accessor
         {
             get
             {

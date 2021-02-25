@@ -8,6 +8,7 @@ namespace Okta.Xamarin
     public enum TokenType
     {
         Invalid,
+		IdToken,
         AccessToken,
         RefreshToken,
     }

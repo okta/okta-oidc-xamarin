@@ -82,9 +82,9 @@
     </AdditionalFiles>
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
-    <Compile Include="OidcClient.iOS.cs" />
+    <Compile Include="iOSOidcClient.cs" />
     <Compile Include="OktaAppDelegate.cs" />
-    <Compile Include="OktaConfig.iOS.cs" />
+    <Compile Include="iOSOktaConfig.cs" />
     <Compile Include="OktaViewController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="OktaConfig.plist">
@@ -163,12 +163,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="..\Okta.Xamarin\OidcClient.cs">
-      <Link>OidcClient.cs</Link>
-    </Compile>
-    <Compile Include="..\Okta.Xamarin\OktaConfig.cs">
-      <Link>OktaConfig.cs</Link>
-    </Compile>
     <ProjectReference Include="..\Okta.Xamarin\Okta.Xamarin.csproj">
       <Project>{F4056B13-CE8C-4FD7-B079-A030A1053D33}</Project>
       <Name>Okta.Xamarin</Name>

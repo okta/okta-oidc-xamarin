@@ -13,7 +13,7 @@ namespace Okta.Xamarin
 	/// <summary>
 	/// Stores configuration for the Okta Android OIDC client
 	/// </summary>
-	public partial class OktaConfig : IOktaConfig
+	public class AndroidOktaConfig : OktaConfig
 	{
 		/// <summary>
 		/// Instantiates a <see cref="OktaConfig"/> from an XML string and validates it.  Throws an exception if required fields are missing or invalid.

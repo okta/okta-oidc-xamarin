@@ -10,31 +10,40 @@ using Xamarin.Forms.Xaml;
 
 namespace Okta.Xamarin.Views
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class DiagnosticsPage : ContentPage
-	{
-		public DiagnosticsPage()
-		{
-			InitializeComponent();
-			BindingContext = new DiagnosticsViewModel(this);
-			OktaContext.AddTokenRevokedListener((sender, args) => 
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class DiagnosticsPage : ContentPage
+    {
+        public DiagnosticsPage()
+        {
+            InitializeComponent();
+            BindingContext = new DiagnosticsViewModel(this);
+            OktaContext.AddTokenRevokedListener((sender, revokeTokenEventArgs) =>
+            {           
+                OktaStateManager = revokeTokenEventArgs.StateManager;
+                SetMessage($"Token revoked: {OktaStateManager.LastApiResponse?.StatusCode}");
+            });
+            OktaContext.AddGetUserCompletedListener((sender, getUserEventArgs) =>
+            {
+                OktaStateManager = getUserEventArgs.StateManager;
+                SetMessage($"Got User: {OktaStateManager.LastApiResponse?.StatusCode}");
+            });
+			OktaContext.AddIntrospectCompletedListener((sender, introspectEventArgs) =>
 			{
-				RevokeTokenEventArgs revokeTokenEventArgs = (RevokeTokenEventArgs)args;
-				OktaStateManager = revokeTokenEventArgs.StateManager;
-				SetMessage($"Token revoked: {OktaStateManager.LastApiResponse?.StatusCode}");
+				OktaStateManager = introspectEventArgs.StateManager;
+				SetMessage($"Introspect completed: {OktaStateManager.LastApiResponse?.StatusCode}");
 			});
-		}
+        }
 
-		public OktaStateManager OktaStateManager
-		{
-			get;
-			set;
-		}
+        public IOktaStateManager OktaStateManager
+        {
+            get;
+            set;
+        }
 
-		public void SetMessage(string text)
-		{
-			Label messageLabel = (Label)this.FindByName("Message");
-			messageLabel.Text = text;
-		}
-	}
+        public void SetMessage(string text)
+        {
+            Label messageLabel = (Label)this.FindByName("Message");
+            messageLabel.Text = text;
+        }
+    }
 }

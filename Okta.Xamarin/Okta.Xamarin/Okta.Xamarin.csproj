@@ -14,17 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="OidcClient.cs" />
-    <Compile Remove="OktaConfig.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="OidcClient.cs" />
-    <None Include="OktaConfig.cs" />
   </ItemGroup>
 
   <ItemGroup>  

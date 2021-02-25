@@ -53,7 +53,7 @@ namespace Okta.Xamarin.ViewModels
         }
         #endregion
 
-        public virtual OktaStateManager StateManager { get; set; }
+        public virtual IOktaStateManager StateManager { get; set; }
 
         protected void OnSignInCompleted(object sender, EventArgs e)
         {

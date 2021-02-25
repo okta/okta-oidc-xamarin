@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,9 +43,35 @@ namespace Okta.Xamarin
         /// </summary>
         public event EventHandler<AuthenticationFailedEventArgs> AuthenticationFailed;
 
+        /// <summary>
+        /// The event that is raised when revoking a token is started.
+        /// </summary>
         public event EventHandler<RevokeTokenEventArgs> RevokingToken;
 
+        /// <summary>
+        /// The event that is raised when a token revocation completes.
+        /// </summary>
         public event EventHandler<RevokeTokenEventArgs> RevokedToken;
+
+        /// <summary>
+        /// The event that is raised when getting user.
+        /// </summary>
+        public event EventHandler<GetUserEventArgs> GetUserStarted;
+
+        /// <summary>
+        /// The event that is raised when getting user is complete.
+        /// </summary>
+        public event EventHandler<GetUserEventArgs> GetUserCompleted;
+
+        /// <summary>
+        /// The event that is raised when introspection starts.
+        /// </summary>
+        public event EventHandler<IntrospectEventArgs> IntrospectStarted;
+
+        /// <summary>
+        /// The event that is raised when introspection completes.
+        /// </summary>
+        public event EventHandler<IntrospectEventArgs> IntrospectCompleted;
 
         /// <summary>
         /// Gets or sets the current global context.
@@ -84,7 +111,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the default state.
         /// </summary>
-        public OktaStateManager StateManager { get; set; } 
+        public IOktaStateManager StateManager { get; set; } 
 
         /// <summary>
         /// Convenience method to add a listener to the OktaContext.Current.SignInStarted event.
@@ -132,6 +159,42 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.GetUserStarted event.
+        /// </summary>
+        /// <param name="getUserEventHandler">The event handler.</param>
+        public static void AddGetUserStartedListener(EventHandler<GetUserEventArgs> getUserEventHandler)
+        {
+            Current.GetUserStarted += getUserEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.GetUsercompleted event.
+        /// </summary>
+        /// <param name="getUserEventHandler">The event handler.</param>
+        public static void AddGetUserCompletedListener(EventHandler<GetUserEventArgs> getUserEventHandler)
+        {
+            Current.GetUserCompleted += getUserEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.IntrospectStarted event.
+        /// </summary>
+        /// <param name="introspectEventHandler">The event handler.</param>
+        public static void AddIntrospectStartedListener(EventHandler<IntrospectEventArgs> introspectEventHandler)
+        {
+            Current.IntrospectStarted += introspectEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listene to the OktaContenxt.Current.InstrospectCompleted event.
+        /// </summary>
+        /// <param name="introspectEventHandler">The event handler.</param>
+        public static void AddIntrospectCompletedListener(EventHandler<IntrospectEventArgs> introspectEventHandler)
+        {
+            Current.IntrospectCompleted += introspectEventHandler;
+        }
+
+        /// <summary>
         /// Initialize OktaContext.Current with the specified default client.
         /// </summary>
         /// <param name="oidcClient">The client.</param>
@@ -145,7 +208,7 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="oidcClient">The client.</param>
         /// <returns>OktaState.</returns>
-        public virtual async Task<OktaStateManager> SignInAsync(IOidcClient oidcClient = null)
+        public virtual async Task<IOktaStateManager> SignInAsync(IOidcClient oidcClient = null)
         {
             this.SignInStarted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
             oidcClient = oidcClient ?? this.OidcClient;
@@ -193,6 +256,40 @@ namespace Okta.Xamarin
             await this.StateManager.RevokeAsync(tokenType);
 
             this.RevokedToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType });
+        }
+
+        /// <summary>
+        /// Gets an instance of the generic type T representing the current user.
+        /// </summary>
+        public virtual async Task<T> GetUserAsync<T>()
+        {
+            this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });
+            T user = await this.StateManager.GetUserAsync<T>();
+            this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = user });
+            return user;
+        }
+
+        /// <summary>
+        /// Gets information about the current user.
+        /// </summary>
+        public virtual async Task<Dictionary<string, object>> GetUserAsync()
+        {
+            this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });
+            Dictionary<string, object> userInfo = await this.StateManager.GetUserAsync();
+            this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = userInfo });
+            return userInfo;
+        }
+
+        /// <summary>
+        /// Gets a ClaimsPrincipal representing the current user.
+        /// </summary>
+        /// <returns>ClaimsPrincipal.</returns>
+        public virtual async Task<System.Security.Claims.ClaimsPrincipal> GetClaimsPrincipalAsync()
+        {
+            this.GetUserStarted?.Invoke(this, new GetUserEventArgs());
+            ClaimsPrincipal claimsPrincipal = await this.StateManager.GetClaimsPrincipalAsync();
+            this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = claimsPrincipal });
+            return claimsPrincipal;
         }
     }
 }

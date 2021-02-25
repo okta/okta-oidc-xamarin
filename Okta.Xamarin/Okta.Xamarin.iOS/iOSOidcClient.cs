@@ -10,7 +10,7 @@ using UIKit;
 
 namespace Okta.Xamarin
 {
-	public partial class OidcClient
+	public class iOsOidcClient: OidcClient
 	{
 #pragma warning disable IDE1006 // Naming Styles
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Okta.Xamarin
 		/// Launches a Safari view controller to the specified url
 		/// </summary>
 		/// <param name="url">The url to launch in a Safari view controller</param>
-		private void LaunchBrowser(string url)
+		protected override void LaunchBrowser(string url)
 		{
 			SafariViewController = new SFSafariViewController(Foundation.NSUrl.FromString(url));
 			iOSViewController.PresentViewControllerAsync(SafariViewController, true);
@@ -39,7 +39,7 @@ namespace Okta.Xamarin
 		/// </summary>
 		/// <param name="iOSViewController">A reference to the current iOS <see cref="UIKit.UIViewController"/>, for use in launching the browser for login</param>
 		/// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
-		public OidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config)
+		public iOsOidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config)
 		{
 			while (iOSViewController?.PresentedViewController != null)
 			{
@@ -53,7 +53,7 @@ namespace Okta.Xamarin
 		/// <summary>
 		/// Called to close the Safari view controller used for login after the redirect
 		/// </summary>
-		private void CloseBrowser()
+		protected override void CloseBrowser()
 		{
 			if (SafariViewController != null)
 			{

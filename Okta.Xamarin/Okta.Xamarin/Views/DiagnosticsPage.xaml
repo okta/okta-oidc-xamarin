@@ -12,6 +12,39 @@
                             Command="{Binding RevokeAccessTokenCommand}"
                             BackgroundColor="{StaticResource Primary}"
                             TextColor="White" />
+
+            <Label AutomationId="LabelDiagnosticsUserName" x:Name="UserNameLabel" Text="UserName: " FontSize="Default" />
+            <Label AutomationId="LabelDiagnosticsUserName" x:Name="UserName" Text="{Binding UserName}" FontSize="Default" 
+                   Margin="5"
+                   />
+            <Button AutomationId="ProfilePageButtonGetUser"
+                    Margin="5,10,5,0" Text="Get User"
+                            Command="{Binding GetUserCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+
+            <Label AutomationId="LabelDiagnosticsIntrospectResponse" x:Name="IntrospectResponse" Text="{Binding IntrospectResponseJson}" FontSize="Default" />
+
+            <Button AutomationId="ProfilePageButtonIntrospect"
+                    Margin="5,10,5,0" Text="Introspect Id Token"
+                            Command="{Binding IntrospectCommand}"
+                            CommandParameter="IdToken"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+
+            <Button AutomationId="ProfilePageButtonIntrospect"
+                    Margin="5,10,5,0" Text="Introspect Access Token"
+                            Command="{Binding IntrospectCommand}"
+                            CommandParameter="AccessToken"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+
+            <Button AutomationId="ProfilePageButtonIntrospect"
+                    Margin="5,10,5,0" Text="Introspect Refresh Token"
+                            Command="{Binding IntrospectCommand}"
+                            CommandParameter="RefreshToken"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

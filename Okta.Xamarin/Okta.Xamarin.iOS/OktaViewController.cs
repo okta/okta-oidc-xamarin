@@ -50,7 +50,7 @@ namespace Okta.Xamarin.iOS
 			base.ViewDidLoad();
 			// Perform any additional setup after loading the view, typically from a nib.
 
-			OktaConfig config = OktaConfig.LoadFromPList("OktaConfig.plist");
+			OktaConfig config = iOsOktaConfig.LoadFromPList("OktaConfig.plist");
 			// TODO: log telemetry data
 			/*  $"Domain: {config.OktaDomain}\n" +
 				$"ClientId: {config.ClientId}\n" +
@@ -59,13 +59,13 @@ namespace Okta.Xamarin.iOS
 				$"Scope: {string.Join(", ", config.Scopes)}\n" +
 				$"ClockSkew: {config.ClockSkew.ToString()}\n";*/
 
-			client = new OidcClient(this, config);
+			client = new iOsOidcClient(this, config);
 		}
 
-		public async Task<OktaStateManager> SignIn(IOktaConfig oktaConfig = default)
+		public async Task<IOktaStateManager> SignIn(IOktaConfig oktaConfig = default)
 		{
-			oktaConfig = oktaConfig ?? OktaConfig.LoadFromPList("OktaConfig.plist");
-			OidcClient oidcClient = new OidcClient(this, oktaConfig);
+			oktaConfig = oktaConfig ?? iOsOktaConfig.LoadFromPList("OktaConfig.plist");
+			OidcClient oidcClient = new iOsOidcClient(this, oktaConfig);
 			return await oidcClient.SignInWithBrowserAsync();
 		}
 	}

@@ -3,10 +3,13 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,11 +17,12 @@ using System.Threading.Tasks;
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// A client for logging into Okta via Oidc
+    /// A client for logging into Okta via Oidc.
     /// </summary>
-    public partial class OidcClient : IOidcClient
+    public abstract class OidcClient : IOidcClient
     {
         OAuthException oauthException;
+
         /// <summary>
         /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
         /// </summary>
@@ -40,6 +44,8 @@ namespace Okta.Xamarin
         /// </summary>
         public IOktaConfig Config { get; set; }
 
+        protected HttpResponseMessage LastApiResponse { get; set; }
+
         /// <summary>
         /// Maintains a list of all currently active Clients, by state.  This is used after the intent/universal link callback from login to continue the state machine.
         /// </summary>
@@ -50,22 +56,22 @@ namespace Okta.Xamarin
         /// <summary>
         /// The <see cref="HttpClient"/> for use in getting an auth token.  Microsoft guidance specifies that this should be reused for performance reasons.
         /// </summary>
-        private HttpClient client = new HttpClient();
+        protected HttpClient client = new HttpClient();
 
         /// <summary>
         /// A <see cref="OktaConfigValidator"/> used to validate any configuration used by Clients
         /// </summary>
-        private static readonly OktaConfigValidator<IOktaConfig> validator = new OktaConfigValidator<IOktaConfig>();
+        protected static readonly OktaConfigValidator<IOktaConfig> validator = new OktaConfigValidator<IOktaConfig>();
 
         /// <summary>
         /// Start the authorization flow.  This is an async method and should be awaited.
         /// </summary>
         /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaStateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-        public Task<OktaStateManager> SignInWithBrowserAsync()
+        public Task<IOktaStateManager> SignInWithBrowserAsync()
         {
             validator.Validate(Config);
 
-            currentTask = new TaskCompletionSource<OktaStateManager>();
+            currentTask = new TaskCompletionSource<IOktaStateManager>();
             GenerateStateCodeVerifierAndChallenge();
             authenticatorsByState.Add(State, this);
             this.LaunchBrowser(this.GenerateAuthorizeUrl());
@@ -73,15 +79,19 @@ namespace Okta.Xamarin
             return currentTask.Task;
         }
 
+        protected abstract void LaunchBrowser(string url);
+
+        protected abstract void CloseBrowser();
+
         /// <summary>
-        /// This method will end the user's Okta session in the browser.  
+        /// This method will end the user's Okta session in the browser.
         /// </summary>
         /// <param name="stateManager">The state manager associated with the login that you wish to log out</param>
         /// <returns>Task which tracks the progress of the logout</returns>
-        public Task<OktaStateManager> SignOutOfOktaAsync(OktaStateManager stateManager)
+        public Task<IOktaStateManager> SignOutOfOktaAsync(IOktaStateManager stateManager)
         {
             validator.Validate(this.Config);
-            this.currentTask = new TaskCompletionSource<OktaStateManager>();
+            this.currentTask = new TaskCompletionSource<IOktaStateManager>();
             if (!stateManager.IsAuthenticated)
             {
                 this.currentTask.SetResult(stateManager);
@@ -98,9 +108,140 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="sessionToken">A valid session  token obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see></param>
         /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaStateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-        public async Task<OktaStateManager> AuthenticateAsync(string sessionToken)
+        public async Task<IOktaStateManager> AuthenticateAsync(string sessionToken)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("AuthN SDK is deprecated");
+        }
+
+        /// <summary>
+        /// Gets information about the current user.
+        /// </summary>
+        /// <param name="accessToken">The access token used to authorize the request.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> GetUserAsync(string accessToken, string authorizationServerId = "default")
+        {
+            return await GetUserAsync<Dictionary<string, object>>(accessToken, authorizationServerId);
+        }
+
+        /// <summary>
+        /// Gets an instance of the generic type T representing the current user.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the response as.</typeparam>
+        /// <param name="accessToken">The access token used to authorize the request.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>T.</returns>
+        public async Task<T> GetUserAsync<T>(string accessToken, string authorizationServerId = "default")
+        {
+            string userInfoJson = await GetUserInfoJsonAsync(accessToken, authorizationServerId);
+            return JsonConvert.DeserializeObject<T>(userInfoJson);
+        }
+
+        /// <summary>
+        /// Gets a claims principal representing the current user.
+        /// </summary>
+        /// <param name="accessToken">The access token used to authorize the request.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>ClaimsPrincipal</returns>
+        public async Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken, string authorizationServerId = "default")
+        {
+            string userInfoJson = await GetUserInfoJsonAsync(accessToken, authorizationServerId);
+
+            UserInfo userInfo = JsonConvert.DeserializeObject<UserInfo>(userInfoJson); // OKTA-371439 added to ensure proper mapping of all claims to ClaimsPrincipal
+
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(userInfo.ToClaims(), "Okta");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            return claimsPrincipal;
+        }
+
+        protected async Task<string> GetUserInfoJsonAsync(string accessToken, string authorizationServerId = "default")
+        {
+            return await PerformAuthorizationServerRequestAsync(HttpMethod.Get, "/userinfo", new Dictionary<string, string>
+            {
+                {"Authorization", $"Bearer {accessToken}" }
+            }, authorizationServerId);
+        }
+
+        protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers)
+        {
+            return await PerformRequestAsync(httpMethod, path, headers, new Dictionary<string, string>());
+        }
+
+        protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)
+        {
+            return await PerformRequestAsync(httpMethod, path, headers, formUrlEncodedContent.Select(kvp => kvp).ToArray());
+        }
+
+        protected virtual async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, params KeyValuePair<string, string>[] formUrlEncodedContent)
+        {
+            FormUrlEncodedContent content = null;
+            if ((bool)formUrlEncodedContent?.Any())
+            {
+                content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = $"/{path}";
+            }
+
+            var request = GetHttpRequestMessage(httpMethod, $"{GetBasePath()}{path}", headers);
+            request.Content = content;
+
+            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+            LastApiResponse = response;
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+
+        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = "default", params KeyValuePair<string, string>[] formUrlEncodedContent)
+        {
+            FormUrlEncodedContent content = null;
+            if ((bool)formUrlEncodedContent?.Any())
+            {
+                content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = $"/{path}";
+            }
+
+            var request = GetHttpRequestMessage(httpMethod, $"{GetAuthorizationServerBasePath(authorizationServerId)}{path}", headers);
+            request.Content = content;
+
+            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+            LastApiResponse = response;
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+
+        protected virtual string GetBasePath()
+        {
+            return $"{Config?.OktaDomain}/oauth2/v1";
+        }
+
+        protected virtual string GetAuthorizationServerBasePath(string authorizationServerId = "default")
+        {
+            return $"{Config?.OktaDomain}/oauth2/{authorizationServerId}/v1";
+        }
+
+        /// <summary>
+        /// Gets a request message.
+        /// </summary>
+        /// <param name="method">The http method.</param>
+        /// <param name="path">The path.</param>
+        /// <param name="headers">The headers.</param>
+        /// <returns>HttpRequestMessage</returns>
+        protected HttpRequestMessage GetHttpRequestMessage(HttpMethod method, string path, Dictionary<string, string> headers)
+        {
+            HttpRequestMessage requestMessage = new HttpRequestMessage(method, path);
+            requestMessage.Headers.Add("Accept", "application/json");
+            requestMessage.Headers.Add("User-Agent", OktaXamarinUserAgent.Value);
+            foreach (string key in headers.Keys)
+            {
+                requestMessage.Headers.Add(key, headers[key]);
+            }
+
+            return requestMessage;
         }
 
         /// <summary>
@@ -183,7 +324,7 @@ namespace Okta.Xamarin
                 new KeyValuePair<string, string>("code", code),
                 new KeyValuePair<string, string>("redirect_uri", this.Config.RedirectUri),
                 new KeyValuePair<string, string>("client_id", this.Config.ClientId),
-                new KeyValuePair<string, string>("code_verifier", CodeVerifier)
+                new KeyValuePair<string, string>("code_verifier", CodeVerifier),
             };
             var content = new FormUrlEncodedContent(kvdata);
 
@@ -212,39 +353,40 @@ namespace Okta.Xamarin
 
             // TODO: add a StateManager constructor that takes Dictionary<string, string>
             OktaStateManager stateManager = new OktaStateManager(
-				data["access_token"],
-				data["token_type"],
-				data.GetValueOrDefault("id_token"),
-				data.GetValueOrDefault("refresh_token"),
-				data.ContainsKey("expires_in") ? (int?)(int.Parse(data["expires_in"])) : null,
-				data.GetValueOrDefault("scope") ?? this.Config.Scope)
-			{
-				Config = Config
-			};
+                data["access_token"],
+                data["token_type"],
+                data.GetValueOrDefault("id_token"),
+                data.GetValueOrDefault("refresh_token"),
+                data.ContainsKey("expires_in") ? (int?)(int.Parse(data["expires_in"])) : null,
+                data.GetValueOrDefault("scope") ?? this.Config.Scope)
+            {
+                Config = Config,
+                Client = this,
+            };
 
             currentTask.SetResult(stateManager);
         }
 
         /// <summary>
-        /// The internal OAuth state used to track requests from this client
+        /// The internal OAuth state used to track requests from this client.
         /// </summary>
-        private string State { get; set; }
+        protected string State { get; set; }
 
         /// <summary>
-        /// The PKCE code that is used to verify the integrity of the token exchange
+        /// The PKCE code that is used to verify the integrity of the token exchange.
         /// </summary>
-        private string CodeVerifier { get; set; }
+        protected string CodeVerifier { get; set; }
 
         /// <summary>
-        /// A SHA256 hash of the <see cref="CodeVerifier"/> used for PKCE
+        /// A SHA256 hash of the <see cref="CodeVerifier"/> used for PKCE.
         /// </summary>
-        private string CodeChallenge { get; set; }
+        protected string CodeChallenge { get; set; }
 
 
         /// <summary>
-        /// Tracks the current state machine used by <see cref="SignInWithBrowserAsync"/> across the login callback
+        /// Tracks the current state machine used by <see cref="SignInWithBrowserAsync"/> across the login callback.
         /// </summary>
-        private TaskCompletionSource<OktaStateManager> currentTask;
+        protected TaskCompletionSource<IOktaStateManager> currentTask;
 
         /// <summary>
         /// Generates a cryptographically random <see cref="State"/> and <see cref="CodeVerifier"/>, and computes the <see cref="CodeChallenge"/> for use in PKCE
@@ -282,7 +424,7 @@ namespace Okta.Xamarin
         /// Determines the AuthorizeUrl including login query parameters based on the <see cref="Config"/>
         /// </summary>
         /// <returns>The url ready to be used for login</returns>
-        private string GenerateAuthorizeUrl()
+        protected string GenerateAuthorizeUrl()
         {
             var baseUri = new Uri(this.Config.GetAuthorizeUrl());
             string url = baseUri.AbsoluteUri;
@@ -388,7 +530,7 @@ namespace Okta.Xamarin
                 return false;
             }
         }
-        
+
         /// <summary>
         /// Call after a user logs in and is redirected back to the app via an intent or universal link.  This method determines the appropriate <see cref="OidcClient"/> to continue the flow based on the <see cref="State"/>.
         /// </summary>
@@ -398,6 +540,32 @@ namespace Okta.Xamarin
         public static bool CaptureRedirectUrl(Uri uri)
         {
             return InterceptLoginCallback(uri);
+        }
+
+        public async Task RevokeAccessTokenAsync(string accessToken)
+        {
+            _ = await PerformRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
+                {
+                    {"Authorization", $"Bearer {accessToken}" }
+                }, new Dictionary<string, string>
+                {
+                    { "token", accessToken },
+                    { "token_type_hint", "access_token" },
+                    { "client_id", Config.ClientId }
+                });
+        }
+
+        public async Task RevokeRefreshTokenAsync(string accessToken, string refreshToken)
+        {
+            _ = await PerformRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
+                {
+                    {"Authorization", $"Bearer {accessToken}" }
+                }, new Dictionary<string, string>
+                {
+                    { "token", refreshToken },
+                    { "token_type_hint", "refresh_token" },
+                    { "client_id", Config.ClientId }
+                });
         }
     }
 }
