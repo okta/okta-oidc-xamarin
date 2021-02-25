@@ -197,6 +197,14 @@ namespace Okta.Xamarin
             return claimsPrincipal;
         }
 
+        /// <summary>
+        /// Renews tokens using the specified refresh token.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the response as.</typeparam>
+        /// <param name="refreshToken">The refresh token</param>
+        /// <param name="refreshIdToken">A value indicating whether the id token should be refreshed.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>T.</returns>
         public async Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
         {
             string responseJson = await GetRenewJsonAsync(refreshToken, refreshIdToken, authorizationServerId);
