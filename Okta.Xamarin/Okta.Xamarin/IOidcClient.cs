@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// An interface defining the cross-platform surface area of the OidcClient
+    /// An interface defining the cross-platform surface area of the OidcClient.
     /// </summary>
     public interface IOidcClient
     {
@@ -63,7 +63,7 @@ namespace Okta.Xamarin
         /// <param name="accessToken">The access token used for authorization.</param>
         /// <param name="refreshToken">The refresh token.</param>
         /// <returns>Task.</returns>
-        Task RevokeRefreshTokenAsync(string accessToken, string refreshToken);
+        Task RevokeRefreshTokenAsync(string refreshToken);
 
         /// <summary>
         /// Gets user information.

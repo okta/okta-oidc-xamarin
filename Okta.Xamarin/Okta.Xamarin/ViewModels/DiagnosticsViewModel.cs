@@ -38,6 +38,8 @@ namespace Okta.Xamarin.ViewModels
 
         public RevokeAccessTokenCommand RevokeAccessTokenCommand => new RevokeAccessTokenCommand();
 
+		public RevokeRefreshTokenCommand RevokeRefreshTokenCommand => new RevokeRefreshTokenCommand();
+
         public GetClaimsPrincipalCommand GetClaimsPrincipalCommand => new GetClaimsPrincipalCommand();
 
         public GetUserCommand GetUserCommand => new GetUserCommand();

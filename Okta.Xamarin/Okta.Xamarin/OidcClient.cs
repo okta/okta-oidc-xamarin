@@ -637,12 +637,22 @@ namespace Okta.Xamarin
             return InterceptLoginCallback(uri);
         }
 
+        /// <summary>
+        /// Revokes the specified access token.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <returns>Task representing the operation.</returns>
         public async Task RevokeAccessTokenAsync(string accessToken)
         {
             _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", accessToken }, { "token_type_hint", "access_token" }, { "client_id", this.Config.ClientId } });
         }
 
-        public async Task RevokeRefreshTokenAsync(string accessToken, string refreshToken)
+        /// <summary>
+        /// Revokes the specified refresh token.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <returns>Task representing the operation.</returns>
+        public async Task RevokeRefreshTokenAsync(string refreshToken)
         {
             _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", refreshToken }, { "token_type_hint", "refresh_token" }, { "client_id", this.Config.ClientId } });
         }

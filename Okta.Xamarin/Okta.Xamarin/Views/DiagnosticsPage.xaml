@@ -7,9 +7,15 @@
             <Label AutomationId="LabelDiagnosticsHeader" Text="Diagnostics" FontSize="Medium" />
             <Label AutomationId="LabelDiagnosticsMessage" x:Name="Message" Text="" FontSize="Default" />
 
-            <Button AutomationId="ProfilePageButtonRevokeAccesstoken"
+            <Button AutomationId="ProfilePageButtonRevokeAccessToken"
                     Margin="5,10,5,0" Text="Revoke Access Token"
                             Command="{Binding RevokeAccessTokenCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+
+            <Button AutomationId="ProfilePageButtonRevokeRefreshToken"
+                    Margin="5,10,5,0" Text="Revoke Refresh Token"
+                            Command="{Binding RevokeRefreshTokenCommand}"
                             BackgroundColor="{StaticResource Primary}"
                             TextColor="White" />
 

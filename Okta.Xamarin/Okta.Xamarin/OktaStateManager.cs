@@ -164,7 +164,7 @@ namespace Okta.Xamarin
                     break;
                 case Xamarin.TokenKind.RefreshToken:
                 default:
-                    await Client.RevokeRefreshTokenAsync(AccessToken, RefreshToken);
+                    await Client.RevokeRefreshTokenAsync(RefreshToken);
                     break;
             }
         }
