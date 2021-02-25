@@ -575,7 +575,7 @@ OktaContext.AddIntrospectCompletedListener((sender, introspectEventArgs) =>
 
 #### RenewStarted event
 
-The `OktaContext.Current.RenewStarted` event is raised before token renewal (refresh).  To execute code when the `RenewStarted` event is raised, add an event handler to the `OktaContext.Current.RenewStarted` event.
+The `OktaContext.Current.RenewStarted` event is raised before token renewal begins.  To execute code when the `RenewStarted` event is raised, add an event handler to the `OktaContext.Current.RenewStarted` event.
 
 ```csharp
 // directly
@@ -597,7 +597,7 @@ OktaContext.AddRenewStartedListener((sender, renewEventArgs) =>
 
 #### RenewCompleted event
 
-The `OktaContext.Current.RenewCompleted` event is raised after token renewal (refresh).  To execute code when the `RenewCompleted` event is raised, add an event handler to the `OktaContext.Current.RenewCompleted` event.
+The `OktaContext.Current.RenewCompleted` event is raised after token renewal completes.  To execute code when the `RenewCompleted` event is raised, add an event handler to the `OktaContext.Current.RenewCompleted` event.
 
 ```csharp
 // directly
