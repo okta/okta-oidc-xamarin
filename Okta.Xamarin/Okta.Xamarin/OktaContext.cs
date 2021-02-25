@@ -268,12 +268,12 @@ namespace Okta.Xamarin
             this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind });
         }
 
-        public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType)
+        public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind)
         {
-            string token = this.StateManager.GetToken(tokenType);
-            this.IntrospectStarted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenType = tokenType });
-            Dictionary<string, object> result = await this.StateManager.IntrospectAsync(tokenType);
-            this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenType = tokenType, Response = result });
+            string token = this.StateManager.GetToken(tokenKind);
+            this.IntrospectStarted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind });
+            Dictionary<string, object> result = await this.StateManager.IntrospectAsync(tokenKind);
+            this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind, Response = result });
             return result;
         }
 
