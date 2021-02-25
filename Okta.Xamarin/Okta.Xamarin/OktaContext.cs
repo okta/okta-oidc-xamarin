@@ -256,16 +256,16 @@ namespace Okta.Xamarin
         /// <summary>
         /// Revoke token of the specified type.
         /// </summary>
-        /// <param name="tokenType">The type of token to revoke</param>
+        /// <param name="tokenKind">The type of token to revoke</param>
         /// <returns>Task</returns>
-        public virtual async Task RevokeTokenAsync(TokenKind tokenType)
+        public virtual async Task RevokeTokenAsync(TokenKind tokenKind)
         {
-            string token = this.StateManager.GetToken(tokenType);
-            this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenType, Token = token });
+            string token = this.StateManager.GetToken(tokenKind);
+            this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
 
-            await this.StateManager.RevokeAsync(tokenType);
+            await this.StateManager.RevokeAsync(tokenKind);
 
-            this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenType });
+            this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind });
         }
 
         public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenType)
