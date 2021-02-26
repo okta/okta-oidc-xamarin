@@ -13,7 +13,6 @@ namespace Okta.Xamarin
     /// </summary>
     public class RenewResponse : Serializable
     {
-
         /// <summary>
         /// Gets or sets the token type.
         /// </summary>

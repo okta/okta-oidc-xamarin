@@ -3,16 +3,23 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-using Okta.Xamarin.Views;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Okta.Xamarin.Views;
 using Xamarin.Forms;
 
 namespace Okta.Xamarin.ViewModels
 {
+    /// <summary>
+    /// View model for Diagnostics page.
+    /// </summary>
     public class DiagnosticsViewModel : BaseViewModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiagnosticsViewModel"/> class.
+        /// </summary>
+        /// <param name="diagnosticsPage">The page.</param>
         public DiagnosticsViewModel(DiagnosticsPage diagnosticsPage)
         {
             this.Page = diagnosticsPage;
@@ -36,20 +43,41 @@ namespace Okta.Xamarin.ViewModels
 
         protected DiagnosticsPage Page { get; }
 
+        /// <summary>
+        /// Gets the revoke access token command.
+        /// </summary>
         public RevokeAccessTokenCommand RevokeAccessTokenCommand => new RevokeAccessTokenCommand();
 
+        /// <summary>
+        /// Gets the revoke refresh token command.
+        /// </summary>
         public RevokeRefreshTokenCommand RevokeRefreshTokenCommand => new RevokeRefreshTokenCommand();
 
+        /// <summary>
+        /// Gets the `get claims principal command`.
+        /// </summary>
         public GetClaimsPrincipalCommand GetClaimsPrincipalCommand => new GetClaimsPrincipalCommand();
 
+        /// <summary>
+        /// Gets the `get user command`.
+        /// </summary>
         public GetUserCommand GetUserCommand => new GetUserCommand();
 
+        /// <summary>
+        /// Gets the introspect command.
+        /// </summary>
         public Command<string> IntrospectCommand => new Command<string>(async (tokenType) => await OktaContext.Current.IntrospectAsync((TokenKind)Enum.Parse(typeof(TokenKind), tokenType)));
 
+        /// <summary>
+        /// Gets the renew command.
+        /// </summary>
         public Command<string> RenewCommand => new Command<string>(async (refreshIdToken) => await OktaContext.Current.RenewAsync(refreshIdToken.Equals("True")));
 
         IOktaStateManager stateManager;
 
+        /// <summary>
+        /// Gets or sets the Okta state manager.
+        /// </summary>
         public IOktaStateManager StateManager
         {
             get { return stateManager; }
@@ -63,6 +91,9 @@ namespace Okta.Xamarin.ViewModels
 
         object userInfo;
 
+        /// <summary>
+        /// Gets or sets the user information.
+        /// </summary>
         public object UserInfo
         {
             get
@@ -79,6 +110,9 @@ namespace Okta.Xamarin.ViewModels
 
         ClaimsPrincipal claimsPrincipal;
 
+        /// <summary>
+        /// Gets or sets the claims principal.
+        /// </summary>
         public ClaimsPrincipal ClaimsPrincipal
         {
             get { return claimsPrincipal; }
@@ -92,6 +126,9 @@ namespace Okta.Xamarin.ViewModels
 
         string introspectResponse;
 
+        /// <summary>
+        /// Gets or sets the introspect response json.
+        /// </summary>
         public string IntrospectResponseJson
         {
             get{ return introspectResponse; }

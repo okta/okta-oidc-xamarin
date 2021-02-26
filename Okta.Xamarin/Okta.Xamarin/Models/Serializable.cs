@@ -1,16 +1,20 @@
-﻿using System.Collections.Generic;
+﻿// <copyright file="Serializable.cs" company="Okta, Inc">
+// Copyright (c) 2020 - present Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Okta.Xamarin.Models
 {
-    /// <summary>
-    /// Base class for serializing to and from json.
-    /// </summary>
-    public abstract class Serializable
+	/// <summary>
+	/// Base class for serializing to and from json.
+	/// </summary>
+	public abstract class Serializable
     {
         /// <summary>
         /// Deserialize the specified json as the specified generic type T.

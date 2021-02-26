@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// Stores configuration for the Okta OIDC client
+    /// Stores configuration for the Okta OIDC client.
     /// </summary>
     public class OktaConfig : IOktaConfig
     {
@@ -30,6 +30,9 @@ namespace Okta.Xamarin
         [JsonProperty("AuthorizeUri", Required = Required.Always)]
         public string AuthorizeUri { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Logout URI.
+        /// </summary>
         [JsonProperty("LogoutUri", Required = Required.AllowNull)]
         public string LogoutUri { get; set; }
 
@@ -74,18 +77,15 @@ namespace Okta.Xamarin
         [JsonProperty("ClockSkew", DefaultValueHandling = DefaultValueHandling.Populate)]
         public TimeSpan ClockSkew { get; set; } = TimeSpan.FromMinutes(2);
 
-
-
         /// <summary>
-        /// Default constructor for an OktaConfig object, with optional properties set to defaults.  This config will not be valid until the required properties are set.
+        /// Initializes a new instance of the <see cref="OktaConfig"/> class.
         /// </summary>
         public OktaConfig()
         {
         }
 
         /// <summary>
-        /// Constructor for an OktaConfig object including all required properties, with optional properties set to defaults.
-        /// </summary>
+        /// Initializes a new instance of the <see cref="OktaConfig"/> class.
         /// <param name="clientId"><seealso cref="ClientId"/></param>
         /// <param name="oktaDomain"><seealso cref="OktaDomain"/></param>
         /// <param name="redirectUri"><seealso cref="RedirectUri"/></param>
