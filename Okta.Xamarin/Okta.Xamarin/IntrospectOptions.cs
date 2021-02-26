@@ -10,6 +10,9 @@ namespace Okta.Xamarin
     /// </summary>
     public class IntrospectOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectOptions"/> class.
+        /// </summary>
         public IntrospectOptions()
         {
             AuthorizationServerId = "default";
