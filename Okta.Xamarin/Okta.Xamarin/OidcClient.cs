@@ -130,7 +130,6 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets introspection details.
         /// </summary>
-        /// <param name="accessToken">The access token used to authroize the request.</param>
         /// <param name="tokenKind">The type of the token to introspect.</param>
         /// <param name="token">The target of introspection.</param>
         /// <param name="authorizationServerId">Authorization server ID.</param>
