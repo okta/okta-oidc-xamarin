@@ -292,7 +292,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Revoke token of the specified kind.
         /// </summary>
-        /// <param name="tokenKind">The type of token to revoke.</param>
+        /// <param name="tokenKind">The kind of token to revoke.</param>
         /// <returns>Task.</returns>
         public virtual async Task RevokeAsync(TokenKind tokenKind)
         {
