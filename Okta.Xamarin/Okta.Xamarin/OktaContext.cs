@@ -232,7 +232,7 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Convenience method to add a listener to the OktaContext.Current.RenewStarted event.
+        /// Convenience method to add a listener to the OktaContext.Current.RenewCompleted event.
         /// </summary>
         /// <param name="renewEventHandler">The event handler.</param>
         public static void AddRenewCompletedListener(EventHandler<RenewEventArgs> renewEventHandler)
