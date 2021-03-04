@@ -60,7 +60,6 @@ namespace Okta.Xamarin
         /// <summary>
         /// Revokes the specified refresh token.
         /// </summary>
-        /// <param name="accessToken">The access token used for authorization.</param>
         /// <param name="refreshToken">The refresh token.</param>
         /// <returns>Task.</returns>
         Task RevokeRefreshTokenAsync(string refreshToken);
