@@ -2,27 +2,32 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Okta.Xamarin.Views.DiagnosticsPage">
-    <ContentPage.Content>
+    <ScrollView>
         <StackLayout>
             <Label AutomationId="LabelDiagnosticsHeader" Text="Diagnostics" FontSize="Medium" />
             <Label AutomationId="LabelDiagnosticsMessage" x:Name="Message" Text="" FontSize="Default" />
 
-            <Button AutomationId="ProfilePageButtonRevokeAccesstoken"
+            <Button AutomationId="ProfilePageButtonRevokeAccessToken"
                     Margin="5,10,5,0" Text="Revoke Access Token"
                             Command="{Binding RevokeAccessTokenCommand}"
                             BackgroundColor="{StaticResource Primary}"
                             TextColor="White" />
 
-            <Label AutomationId="LabelDiagnosticsUserName" x:Name="UserNameLabel" Text="UserName: " FontSize="Default" />
-            <Label AutomationId="LabelDiagnosticsUserName" x:Name="UserName" Text="{Binding UserName}" FontSize="Default" 
-                   Margin="5"
-                   />
+            <Button AutomationId="ProfilePageButtonRevokeRefreshToken"
+                    Margin="5,10,5,0" Text="Revoke Refresh Token"
+                            Command="{Binding RevokeRefreshTokenCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+
             <Button AutomationId="ProfilePageButtonGetUser"
                     Margin="5,10,5,0" Text="Get User"
                             Command="{Binding GetUserCommand}"
                             BackgroundColor="{StaticResource Primary}"
                             TextColor="White" />
 
+            <StackLayout AutomationId="Introspection" x:Name="Introspection">
+
+            </StackLayout>
             <Label AutomationId="LabelDiagnosticsIntrospectResponse" x:Name="IntrospectResponse" Text="{Binding IntrospectResponseJson}" FontSize="Default" />
 
             <Button AutomationId="ProfilePageButtonIntrospect"
@@ -40,11 +45,28 @@
                             TextColor="White" />
 
             <Button AutomationId="ProfilePageButtonIntrospect"
-                    Margin="5,10,5,0" Text="Introspect Refresh Token"
+                    Margin="5,10,5,30" Text="Introspect Refresh Token"
                             Command="{Binding IntrospectCommand}"
                             CommandParameter="RefreshToken"
                             BackgroundColor="{StaticResource Primary}"
                             TextColor="White" />
+
+            <StackLayout AutomationId="Renewal" x:Name="Renewal">
+                
+            </StackLayout>
+            <Button AutomationId="ProfilePageButtonIntrospect"
+                    Margin="5,10,5,0" Text="Renew Tokens"
+                            Command="{Binding RenewCommand}"
+                            CommandParameter="False"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+
+            <Button AutomationId="ProfilePageButtonIntrospect"
+                    Margin="5,10,5,0" Text="Renew Tokens (refreshIdToken=true)"
+                            Command="{Binding RenewCommand}"
+                            CommandParameter="True"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
         </StackLayout>
-    </ContentPage.Content>
+    </ScrollView>
 </ContentPage>

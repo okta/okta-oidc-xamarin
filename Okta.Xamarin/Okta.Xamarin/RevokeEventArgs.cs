@@ -10,7 +10,7 @@ namespace Okta.Xamarin
     /// <summary>
     /// Represents data relevant to revoke token events.
     /// </summary>
-    public class RevokeTokenEventArgs : EventArgs
+    public class RevokeEventArgs : EventArgs
     {
         /// <summary>
         /// Gets or sets the token.
@@ -18,9 +18,9 @@ namespace Okta.Xamarin
         public string Token { get; set; }
 
         /// <summary>
-        /// Gets or sets the token type.
+        /// Gets or sets the kind of token.
         /// </summary>
-        public TokenType TokenType { get; set; }
+        public TokenKind TokenKind { get; set; }
 
         /// <summary>
         /// Gets or sets the state manager.

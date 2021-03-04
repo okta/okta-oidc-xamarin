@@ -46,12 +46,12 @@ namespace Okta.Xamarin
         /// <summary>
         /// The event that is raised when revoking a token is started.
         /// </summary>
-        public event EventHandler<RevokeTokenEventArgs> RevokingToken;
+        public event EventHandler<RevokeEventArgs> RevokeStarted;
 
         /// <summary>
         /// The event that is raised when a token revocation completes.
         /// </summary>
-        public event EventHandler<RevokeTokenEventArgs> RevokedToken;
+        public event EventHandler<RevokeEventArgs> RevokeCompleted;
 
         /// <summary>
         /// The event that is raised when getting user.
@@ -72,6 +72,16 @@ namespace Okta.Xamarin
         /// The event that is raised when introspection completes.
         /// </summary>
         public event EventHandler<IntrospectEventArgs> IntrospectCompleted;
+
+        /// <summary>
+        /// The event that is raised when token renewal (refresh) is started.
+        /// </summary>
+        public event EventHandler<RenewEventArgs> RenewStarted;
+
+        /// <summary>
+        /// The event that is raised when token renewal (refresh) completes.
+        /// </summary>
+        public event EventHandler<RenewEventArgs> RenewCompleted;
 
         /// <summary>
         /// Gets or sets the current global context.
@@ -111,7 +121,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the default state.
         /// </summary>
-        public IOktaStateManager StateManager { get; set; } 
+        public IOktaStateManager StateManager { get; set; }
 
         /// <summary>
         /// Convenience method to add a listener to the OktaContext.Current.SignInStarted event.
@@ -129,6 +139,15 @@ namespace Okta.Xamarin
         public static void AddSignInCompletedListener(EventHandler<SignInEventArgs> signInCompletedEventHandler)
         {
             Current.SignInCompleted += signInCompletedEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.AuthenticationFailed event.
+        /// </summary>
+        /// <param name="authenticationFailedEventHandler">The event handler.</param>
+        public static void AddAuthenticationFailedListener(EventHandler<AuthenticationFailedEventArgs> authenticationFailedEventHandler)
+        {
+            Current.AuthenticationFailed += authenticationFailedEventHandler;
         }
 
         /// <summary>
@@ -152,10 +171,19 @@ namespace Okta.Xamarin
         /// <summary>
         /// Convenience method to add a listener to the OktaContext.Current.RevokedToken event.
         /// </summary>
-        /// <param name="tokenRevokedEventHandler">The event handler.</param>
-        public static void AddTokenRevokedListener(EventHandler<RevokeTokenEventArgs> tokenRevokedEventHandler)
+        /// <param name="revokeStartedEventHandler">The event handler.</param>
+        public static void AddRevokeStartedListener(EventHandler<RevokeEventArgs> revokeStartedEventHandler)
         {
-            Current.RevokedToken += tokenRevokedEventHandler;
+            Current.RevokeStarted += revokeStartedEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RevokeCompleted event.
+        /// </summary>
+        /// <param name="revokeCompletedEventHandler">The event handler.</param>
+        public static void AddRevokeCompletedListener(EventHandler<RevokeEventArgs> revokeCompletedEventHandler)
+        {
+            Current.RevokeCompleted += revokeCompletedEventHandler;
         }
 
         /// <summary>
@@ -186,12 +214,30 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Convenience method to add a listene to the OktaContenxt.Current.InstrospectCompleted event.
+        /// Convenience method to add a listener to the OktaContenxt.Current.InstrospectCompleted event.
         /// </summary>
         /// <param name="introspectEventHandler">The event handler.</param>
         public static void AddIntrospectCompletedListener(EventHandler<IntrospectEventArgs> introspectEventHandler)
         {
             Current.IntrospectCompleted += introspectEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RenewStarted event.
+        /// </summary>
+        /// <param name="renewEventHandler">The event handler.</param>
+        public static void AddRenewStartedListener(EventHandler<RenewEventArgs> renewEventHandler)
+        {
+            Current.RenewStarted += renewEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RenewCompleted event.
+        /// </summary>
+        /// <param name="renewEventHandler">The event handler.</param>
+        public static void AddRenewCompletedListener(EventHandler<RenewEventArgs> renewEventHandler)
+        {
+            Current.RenewCompleted += renewEventHandler;
         }
 
         /// <summary>
@@ -244,23 +290,54 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Revoke token of the specified type.
+        /// Revoke token of the specified kind.
         /// </summary>
-        /// <param name="tokenType">The type of token to revoke</param>
-        /// <returns>Task</returns>
-        public virtual async Task RevokeTokenAsync(TokenType tokenType)
+        /// <param name="tokenKind">The kind of token to revoke.</param>
+        /// <returns>Task.</returns>
+        public virtual async Task RevokeAsync(TokenKind tokenKind)
         {
-            string token = this.StateManager.GetToken(tokenType);
-            this.RevokingToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType, Token = token });
+            string token = this.StateManager.GetToken(tokenKind);
+            this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
 
-            await this.StateManager.RevokeAsync(tokenType);
+            await this.StateManager.RevokeAsync(tokenKind);
 
-            this.RevokedToken?.Invoke(this, new RevokeTokenEventArgs { StateManager = this.StateManager, TokenType = tokenType });
+            this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind });
+        }
+
+        /// <summary>
+        /// Gets information about the specified kind of token.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token to introspect.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind)
+        {
+            string token = this.StateManager.GetToken(tokenKind);
+            this.IntrospectStarted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind });
+            Dictionary<string, object> result = await this.StateManager.IntrospectAsync(tokenKind);
+            this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind, Response = result });
+            return result;
+        }
+
+        /// <summary>
+        /// Renew tokens.
+        /// </summary>
+        /// <param name="refreshIdToken">A value indicating whether to renew the ID token, the default is false.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        public virtual async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
+        {
+            this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+            RenewResponse result = await this.StateManager.RenewAsync(refreshIdToken, authorizationServerId);
+            this.RenewCompleted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, Response = result, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+
+            return result;
         }
 
         /// <summary>
         /// Gets an instance of the generic type T representing the current user.
         /// </summary>
+        /// <typeparam name="T">T</typeparam>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task<T> GetUserAsync<T>()
         {
             this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });
@@ -290,6 +367,24 @@ namespace Okta.Xamarin
             ClaimsPrincipal claimsPrincipal = await this.StateManager.GetClaimsPrincipalAsync();
             this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = claimsPrincipal });
             return claimsPrincipal;
+        }
+
+        /// <summary>
+        /// Clears the local authentication state by removing tokens from the state manager.
+        /// </summary>
+        public void Clear()
+        {
+            this.StateManager.Clear();
+        }
+
+        /// <summary>
+        /// Gets the token of the specified kind from the state manager.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token to get.</param>
+        /// <returns>token as string.</returns>
+        public string GetToken(TokenKind tokenKind)
+        {
+            return this.StateManager.GetToken(tokenKind);
         }
     }
 }

@@ -63,10 +63,10 @@ namespace Okta.Xamarin.Test
             bool? revokingTokenRaised = false;
             bool? revokedTokenRaised = false;
             OktaContext.Current.StateManager = new TestOktaStateManager(testAccessToken, testRefreshToken);
-            OktaContext.Current.RevokingToken += (sender, args) => revokingTokenRaised = true;
-            OktaContext.Current.RevokedToken += (sender, args) => revokedTokenRaised = true;
+            OktaContext.Current.RevokeStarted += (sender, args) => revokingTokenRaised = true;
+            OktaContext.Current.RevokeCompleted += (sender, args) => revokedTokenRaised = true;
 
-            OktaContext.Current.RevokeTokenAsync(TokenType.AccessToken).Wait();
+            OktaContext.Current.RevokeAsync(TokenKind.AccessToken).Wait();
 
             revokedTokenRaised.Should().BeTrue();
             revokingTokenRaised.Should().BeTrue();
@@ -88,6 +88,44 @@ namespace Okta.Xamarin.Test
 
             getUserStartedRaised.Should().BeTrue();
             getUserCompletedRaised.Should().BeTrue();
+        }
+
+        [Fact]
+        public void RaiseIntrospectionEvents()
+        {
+            IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
+            Task<Dictionary<string, object>> testIntrospectResponse = Task.FromResult(new Dictionary<string, object>());
+            testStateManager.IntrospectAsync(Arg.Any<TokenKind>()).Returns(testIntrospectResponse);
+            OktaContext.Current.StateManager = testStateManager;
+
+            bool? introspectStartedRaised = false;
+            bool? introspectCompletedRaised = false;
+            OktaContext.Current.IntrospectStarted += (sender, args) => introspectStartedRaised = true;
+            OktaContext.Current.IntrospectCompleted += (sender, args) => introspectCompletedRaised = true;
+
+            OktaContext.Current.IntrospectAsync(TokenKind.AccessToken).Wait();
+
+            introspectStartedRaised.Should().BeTrue();
+            introspectCompletedRaised.Should().BeTrue();
+        }
+
+        [Fact]
+        public void RaiseRenewEvents()
+        {
+            IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
+            Task<RenewResponse> testRenewResponse = Task.FromResult(new RenewResponse());
+            testStateManager.RenewAsync().Returns(testRenewResponse);
+            OktaContext.Current.StateManager = testStateManager;
+
+            bool? renewStartedRaised = false;
+            bool? renewCompletedRaised = false;
+            OktaContext.Current.RenewStarted += (sender, args) => renewStartedRaised = true;
+            OktaContext.Current.RenewCompleted += (sender, args) => renewCompletedRaised = true;
+
+            OktaContext.Current.RenewAsync().Wait();
+
+            renewStartedRaised.Should().BeTrue();
+            renewCompletedRaised.Should().BeTrue();
         }
     }
 }

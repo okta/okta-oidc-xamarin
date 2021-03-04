@@ -17,8 +17,8 @@ namespace Okta.Xamarin.Views
         {
             InitializeComponent();
             BindingContext = new DiagnosticsViewModel(this);
-            OktaContext.AddTokenRevokedListener((sender, revokeTokenEventArgs) =>
-            {           
+            OktaContext.AddRevokeStartedListener((sender, revokeTokenEventArgs) =>
+            {
                 OktaStateManager = revokeTokenEventArgs.StateManager;
                 SetMessage($"Token revoked: {OktaStateManager.LastApiResponse?.StatusCode}");
             });
@@ -27,11 +27,11 @@ namespace Okta.Xamarin.Views
                 OktaStateManager = getUserEventArgs.StateManager;
                 SetMessage($"Got User: {OktaStateManager.LastApiResponse?.StatusCode}");
             });
-			OktaContext.AddIntrospectCompletedListener((sender, introspectEventArgs) =>
-			{
-				OktaStateManager = introspectEventArgs.StateManager;
-				SetMessage($"Introspect completed: {OktaStateManager.LastApiResponse?.StatusCode}");
-			});
+            OktaContext.AddIntrospectCompletedListener((sender, introspectEventArgs) =>
+            {
+                OktaStateManager = introspectEventArgs.StateManager;
+                SetMessage($"Introspect completed: {OktaStateManager.LastApiResponse?.StatusCode}");
+            });
         }
 
         public IOktaStateManager OktaStateManager

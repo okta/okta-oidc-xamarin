@@ -44,7 +44,10 @@ namespace Okta.Xamarin
         /// </summary>
         public IOktaConfig Config { get; set; }
 
-        protected HttpResponseMessage LastApiResponse { get; set; }
+        /// <summary>
+        /// Gets or sets the last API response, primarily for debugging.
+        /// </summary>
+        public HttpResponseMessage LastApiResponse { get; private set; }
 
         /// <summary>
         /// Maintains a list of all currently active Clients, by state.  This is used after the intent/universal link callback from login to continue the state machine.
@@ -97,6 +100,7 @@ namespace Okta.Xamarin
                 this.currentTask.SetResult(stateManager);
                 return this.currentTask.Task;
             }
+
             this.GenerateStateCodeVerifierAndChallenge();
             loggingOutClientsByState.Add(this.State, this);
             this.LaunchBrowser(this.GenerateLogoutUrl(new LogoutOptions(stateManager, this.Config, this.State)));
@@ -111,6 +115,44 @@ namespace Okta.Xamarin
         public async Task<IOktaStateManager> AuthenticateAsync(string sessionToken)
         {
             throw new NotImplementedException("AuthN SDK is deprecated");
+        }
+
+        /// <summary>
+        /// Gets introspection details.
+        /// </summary>
+        /// <param name="options">IntrospectionOptions</param>
+        /// <returns>Dicationary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> IntrospectAsync(IntrospectOptions options)
+        {
+            return await IntrospectAsync(options.TokenKind, options.Token, options.AuthorizationServerId);
+        }
+
+        /// <summary>
+        /// Gets introspection details.
+        /// </summary>
+        /// <param name="tokenKind">The type of the token to introspect.</param>
+        /// <param name="token">The target of introspection.</param>
+        /// <param name="authorizationServerId">Authorization server ID.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string token, string authorizationServerId = "default")
+        {
+            string tokenHint;
+            switch (tokenKind)
+            {
+                case Xamarin.TokenKind.IdToken:
+                    tokenHint = "id_token";
+                    break;
+                case Xamarin.TokenKind.RefreshToken:
+                    tokenHint = "refresh_token";
+                    break;
+                case Xamarin.TokenKind.Invalid:
+                case Xamarin.TokenKind.AccessToken:
+                default:
+                    tokenHint = "access_token";
+                    break;
+            }
+
+            return await IntrospectAsync(token, tokenHint, authorizationServerId);
         }
 
         /// <summary>
@@ -154,6 +196,53 @@ namespace Okta.Xamarin
             return claimsPrincipal;
         }
 
+        /// <summary>
+        /// Renews tokens using the specified refresh token.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the response as.</typeparam>
+        /// <param name="refreshToken">The refresh token</param>
+        /// <param name="refreshIdToken">A value indicating whether the id token should be refreshed.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>T.</returns>
+        public async Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
+        {
+            string responseJson = await GetRenewJsonAsync(refreshToken, refreshIdToken, authorizationServerId);
+            return JsonConvert.DeserializeObject<T>(responseJson);
+        }
+
+        protected async Task<string> GetRenewJsonAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
+        {
+            string scope = "offline_access";
+            if (refreshIdToken)
+            {
+                scope += " openid";
+            }
+
+            return await PerformAuthorizationServerRequestAsync(HttpMethod.Post, $"/token?client_id={Config.ClientId}", new Dictionary<string, string>(), new Dictionary<string, string>()
+            {
+                { "grant_type", "refresh_token" },
+                { "redirect_uri", Config.RedirectUri },
+                { "scope", scope },
+                { "refresh_token", refreshToken },
+            }, authorizationServerId);
+        }
+
+        protected async Task<string> GetIntrospectJsonAsync(string token, string tokenTypeHint, string authorizationServerId = "default")
+        {
+            return await PerformAuthorizationServerRequestAsync(HttpMethod.Post, $"/introspect?client_id={Config.ClientId}", new Dictionary<string, string>(), new Dictionary<string, string>
+            {
+                { "token", token },
+                { "token_type_hint", tokenTypeHint },
+                { "client_id", Config.ClientId },
+            }, authorizationServerId);
+        }
+
+        protected async Task<Dictionary<string, object>> IntrospectAsync(string token, string tokenTypeHint, string authorizationServerId = "default")
+        {
+            string responseJson = await GetIntrospectJsonAsync(token, tokenTypeHint, authorizationServerId);
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson);
+        }
+
         protected async Task<string> GetUserInfoJsonAsync(string accessToken, string authorizationServerId = "default")
         {
             return await PerformAuthorizationServerRequestAsync(HttpMethod.Get, "/userinfo", new Dictionary<string, string>
@@ -191,6 +280,11 @@ namespace Okta.Xamarin
             HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
             LastApiResponse = response;
             return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+
+        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent, string authorizationServerId = "default")
+        {
+            return await PerformAuthorizationServerRequestAsync(httpMethod, path, headers, authorizationServerId, formUrlEncodedContent.ToArray());
         }
 
         protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = "default", params KeyValuePair<string, string>[] formUrlEncodedContent)
@@ -542,30 +636,24 @@ namespace Okta.Xamarin
             return InterceptLoginCallback(uri);
         }
 
+        /// <summary>
+        /// Revokes the specified access token.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <returns>Task representing the operation.</returns>
         public async Task RevokeAccessTokenAsync(string accessToken)
         {
-            _ = await PerformRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
-                {
-                    {"Authorization", $"Bearer {accessToken}" }
-                }, new Dictionary<string, string>
-                {
-                    { "token", accessToken },
-                    { "token_type_hint", "access_token" },
-                    { "client_id", Config.ClientId }
-                });
+            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", accessToken }, { "token_type_hint", "access_token" }, { "client_id", this.Config.ClientId } });
         }
 
-        public async Task RevokeRefreshTokenAsync(string accessToken, string refreshToken)
+        /// <summary>
+        /// Revokes the specified refresh token.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <returns>Task representing the operation.</returns>
+        public async Task RevokeRefreshTokenAsync(string refreshToken)
         {
-            _ = await PerformRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>
-                {
-                    {"Authorization", $"Bearer {accessToken}" }
-                }, new Dictionary<string, string>
-                {
-                    { "token", refreshToken },
-                    { "token_type_hint", "refresh_token" },
-                    { "client_id", Config.ClientId }
-                });
+            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", refreshToken }, { "token_type_hint", "refresh_token" }, { "client_id", this.Config.ClientId } });
         }
     }
 }

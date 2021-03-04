@@ -4,16 +4,22 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// An interface defining the cross-platform surface area of the OidcClient
+    /// An interface defining the cross-platform surface area of the OidcClient.
     /// </summary>
     public interface IOidcClient
     {
+        /// <summary>
+        /// Gets or sets the last API response, primarily for debugging.
+        /// </summary>
+        HttpResponseMessage LastApiResponse { get; }
+
         /// <summary>
         /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
         /// </summary>
@@ -54,10 +60,9 @@ namespace Okta.Xamarin
         /// <summary>
         /// Revokes the specified refresh token.
         /// </summary>
-        /// <param name="accessToken">The access token used for authorization.</param>
         /// <param name="refreshToken">The refresh token.</param>
         /// <returns>Task.</returns>
-        Task RevokeRefreshTokenAsync(string accessToken, string refreshToken);
+        Task RevokeRefreshTokenAsync(string refreshToken);
 
         /// <summary>
         /// Gets user information.
@@ -84,5 +89,31 @@ namespace Okta.Xamarin
         /// <param name="authorizationServerId">The authorization server id or null.</param>
         /// <returns>Task{ClaimsPrincipal}.</returns>
         Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken, string authorizationServerId = "default");
+
+        /// <summary>
+        /// Gets information about the state of the specified token.
+        /// </summary>
+        /// <param name="options">IntrospectionOptions.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        Task<Dictionary<string, object>> IntrospectAsync(IntrospectOptions options);
+
+        /// <summary>
+        /// Gets information about the state of the specified token.
+        /// </summary>
+        /// <param name="tokenKind">The type of the token to introspect.</param>
+        /// <param name="token">The token to introspect.</param>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string token, string authorizationServerId = "default");
+
+        /// <summary>
+        /// Renews tokens.
+        /// </summary>
+        /// <typeparam name="T">Type to return</typeparam>
+        /// <param name="refreshToken">The refresh token</param>
+        /// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <returns>T.</returns>
+        Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default");
     }
 }
