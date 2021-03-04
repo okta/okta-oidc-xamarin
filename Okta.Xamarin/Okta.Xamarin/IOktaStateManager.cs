@@ -34,7 +34,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets the expiration time.
         /// </summary>
-        DateTimeOffset? Expires { get; }
+        DateTime? Expires { get; }
 
         /// <summary>
         /// Gets the id token.
@@ -42,7 +42,7 @@ namespace Okta.Xamarin
         string IdToken { get; }
 
         /// <summary>
-        /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, which means that the user is authenticated.
+        /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, indicating the user is currently successfully authenticated.
         /// </summary>
         bool IsAuthenticated { get; }
 
@@ -72,9 +72,9 @@ namespace Okta.Xamarin
         void Clear();
 
         /// <summary>
-        /// Gets the token of the specified kind.
+        /// Gets the token of the specified type.
         /// </summary>
-        /// <param name="tokenKind">The token kind.</param>
+        /// <param name="tokenKind">The token type.</param>
         /// <returns>string.</returns>
         string GetToken(TokenKind tokenKind);
 

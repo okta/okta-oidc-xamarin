@@ -115,6 +115,7 @@ namespace Okta.Xamarin
                                                root.Value<string>("RedirectUri"),
                                                root.Value<string>("PostLogoutRedirectUri"));
 
+
             if (root.ContainsKey("Scope"))
             {
                 config.Scope = root.Value<string>("Scope");
@@ -167,7 +168,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets the logout url used for loggin a user out.
         /// </summary>
-        /// <returns>The computed logout URL used for logging out.</returns>
+        /// <returns>The computed logout url used for logging out.</returns>
         public string GetLogoutUrl()
         {
             if (string.IsNullOrEmpty(LogoutUri))

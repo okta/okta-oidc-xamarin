@@ -20,7 +20,7 @@ namespace Okta.Xamarin
         public string TokenType { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of seconds to expiration.
+        /// Gets or sets the expires in.
         /// </summary>
         [JsonProperty("expires_in")]
         public int ExpiresIn { get; set; }
