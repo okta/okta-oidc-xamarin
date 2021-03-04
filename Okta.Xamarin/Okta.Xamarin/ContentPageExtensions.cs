@@ -9,7 +9,7 @@ using Xamarin.Forms;
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// Extension metods for ContentPage.
+    /// Extension methods for ContentPage.
     /// </summary>
     public static class ContentPageExtensions
     {
