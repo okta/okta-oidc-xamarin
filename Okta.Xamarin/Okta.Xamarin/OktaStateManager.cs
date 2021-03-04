@@ -58,7 +58,7 @@ namespace Okta.Xamarin
         public string Scope { get; private set; }
 
         /// <inheritdoc/>
-        public DateTime? Expires { get; private set; }
+        public DateTimeOffset? Expires { get; private set; }
 
         /// <summary>
         /// Gets the most recent renew response or null.
