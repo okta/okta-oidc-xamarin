@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Okta.Xamarin
+namespace Okta.Xamarin.Android
 {
 	/// <summary>
 	/// Stores configuration for the Okta Android OIDC client

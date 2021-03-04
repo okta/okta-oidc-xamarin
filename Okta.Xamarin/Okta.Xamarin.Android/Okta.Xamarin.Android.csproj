@@ -85,12 +85,11 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActivityCustomUrlSchemeInterceptor.cs" />
-    <Compile Include="LoginCallbackInterceptorActivity.cs" />
-    <Compile Include="LogoutCallbackInterceptorActivity.cs" />
-    <Compile Include="MainActivity.cs" />
+    <Compile Include="OktaLogoutCallbackInterceptorActivity.cs" />
+    <Compile Include="OktaMainActivity.cs" />
     <Compile Include="AndroidOidcClient.cs" />
     <Compile Include="AndroidOktaConfig.cs" />
+    <Compile Include="OktaLoginCallbackInterceptorActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -137,9 +136,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\Okta_Logo_Large.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\OktaConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\tab_profile.png" />

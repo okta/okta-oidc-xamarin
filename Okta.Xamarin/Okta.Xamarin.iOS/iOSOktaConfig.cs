@@ -6,7 +6,7 @@
 using Foundation;
 using System;
 
-namespace Okta.Xamarin
+namespace Okta.Xamarin.iOS
 {
 	/// <summary>
 	/// Stores configuration for the Okta iOS OIDC client

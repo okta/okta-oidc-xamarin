@@ -14,8 +14,8 @@ namespace Okta.Xamarin.ViewModels
         /// Initializes a new instance of the <see cref="RevokeRefreshTokenCommand"/> class.
         /// </summary>
         public RevokeRefreshTokenCommand()
-        : base(async () => await OktaContext.Current.RevokeAsync(TokenKind.RefreshToken))
+            : base(async () => await OktaContext.Current.RevokeAsync(TokenKind.RefreshToken))
         {
-		}
+        }
     }
 }
