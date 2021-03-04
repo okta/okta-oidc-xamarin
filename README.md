@@ -301,7 +301,7 @@ The `OktaContext.Current` singleton provides a top level entry point into Okta f
 
 #### SignInAsync
 
-Signs a user in. See also, [SignInStarted event](#signinstarted-event) and [SignInCompleted event](#signincompleted-event).
+Signs a user in.  Returns a reference to `OktaContext.Current.StateManager` after the sign in process completes. See also, [SignInStarted event](#signinstarted-event) and [SignInCompleted event](#signincompleted-event).
 ```csharp
 await OktaContext.Current.SignInAsync();
 ```
