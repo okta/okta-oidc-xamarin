@@ -11,7 +11,7 @@ using Xamarin.Forms;
 
 namespace Okta.Xamarin.Android
 {
-    [Activity(Label = "Okta.Xamarin", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    [Activity(Label = "Okta.Xamarin")]
     public class OktaMainActivity<TApp> : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity where TApp : global::Xamarin.Forms.Application, new()
     {
         protected override void OnCreate(Bundle savedInstanceState)
