@@ -17,7 +17,7 @@
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.8.0.1451" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LoginCallbackInterceptorActivity.cs" />
@@ -107,7 +107,7 @@
       <Name>Okta.Xamarin</Name>
     </ProjectReference>
     <ProjectReference Include="..\Okta.Xamarin.Demo\Okta.Xamarin.Demo.csproj">
-      <Project>{880736f4-71b1-4f5c-bdc8-f246d69acd09}</Project>
+      <Project>{d82b6c59-231e-4d06-97c0-38cf6cae0540}</Project>
       <Name>Okta.Xamarin.Demo</Name>
     </ProjectReference>
   </ItemGroup>

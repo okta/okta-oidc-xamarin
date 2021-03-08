@@ -6,7 +6,6 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Okta.Xamarin.Android;
-using Okta.Xamarin.Droid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
