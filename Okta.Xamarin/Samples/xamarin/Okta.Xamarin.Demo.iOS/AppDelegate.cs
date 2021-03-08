@@ -24,7 +24,7 @@ namespace Okta.Xamarin.Demo.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-            bool result = base.FinishedLaunching(app, options);
+			bool result = base.FinishedLaunching(app, options);
 
 			// Additional logic to execute can go here if necessary
 			
