@@ -108,7 +108,8 @@ Func<NuSpecDependency[]> getAndroidDependencies = () =>
         new NuSpecDependency { Id = "Okta.Xamarin", Version = "1.0.0" },
         new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
         new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.6.1" },
-        new NuSpecDependency { Id = "Xamarin.Forms", Version = "5.0.0.2012" }
+        new NuSpecDependency { Id = "Xamarin.Forms", Version = "5.0.0.2012" },
+        new NuSpecDependency { Id = "Xamarin.Android.Support.CustomTabs", Version = "28.0.0.3" }
     };    
 };
 // iOS Nuget functions
