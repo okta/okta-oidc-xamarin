@@ -210,13 +210,13 @@ To configure your iOS application do the following:
 
 ## Platform Wiring
 
-This section describes the minimal code necessary to handle Okta authentication related redirects when using the Okta Xamarin Sdk.  The examples shown here are based on `Xamarin.Forms` projects.
+This section describes the minimal code necessary to handle Okta authentication related redirects when using the Okta Xamarin Sdk.
 
 ### Android
 
 To handle Okta authentication redirects on Android do the following:
 
-1. Update your `MainActivity` to extend `OktaMainActivity<App>` (or `OktaMainActivity` if you are not using Xamarin.Forms).
+1. Update your `MainActivity` to extend `OktaMainActivity<App>`.
     ```csharp
     public class MainActivity : OktaMainActivity<App>
     ```
@@ -313,17 +313,17 @@ To handle Okta authentication redirects on iOS do the following:
             return result;
         }
         
-		public void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
-		{
-			// for demo purposes go to the profile page
-			Shell.Current.GoToAsync("//ProfilePage", true);
-		}
-
-		public void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
-		{
-			// for demo purposes go to the profile page
-			Shell.Current.GoToAsync("//ProfilePage", true);
-		}
+        public void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
+        {
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
+        }
+        
+        public void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
+        {
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
+        }
     }
     ```
 
