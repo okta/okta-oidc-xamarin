@@ -236,21 +236,21 @@ To handle Okta authentication redirects on Android do the following:
     ```
 3. Your completed `MainActivity.cs` should look similar to the following:
    ```csharp
-        [Activity(Label = "MyOktaApp", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
-        public class MainActivity : OktaMainActivity<App>
+    [Activity(Label = "MyOktaApp", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
+    public class MainActivity : OktaMainActivity<App>
+    {
+        public override void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
         {
-            public override void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
-            {
-                // for demo purposes go to the profile page
-                Shell.Current.GoToAsync("//ProfilePage", true);
-            }
-
-            public override void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
-            {
-                // for demo purposes go to the profile page
-                Shell.Current.GoToAsync("//ProfilePage", true);
-            }
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
         }
+
+        public override void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
+        {
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
+        }
+    }
    ```
 4. Create a new Activity to intercept Login redirects, this example uses `LoginCallbackInterceptorActivity`.
 5. Replace the activity implementation with the following code:
