@@ -87,9 +87,44 @@ To update package references do the following:
 2. From the `Installed` tab select `Xamarin.Essentials` and click `Update`; this should update `Xamarin.Essentials` to the latest version (v1.6.1 as of 03/08/2021).
 3. From the `Installed` tab select `Xamarin.Forms` and click `Update`; this should update `Xamarin.Forms` to the latest version (v5.0.0.2012 as of 03.08/2021).
 
+## Add Okta.Xamarin
+
+This section describes how to add Xamarin related Okta packages to your projects.
+
+The following operations are performed from `Solution Explorer`; to ensure `Solution Explorer` is visible go to `View` > `Solution Explorer`.
+
+To add Okta Xamarin packages do the following:
+
+1. Right click on the project `MyOktaApp` and select `Manage Nuget Packages...`.
+2. In the `NuGet Package Manager` window click `Browse`.
+3. In the search box type `Okta.Xamarin`.
+4. Select `Okta.Xamarin` then click the `Install` button.  Accept defaults on any prompts that may appear.
+5. Right click on the project `MyOktaApp.Android` and select `Manage Nuget Packages...`.
+6. In the `NuGet Package Manager` window click `Browse`.
+7. In the search box type `Okta.Xamarin`.
+8. Select `Okta.Xamarin` then click the `Install` button.  Accept defaults on any prompts that may appear.
+9. Select `Okta.Xamarin.Android` then click the `Install` button.  Accept defaults on any prompts that may appear.
+10. Right click on the project `MyOktaApp.iOS` and select `Manage Nuget Packages...`.
+11. In the `NuGet Package Manager` window click `Browse`.
+12. In the search box type `Okta.Xamarin`.
+13. Select `Okta.Xamarin` then click the `Install` button.  Accept defaults on any prompts that may appear.
+14. Select `Okta.Xamarin.iOS` then click the `Install` button.  Accept defaults on any prompts that may appear.
+
+## Update Android Target Framework
+
+The minimum supported Android version of the `Okta Xamarin Sdk` is `Android 10.0 (Q)`.
+
+The following operations are performed from `Solution Explorer`; to ensure `Solution Explorer` is visible go to `View` > `Solution Explorer`.
+
+To update the Android version for your Android project do the following:
+
+1. Right click on `MyOktaApp.Android` and select `Properties`.
+2. In the properties window ensure that the `Application` section is selected.
+3. From the dropdown labeled `Compile using Android version: (Target Framework)` select `Android 10.0 (Q)`.
+
 ## Configure Your Application
 
-This section details how to configure your Okta Xamarin application.  These instructions assume you are using `Visual Studio` and were tested with `Visual Studio Community 2019` Version 16.8.0.
+This section describes how to configure your Okta Xamarin application.  These instructions assume you are using `Visual Studio` and were tested with `Visual Studio Community 2019` Version 16.8.0.
 
 ### Android Configuration
 

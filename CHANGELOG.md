@@ -6,7 +6,7 @@ Running changelog of releases since `1.0.0-beta01`
 ### Features
 
 - Added OktaContext convenience methods and events
-- Added OktaStateManager token lifecycle methods
+- Implemented OktaStateManager token lifecycle methods
 
 ## v1.0.0-beta02
 
