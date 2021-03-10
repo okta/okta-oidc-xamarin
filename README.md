@@ -58,7 +58,7 @@ Create a new `Mobile App (Xamarin.Forms)` project:
 3. Enter `MyOktaApp` into the `Project name` field of the `Configure your new project` form.
 4. Fill in the remaining fields of the `Configure your new project` form and click `Create`.
 
-Now that your Visual Studio solution has been initialized, you can continue to update package references.
+Now that your Visual Studio solution is initialized, you can continue to update package references.
 
 ## Update Package References Automatically
 
