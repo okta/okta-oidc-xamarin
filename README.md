@@ -387,7 +387,7 @@ OktaContext.Current.RenewAsync(TokenKind.AccessToken);
 
 #### RevokeAsync
 
-Calls the revocation endpoint to revoke the specified token kind of token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
+Calls the revocation endpoint to revoke the specified kind of token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
 
 ```csharp
 OktaContext.Current.RevokeAsync();
@@ -419,7 +419,7 @@ OktaContext.GetToken(TokenKind.AccessToken);
 
 #### SignInStarted event
 
-The `OktaContext.Current.SignInStarted` event is raised before the login flow begins.  To execute code when the `SignInStarted` event is raised, add an event handler to the `OktaContext.Current.SignInStarted event.  This is done directly or using the static `AddSignInStartedListener` method.
+The `OktaContext.Current.SignInStarted` event is raised before the login flow begins.  To execute code when the `SignInStarted` event is raised, add an event handler to the `OktaContext.Current.SignInStarted` event.  This is done directly or using the static `AddSignInStartedListener` method.
 
 ```csharp
 // directly
