@@ -36,14 +36,12 @@ namespace Okta.Xamarin.Android
 
 		public virtual void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
 		{
-			// for demo purposes go to the profile page
-			Shell.Current.GoToAsync("//ProfilePage", true);
+
 		}
 
 		public virtual void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
 		{
-			// for demo purposes go to the profile page
-			Shell.Current.GoToAsync("//ProfilePage", true);
+
 		}
     }
 }
