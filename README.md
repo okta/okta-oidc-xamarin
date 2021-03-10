@@ -12,7 +12,7 @@ This library uses semantic versioning and follows Okta's [library version policy
 
 | Version | Status                    |
 | ------- | ------------------------- |
-| 1.x | :warning: Beta |
+| 1.x | :heavy_check_mark: Stable |
 
 The latest release is found on the [releases page](https://github.com/okta/okta-oidc-xamarin/releases).
 
