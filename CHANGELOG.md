@@ -1,11 +1,12 @@
 # Changelog
 Running changelog of releases since `1.0.0-beta01`
 
-## v1.0.0-beta03
+## v1.0.0
 
 ### Features
 
-- Added OktaContext.AuthenticationFailed event
+- Added OktaContext convenience methods and events
+- Added OktaStateManager token lifecycle methods
 
 ## v1.0.0-beta02
 

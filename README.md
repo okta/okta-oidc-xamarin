@@ -258,7 +258,7 @@ To handle Okta authentication redirects on Android do the following:
 
 To handle Okta authentication redirects on iOS do the following:
 
-1. Modify your `AppDelegate` class to extend `OktaAppDelegate<App>` (or `OktaAppDelegate` if you are not using Xamarin.Forms).
+1. Modify your `AppDelegate` class to extend `OktaAppDelegate<App>`.
 2. In the `FinishedLaunching` method add event handlers for the `SignInCompleted` and `SignOutCompleted` events, this example navigates to the `ProfilePage`, you should provide logic appropriate for your application:
     ```csharp
     OktaContext.AddSignInCompletedListener(OnSignInCompleted);
