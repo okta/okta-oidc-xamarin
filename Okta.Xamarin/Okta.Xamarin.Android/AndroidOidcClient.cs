@@ -6,7 +6,7 @@
 using Android.Content;
 using Android.Support.CustomTabs;
 
-namespace Okta.Xamarin
+namespace Okta.Xamarin.Android
 {
 	public class AndroidOidcClient : OidcClient
 	{

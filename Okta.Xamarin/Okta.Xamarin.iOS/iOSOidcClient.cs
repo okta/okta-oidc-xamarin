@@ -8,7 +8,7 @@ using SafariServices;
 using System;
 using UIKit;
 
-namespace Okta.Xamarin
+namespace Okta.Xamarin.iOS
 {
 	public class iOsOidcClient: OidcClient
 	{

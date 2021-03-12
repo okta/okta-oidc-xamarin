@@ -16,6 +16,6 @@ namespace Okta.Xamarin.ViewModels
         public RevokeRefreshTokenCommand()
         : base(async () => await OktaContext.Current.RevokeAsync(TokenKind.RefreshToken))
         {
-		}
+        }
     }
 }

@@ -1,5 +1,3 @@
-#addin "nuget:?package=Cake.Xamarin&version=3.1.0"
-
 Action<string> write = (msg) =>
 {
     System.Console.WriteLine(msg);
@@ -22,10 +20,6 @@ write("Getting android project");
 var androidProject = GetFiles("./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj").First();
 write("Getting ios project");
 var iOSProject = GetFiles("./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj").First();
-write("Getting android UITest project");
-var androidUiTestProject = GetFiles("./Okta.Xamarin/Okta.Xamarin.UITest.Android/Okta.Xamarin.UITest.Android.csproj").First();
-write("Getting iOS UITest project");
-var iOSUiTestProject = GetFiles("./Okta.Xamarin/Okta.Xamarin.UITest.iOS/Okta.Xamarin.UITest.iOS.csproj").First();
 
 write("Setting output folders");
 // Output folders.
@@ -41,9 +35,6 @@ var adroidApkOutputDirectory = Directory(System.IO.Path.Combine(androidOutputDir
 var iOSOutputDirectory = Directory(System.IO.Path.Combine(artifactsDirectory, "iOS"));
 var iOSIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSOutputDirectory, "ipa"));
 var iPhoneSimulatorIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSIpaOutputDirectory, "iPhoneSimulator"));
-
-// Tests.
-var testsProject = GetFiles("./Okta.Xamarin/Okta.Xamarin.Test/*.csproj").First();
 
 // Common Nuget functions
 Func<string> getCommonVersion = () =>
@@ -161,13 +152,20 @@ Func<NuSpecDependency[]> getiOSDependencies = () =>
 Task("Clean")
     .Does(() => 
     {
-        CleanDirectory(artifactsDirectory);
-        CleanDirectory(appArchivesDirectory);
+        try
+        {
+            CleanDirectory(artifactsDirectory);
+            CleanDirectory(appArchivesDirectory);
 
-        MSBuild(solutionFile, settings => settings
-            .SetConfiguration(configuration)
-            .WithTarget("Clean")
-            .SetVerbosity(Verbosity.Minimal)); 
+            MSBuild(solutionFile, settings => settings
+                .SetConfiguration(configuration)
+                .WithTarget("Clean")
+                .SetVerbosity(Verbosity.Minimal)); 
+        }
+        catch (Exception ex)
+        {
+            write($"Error cleaning artifacts and app archive directories: {ex.Message}");
+        }
     });
 
 Task("Restore-Packages")
@@ -277,14 +275,6 @@ Task("NugetPack-Android")
         NuGetPack(nuGetPackSettings);
     });
 
-Task("Build-Android-Apk")
-    .Does(() =>
-    {
-        BuildAndroidApk(androidProject, true, "Release", settings =>
-            settings
-                .WithProperty("OutputPath", adroidApkOutputDirectory));
-    });
-
 Task("Build-iOS")
     .IsDependentOn("Restore-Packages")
     .Does (() =>
@@ -337,62 +327,16 @@ Task("NugetPack-iOS")
         NuGetPack(nuGetPackSettings);
     });
 
-Task("Build-iOS-Ipa")
-    .Does(() =>
-    {        
-        BuildiOSIpa(iOSProject, "Debug", "iPhoneSimulator", settings =>
-            settings
-                .WithProperty("OutputPath", iPhoneSimulatorIpaOutputDirectory));
-    });
-
-Task("Run-Tests")
-    .IsDependentOn("Restore-Packages")
-    .Does(() =>
-    {		
-        DotNetCoreTest(testsProject.FullPath, 
-            new DotNetCoreTestSettings()
-            {
-                Configuration = configuration
-                //NoBuild = true // Running tests will build the test project first, uncomment this line if this behavior should change
-            });
-    });
-
-Task("Build-UITests")
-    .IsDependentOn("Restore-Packages")
-    .Does(() => 
-    {
-        MSBuild(androidUiTestProject, settings =>
-            settings
-                .SetConfiguration("Debug")  
-                .WithProperty("OutputPath", androidUITestOutputDirectory)         
-                .WithProperty("DebugSymbols", "true")
-                .WithProperty("TreatWarningsAsErrors", "false")
-                .SetVerbosity(Verbosity.Minimal));
-
-        MSBuild(iOSUiTestProject, settings =>
-            settings
-                .SetConfiguration("Debug")  
-                .WithProperty("OutputPath", iOSUITestOutputDirectory)         
-                .WithProperty("DebugSymbols", "true")
-                .WithProperty("TreatWarningsAsErrors", "false")
-                .SetVerbosity(Verbosity.Minimal));
-    });
-
 Task("AndroidTarget")
     .IsDependentOn("Build-Android")
-    .IsDependentOn("Run-Tests")
-    .IsDependentOn("NugetPack-Android")
-    .IsDependentOn("Build-Android-Apk");
+    .IsDependentOn("NugetPack-Android");
 
 Task("iOSTarget")
     .IsDependentOn("Build-iOS")
-    .IsDependentOn("Run-Tests")
-    .IsDependentOn("NugetPack-iOS")
-    .IsDependentOn("Build-iOS-Ipa");
+    .IsDependentOn("NugetPack-iOS");
 
 Task("NugetTarget")
     .IsDependentOn("Clean")
-    .IsDependentOn("Run-Tests")
     .IsDependentOn("Build-Common")
     .IsDependentOn("NugetPack-Common")
     .IsDependentOn("Build-Android")
@@ -402,14 +346,10 @@ Task("NugetTarget")
 
 Task("AzureBuildTarget")
     .IsDependentOn("Clean")
-    .IsDependentOn("Build-UITests")
-    .IsDependentOn("Run-Tests")
     .IsDependentOn("Build-Android")
     .IsDependentOn("NugetPack-Android")
-    .IsDependentOn("Build-Android-Apk")
     .IsDependentOn("Build-iOS")
-    .IsDependentOn("NugetPack-iOS")
-    .IsDependentOn("Build-iOS-Ipa");
+    .IsDependentOn("NugetPack-iOS");
 
 Task("DefaultTarget")
     .IsDependentOn("AzureBuildTarget");
