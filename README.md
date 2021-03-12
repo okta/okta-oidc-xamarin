@@ -2,8 +2,6 @@
 
 # Okta Xamarin SDK
 
-> :warning: Beta alert! This library is in beta. See [release status](#release-status) for more information.
-
 This library is a Xamarin library for communicating with Okta as an OAuth 2.0 + OpenID Connect provider, it follows current best practice for native apps using [Authorization Code Flow + PKCE](https://developer.okta.com/authentication-guide/implementing-authentication/auth-code-pkce).
 
 ## Release Status
