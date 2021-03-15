@@ -36,7 +36,7 @@ var iOSOutputDirectory = Directory(System.IO.Path.Combine(artifactsDirectory, "i
 var iOSIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSOutputDirectory, "ipa"));
 var iPhoneSimulatorIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSIpaOutputDirectory, "iPhoneSimulator"));
 
-var testProject = GetFiles("./Okta.Xamarin/Tests/Okta.Xamarin.Test.Okta.Xamarin.Test.csproj").First();
+var testProject = GetFiles("./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj").First();
 
 // Common Nuget functions
 Func<string> getCommonVersion = () =>
@@ -352,6 +352,7 @@ Task("iOSTarget")
 
 Task("NugetTarget")
     .IsDependentOn("Clean")
+    .IsDependentOn("Run-Tests")
     .IsDependentOn("Build-Common")
     .IsDependentOn("NugetPack-Common")
     .IsDependentOn("Build-Android")
