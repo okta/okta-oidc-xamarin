@@ -36,6 +36,8 @@ var iOSOutputDirectory = Directory(System.IO.Path.Combine(artifactsDirectory, "i
 var iOSIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSOutputDirectory, "ipa"));
 var iPhoneSimulatorIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSIpaOutputDirectory, "iPhoneSimulator"));
 
+var testProject = GetFiles("./Okta.Xamarin/Tests/Okta.Xamarin.Test.Okta.Xamarin.Test.csproj").First();
+
 // Common Nuget functions
 Func<string> getCommonVersion = () =>
 {
@@ -326,6 +328,18 @@ Task("NugetPack-iOS")
                             }; 
 
         NuGetPack(nuGetPackSettings);
+    });
+
+Task("Run-Tests")
+    .IsDependentOn("Restore-Packages")
+    .Does(() =>
+    {		
+        DotNetCoreTest(testsProject.FullPath, 
+            new DotNetCoreTestSettings()
+            {
+                Configuration = configuration
+                //NoBuild = true // Running tests will build the test project first, uncomment this line if this behavior should change
+            });
     });
 
 Task("AndroidTarget")

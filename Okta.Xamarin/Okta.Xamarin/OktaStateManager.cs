@@ -38,7 +38,7 @@ namespace Okta.Xamarin
             this.AccessToken = accessToken;
             this.IdToken = idToken;
             this.RefreshToken = refreshToken;
-            this.Expires = expiresIn.HasValue ? DateTime.UtcNow.AddSeconds(expiresIn.Value) : DateTime.MaxValue;
+            this.Expires = expiresIn.HasValue ? new DateTimeOffset(DateTime.UtcNow.AddSeconds(expiresIn.Value)) : default;
             this.Scope = scope;
         }
 
@@ -77,7 +77,7 @@ namespace Okta.Xamarin
             get
             {
                 return !string.IsNullOrEmpty(AccessToken) && // there is an access token
-                                Expires > DateTime.UtcNow;    // and it's not yet expired
+                                (Expires == default(DateTimeOffset) || Expires > DateTime.UtcNow);    // and it's not yet expired
             }
         }
 
