@@ -334,7 +334,7 @@ Task("Run-Tests")
     .IsDependentOn("Restore-Packages")
     .Does(() =>
     {		
-        DotNetCoreTest(testsProject.FullPath, 
+        DotNetCoreTest(testProject.FullPath, 
             new DotNetCoreTestSettings()
             {
                 Configuration = configuration
@@ -361,6 +361,7 @@ Task("NugetTarget")
 
 Task("AzureBuildTarget")
     .IsDependentOn("Clean")
+    .IsDependentOn("Run-Tests")
     .IsDependentOn("Build-Android")
     .IsDependentOn("NugetPack-Android")
     .IsDependentOn("Build-iOS")
