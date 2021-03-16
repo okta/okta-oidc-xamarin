@@ -1,11 +1,36 @@
 # Changelog
 Running changelog of releases since `1.0.0-beta01`
 
-## v1.0.0-beta03
+## v1.0.0
 
+This is the first stable release of the Okta Xamarin Sdk. 
 ### Features
 
-- Added OktaContext.AuthenticationFailed event
+- Added OktaContext convenience methods and events:
+  - Events
+    - SignInStarted
+    - SignInCompleted
+    - SignOutStarted
+    - SignOutCompleted    
+    - RevokeStarted
+    - RevokeCompleted
+    - GetUserStarted
+    - GetUserCompleted
+    - IntrospectStarted
+    - IntrospectCompleted
+    - RenewStarted
+    - RenewCompleted
+  - Methods
+    - SignInAsync
+    - SignOutAsync
+    - RevokeAsync
+    - GetUserAsync
+    - IntrospectAsync
+    - RenewAsync
+- Implemented OktaStateManager token lifecycle methods:
+  - GetToken
+  - RenewAsync
+  - RevokeAsync
 
 ## v1.0.0-beta02
 

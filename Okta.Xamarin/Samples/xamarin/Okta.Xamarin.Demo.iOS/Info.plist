@@ -44,7 +44,7 @@
 				<string>com.okta.xamarin.ios.login</string>
 			</array>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
@@ -54,7 +54,7 @@
 				<string>com.okta.xamarin.ios.logout</string>
 			</array>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 		</dict>
 	</array>
 </dict>

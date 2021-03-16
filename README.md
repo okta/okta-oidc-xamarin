@@ -2,8 +2,6 @@
 
 # Okta Xamarin SDK
 
-> :warning: Beta alert! This library is in beta. See [release status](#release-status) for more information.
-
 This library is a Xamarin library for communicating with Okta as an OAuth 2.0 + OpenID Connect provider, it follows current best practice for native apps using [Authorization Code Flow + PKCE](https://developer.okta.com/authentication-guide/implementing-authentication/auth-code-pkce).
 
 ## Release Status
@@ -12,7 +10,7 @@ This library uses semantic versioning and follows Okta's [library version policy
 
 | Version | Status                    |
 | ------- | ------------------------- |
-| 1.x | :warning: Beta |
+| 1.x | :heavy_check_mark: Stable |
 
 The latest release is found on the [releases page](https://github.com/okta/okta-oidc-xamarin/releases).
 
@@ -47,9 +45,84 @@ To register redirect URIs do the following:
     ```
 9. Click `Save`.
 
+## Create New Xamarin.Forms Project
+
+This section describes how to configure your Xamarin Forms application to use Okta Oidc.  These instructions assume you are using `Visual Studio` and were tested with `Visual Studio Community 2019` Version 16.8.0.  For the purposes of this example the project name used is `MyOktaApp`.
+
+Create a new `Mobile App (Xamarin.Forms)` project:
+
+1. Start Visual Studio and select "Create a new project".
+2. Find and select the project template named `Mobile App (Xamarin.Forms)`, click next.
+3. Enter `MyOktaApp` into the `Project name` field of the `Configure your new project` form.
+4. Fill in the remaining fields of the `Configure your new project` form and click `Create`.
+
+Now that your Visual Studio solution is initialized, you can continue to update package references.
+
+## Update Package References Automatically
+
+This section describes how to update package references automatically.  If you prefer to update package references manually, see [Update Package References Manually](#update-package-references-manually).
+
+To update package references automatically do the following:
+
+1. Go to `View` > `Other Windows` > `Package Manager Console`.
+2. In the `Package Manager Console` window type `Update-Package` and press enter.
+
+## Update Package References Manually
+
+This section describes how to update package references manually.  If you prefer to update package references automatically, see [Update Package References Automatically](#update-package-references-automatically).
+
+The following operations are performed from `Solution Explorer`; to ensure `Solution Explorer` is visible go to `View` > `Solution Explorer`.
+
+To update package references do the following:
+
+1. Right click `MyOktaApp` and select `Manage Nuget Packages`.
+2. From the `Installed` tab select `Xamarin.Essentials` and click `Update`; this should update `Xamarin.Essentials` to the latest version (v1.6.1 as of 03/08/2021).
+3. From the `Installed` tab select `Xamarin.Forms` and click `Update`; this should update `Xamarin.Forms` to the latest version (v5.0.0.2012 as of 03.08/2021).
+4. Right click `MyOktaApp.Android` and select `Manage Nuget Packages`.
+5. From the `Installed` tab select `Xamarin.Essentials` and click `Update`; this should update `Xamarin.Essentials` to the latest version (v1.6.1 as of 03/08/2021).
+6. From the `Installed` tab select `Xamarin.Forms` and click `Update`; this should update `Xamarin.Forms` to the latest version (v5.0.0.2012 as of 03.08/2021).
+7. Right click `MyOktaApp.iOS` and select `Manage Nuget Packages`.
+2. From the `Installed` tab select `Xamarin.Essentials` and click `Update`; this should update `Xamarin.Essentials` to the latest version (v1.6.1 as of 03/08/2021).
+3. From the `Installed` tab select `Xamarin.Forms` and click `Update`; this should update `Xamarin.Forms` to the latest version (v5.0.0.2012 as of 03.08/2021).
+
+## Add Okta.Xamarin
+
+This section describes how to add Xamarin related Okta packages to your projects.
+
+The following operations are performed from `Solution Explorer`; to ensure `Solution Explorer` is visible go to `View` > `Solution Explorer`.
+
+To add Okta Xamarin packages do the following:
+
+1. Right click on the project `MyOktaApp` and select `Manage Nuget Packages...`.
+2. In the `NuGet Package Manager` window click `Browse`.
+3. In the search box type `Okta.Xamarin`.
+4. Select `Okta.Xamarin` then click the `Install` button.  Accept defaults on any prompts that may appear.
+5. Right click on the project `MyOktaApp.Android` and select `Manage Nuget Packages...`.
+6. In the `NuGet Package Manager` window click `Browse`.
+7. In the search box type `Okta.Xamarin`.
+8. Select `Okta.Xamarin` then click the `Install` button.  Accept defaults on any prompts that may appear.
+9. Select `Okta.Xamarin.Android` then click the `Install` button.  Accept defaults on any prompts that may appear.
+10. Right click on the project `MyOktaApp.iOS` and select `Manage Nuget Packages...`.
+11. In the `NuGet Package Manager` window click `Browse`.
+12. In the search box type `Okta.Xamarin`.
+13. Select `Okta.Xamarin` then click the `Install` button.  Accept defaults on any prompts that may appear.
+14. Select `Okta.Xamarin.iOS` then click the `Install` button.  Accept defaults on any prompts that may appear.
+
+## Update Android Target Framework
+
+The minimum supported Android version of the `Okta Xamarin Sdk` is `Android 10.0 (Q)`.
+
+The following operations are performed from `Solution Explorer`; to ensure `Solution Explorer` is visible go to `View` > `Solution Explorer`.
+
+To update the Android version for your Android project do the following:
+
+1. Right click on `MyOktaApp.Android` and select `Properties`.
+2. In the properties window ensure that the `Application` section is selected.
+3. From the dropdown labeled `Compile using Android version: (Target Framework)` select `Android 10.0 (Q)`.
+
 ## Configure Your Application
 
-This section details how to configure your Okta Xamarin application.  These instructions assume you are using `Visual Studio` and were tested with `Visual Studio Community 2019` Version 16.8.0.
+This section describes how to configure your Okta Xamarin application.  These instructions assume you are using `Visual Studio` and were tested with `Visual Studio Community 2019` Version 16.8.0.
 
 ### Android Configuration
 
@@ -135,115 +208,82 @@ To configure your iOS application do the following:
 
 ## Platform Wiring
 
-This section describes the minimal code necessary to handle Okta authentication related redirects when using the Okta Xamarin Sdk.  The examples shown here are based on `Xamarin.Forms` projects.
+This section describes the minimal code necessary to handle Okta authentication related redirects when using the Okta Xamarin Sdk.
 
 ### Android
 
 To handle Okta authentication redirects on Android do the following:
 
-1. In the `OnCreate` method of your `MainActivity` class initialize the `OktaContext` with the following code:
+1. Update your `MainActivity` to extend `OktaMainActivity<App>`.
     ```csharp
-    OktaContext.Init(new OidcClient(this, OktaConfig.LoadFromXmlStream(Assets.Open("OktaConfig.xml"))));
+    public class MainActivity : OktaMainActivity<App>
     ```
-    > Ensure that your OktaContext calls are made prior to `base.OnCreate`.
-2. Additionally, in the `OnCreate` method of your `MainActivity` class add event handlers for the `SignInCompleted` and `SignOutCompleted` events, this example navigates to the `ProfilePage`, you should provide logic appropriate for your application:
+2. Override the OnSignInCompleted and OnSignOutCompleted methods.
     ```csharp
-    OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
-    OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
-    ```
-    > Ensure that your OktaContext calls are made prior to `base.OnCreate`.  
-    > A complete example of a `MainActivity` class follows:
-    ```csharp    
-    [Activity(Label = "MainActivity", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    public override void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
     {
-        protected override void OnCreate(Bundle savedInstanceState)
-        {
-            OktaContext.Init(new OidcClient(this, OktaConfig.LoadFromXmlStream(Assets.Open("OktaConfig.xml"))));
-            OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
-            OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+        // for demo purposes go to the profile page
+        Shell.Current.GoToAsync("//ProfilePage", true);
+    }
 
-            TabLayoutResource = Resource.Layout.Tabbar;
-            ToolbarResource = Resource.Layout.Toolbar;
-
-            base.OnCreate(savedInstanceState);
-
-            global::Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            LoadApplication(new App());
-        }
-
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] global::Android.Content.PM.Permission[] grantResults)
-        {
-            global::Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-
-            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+    public override void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
+    {
+        // for demo purposes go to the profile page
+        Shell.Current.GoToAsync("//ProfilePage", true);
     }
     ```
-3. Create a new Activity to intercept Login redirects, this example uses `MyLoginCallbackInterceptorActivity`.
-4. Replace the activity implementation with the following code:
-    ```csharp
-    [Activity(Label = "MyLoginCallbackInterceptorActivity", LaunchMode = LaunchMode.SingleTask)]
-    [IntentFilter
-        (
-            actions: new[] { Intent.ActionView },
-            Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
-            DataSchemes = new[] { "my.app.login" },
-            DataPath = "/callback"
-        )
-    ]
-    public class MyLoginCallbackInterceptorActivity : Activity
+3. Your completed `MainActivity.cs` should look similar to the following:
+   ```csharp
+    [Activity(Label = "MyOktaApp", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
+    public class MainActivity : OktaMainActivity<App>
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        public override void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
         {
-            base.OnCreate(savedInstanceState);
-            global::Android.Net.Uri uri_android = Intent.Data;
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
+        }
 
-            if (global::Okta.Xamarin.OidcClient.InterceptLoginCallback(new Uri(uri_android.ToString())))
-            {
-                var intent = new Intent(this, typeof(MainActivity));
-                intent.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
-                StartActivity(intent);
-                this.Finish();
-            }
-
-            return;
+        public override void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
+        {
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
         }
     }
+   ```
+4. Create a new Activity to intercept Login redirects, this example uses `LoginCallbackInterceptorActivity`.
+5. Replace the activity implementation with the following code:
+    ```csharp
+	[Activity(Label = "LoginCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleInstance)]
+	[
+		IntentFilter
+		(
+			actions: new[] { Intent.ActionView },
+			Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+			DataSchemes = new[] { "my.app.login" },
+			DataPath = "/callback"
+		)
+	]
+	public class LoginCallbackInterceptorActivity : OktaLoginCallbackInterceptorActivity<MainActivity>
+	{
+	}
     ```
     > Note that the value specified for `DataSchemes` **MUST** match the prefix entered in step 6 of [Register Redirects](#register-redirects) and the `DataPath` **MUST** match the suffix.
-5. Create a new Activity to intercept Logout redirects, this example uses `MyLogoutCallbackInterceptorActivity`.
+5. Create a new Activity to intercept Logout redirects, this example uses `LogoutCallbackInterceptorActivity`.
 6. Replace the activity implementation with the following code:
     ```csharp
-    [Activity(Label = "MyLogoutCallbackInterceptor", LaunchMode = LaunchMode.SingleTask)]
-    [
-        IntentFilter
-        (
-            actions: new[] { Intent.ActionView },
-            Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
-            DataSchemes = new[] { "my.app.logout" },
-            DataPath = "/callback"
-        )
-    ]
-    public class MyLogoutCallbackInterceptor : Activity
-    {
-        protected override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-            global::Android.Net.Uri uri_android = Intent.Data;
-
-            if (global::Okta.Xamarin.OidcClient.InterceptLoginCallback(new Uri(uri_android.ToString())))
-            {
-                var intent = new Intent(this, typeof(MainActivity));
-                intent.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
-                StartActivity(intent);
-                this.Finish();
-            }
-
-            return;
-        }
-    }
+	[Activity(Label = "LogoutCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleInstance)]
+	[
+		IntentFilter
+		(
+			actions: new[] { Intent.ActionView },
+			Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+			DataSchemes = new[] { "my.app.logout" },
+			DataPath = "/callback"
+		)
+	]
+	public class LogoutCallbackInterceptorActivity : OktaLogoutCallbackInterceptorActivity<MainActivity>
+	{
+	}
     ```
      > Note that the value specified for `DataSchemes` **MUST** match the prefix entered in step 8 of [Register Redirects](#register-redirects) and the `DataPath` **MUST** match the suffix.
 
@@ -251,11 +291,11 @@ To handle Okta authentication redirects on Android do the following:
 
 To handle Okta authentication redirects on iOS do the following:
 
-1. Modify your `AppDelegate` class to extend `OktaAppDelegate<App>` (or `OktaAppDelegate` if you are not using Xamarin.Forms).
+1. Modify your `AppDelegate` class to extend `OktaAppDelegate<App>`.
 2. In the `FinishedLaunching` method add event handlers for the `SignInCompleted` and `SignOutCompleted` events, this example navigates to the `ProfilePage`, you should provide logic appropriate for your application:
     ```csharp
-    OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
-    OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+    OktaContext.AddSignInCompletedListener(OnSignInCompleted);
+    OktaContext.AddSignOutCompletedListener(OnSignOutCompleted);
     ```
     > A complete AppDelegate example follows:
     ```csharp
@@ -265,10 +305,22 @@ To handle Okta authentication redirects on iOS do the following:
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             bool result = base.FinishedLaunching(app, options);
-            OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
-            OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+            OktaContext.AddSignInCompletedListener(OnSignInCompleted);
+            OktaContext.AddSignOutCompletedListener(OnSignOutCompleted);
 
             return result;
+        }
+        
+        public void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
+        {
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
+        }
+        
+        public void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
+        {
+            // for demo purposes go to the profile page
+            Shell.Current.GoToAsync("//ProfilePage", true);
         }
     }
     ```
@@ -333,7 +385,7 @@ OktaContext.Current.RenewAsync(TokenKind.AccessToken);
 
 #### RevokeAsync
 
-Calls the revocation endpoint to revoke the specified token kind of token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
+Calls the revocation endpoint to revoke the specified kind of token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
 
 ```csharp
 OktaContext.Current.RevokeAsync();
@@ -365,7 +417,7 @@ OktaContext.GetToken(TokenKind.AccessToken);
 
 #### SignInStarted event
 
-The `OktaContext.Current.SignInStarted` event is raised before the login flow begins.  To execute code when the `SignInStarted` event is raised, add an event handler to the `OktaContext.Current.SignInStarted event.  This is done directly or using the static `AddSignInStartedListener` method.
+The `OktaContext.Current.SignInStarted` event is raised before the login flow begins.  To execute code when the `SignInStarted` event is raised, add an event handler to the `OktaContext.Current.SignInStarted` event.  This is done directly or using the static `AddSignInStartedListener` method.
 
 ```csharp
 // directly

@@ -6,7 +6,7 @@
 VERSION_COMPONENT=$1 # may specify 'major', 'minor' or 'patch' default is 'patch'
 
 if [[ -z ${VERSION_COMPONENT} ]]; then
-    VERSION_COMPONENT="patch"
+    VERSION_COMPONENT="current"
 fi
 
 source ./configure.sh
@@ -14,7 +14,7 @@ source ./configure.sh
 CURRENTBRANCH=`git branch --show-current`
 
 pushd ./nuget/semver
-echo "Incrementing '${VERSION_COMPONENT}' version"
+echo "Version arg was '${VERSION_COMPONENT}'"
 ./version.sh ${VERSION_COMPONENT} release
 cp ./version ../Common/version
 cp ./version ../Android/version

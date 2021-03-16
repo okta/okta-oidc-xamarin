@@ -150,10 +150,6 @@
       <Project>{f4056b13-ce8c-4fd7-b079-a030a1053d33}</Project>
       <Name>Okta.Xamarin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Okta.Xamarin.Demo\Okta.Xamarin.Demo.csproj">
-      <Project>{880736f4-71b1-4f5c-bdc8-f246d69acd09}</Project>
-      <Name>Okta.Xamarin.Demo</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ProjectExtensions>

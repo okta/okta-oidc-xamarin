@@ -36,6 +36,8 @@ var iOSOutputDirectory = Directory(System.IO.Path.Combine(artifactsDirectory, "i
 var iOSIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSOutputDirectory, "ipa"));
 var iPhoneSimulatorIpaOutputDirectory = Directory(System.IO.Path.Combine(iOSIpaOutputDirectory, "iPhoneSimulator"));
 
+var testProject = GetFiles("./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj").First();
+
 // Common Nuget functions
 Func<string> getCommonVersion = () =>
 {
@@ -69,8 +71,8 @@ Func<NuSpecDependency[]> getCommonDependencies = () =>
     return new [] {
         new NuSpecDependency { Id = "Newtonsoft.Json", Version = "12.0.3" },
         new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
-        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
-        new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
+        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.6.1" },
+        new NuSpecDependency { Id = "Xamarin.Forms", Version = "5.0.0.2012" }
     };    
 };
 // ---
@@ -105,10 +107,11 @@ Func<NuSpecDependency[]> getAndroidDependencies = () =>
 {
     // TODO: define a way to determine dependencies programmatically
     return new [] {
-        new NuSpecDependency { Id = "Okta.Xamarin", Version = "1.0.2" },
+        new NuSpecDependency { Id = "Okta.Xamarin", Version = "1.0.0" },
         new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
-        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
-        new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
+        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.6.1" },
+        new NuSpecDependency { Id = "Xamarin.Forms", Version = "5.0.0.2012" },
+        new NuSpecDependency { Id = "Xamarin.Android.Support.CustomTabs", Version = "28.0.0.3" }
     };    
 };
 // iOS Nuget functions
@@ -142,10 +145,10 @@ Func<NuSpecDependency[]> getiOSDependencies = () =>
 {
     // TODO: define way to determine dependencies programmatically
     return new []{
-        new NuSpecDependency { Id = "Okta.Xamarin", Version = "1.0.2" },
+        new NuSpecDependency { Id = "Okta.Xamarin", Version = "1.0.0" },
         new NuSpecDependency { Id = "System.Net.Http", Version = "4.3.4" },
-        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.5.3.2" },
-        new NuSpecDependency { Id = "Xamarin.Forms", Version = "4.8.0.1560" }
+        new NuSpecDependency { Id = "Xamarin.Essentials", Version = "1.6.1" },
+        new NuSpecDependency { Id = "Xamarin.Forms", Version = "5.0.0.2012" }
     };
 };
 
@@ -327,6 +330,18 @@ Task("NugetPack-iOS")
         NuGetPack(nuGetPackSettings);
     });
 
+Task("Run-Tests")
+    .IsDependentOn("Restore-Packages")
+    .Does(() =>
+    {		
+        DotNetCoreTest(testProject.FullPath, 
+            new DotNetCoreTestSettings()
+            {
+                Configuration = configuration
+                //NoBuild = true // Running tests will build the test project first, uncomment this line if this behavior should change
+            });
+    });
+
 Task("AndroidTarget")
     .IsDependentOn("Build-Android")
     .IsDependentOn("NugetPack-Android");
@@ -337,6 +352,7 @@ Task("iOSTarget")
 
 Task("NugetTarget")
     .IsDependentOn("Clean")
+    .IsDependentOn("Run-Tests")
     .IsDependentOn("Build-Common")
     .IsDependentOn("NugetPack-Common")
     .IsDependentOn("Build-Android")
@@ -346,6 +362,7 @@ Task("NugetTarget")
 
 Task("AzureBuildTarget")
     .IsDependentOn("Clean")
+    .IsDependentOn("Run-Tests")
     .IsDependentOn("Build-Android")
     .IsDependentOn("NugetPack-Android")
     .IsDependentOn("Build-iOS")
