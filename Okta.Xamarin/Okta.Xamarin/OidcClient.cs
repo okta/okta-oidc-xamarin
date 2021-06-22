@@ -234,7 +234,6 @@ namespace Okta.Xamarin
             {
                 { "token", token },
                 { "token_type_hint", tokenTypeHint },
-                { "client_id", Config.ClientId },
             }, authorizationServerId);
         }
 
