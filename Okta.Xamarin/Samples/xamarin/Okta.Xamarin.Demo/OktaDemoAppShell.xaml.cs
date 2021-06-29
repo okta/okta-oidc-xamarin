@@ -14,9 +14,9 @@ namespace Okta.Xamarin.Demo
 			Routing.RegisterRoute(nameof(DemoPage), typeof(DemoPage));
         }
 
-		private async void OnSignOutClicked(object sender, EventArgs e)
-		{
-			_ = OktaContext.Current.SignOutAsync();
-		}
+        private async void OnSignOutClicked(object sender, EventArgs e)
+        {
+            _ = OktaContext.Current.SignOutAsync();
+        }
 	}
 }
