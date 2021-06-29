@@ -13,9 +13,9 @@ namespace Okta.Xamarin.Demo.Views
             InitializeComponent();
         }
 
-		private async Task OnSignInClicked(object sender, EventArgs e)
-		{
-			_ = Shell.Current.GoToAsync("DemoPage");
-		}
+        private async Task OnSignInClicked(object sender, EventArgs e)
+        {
+            _ = Shell.Current.GoToAsync("DemoPage");
+        }
     }
 }

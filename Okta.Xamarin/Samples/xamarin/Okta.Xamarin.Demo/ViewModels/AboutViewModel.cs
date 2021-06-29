@@ -10,10 +10,10 @@ namespace Okta.Xamarin.Demo.ViewModels
     {
         public AboutViewModel()
         {
-			this.Title = "About";
-			this.OpenOktaApiReferenceCommand = new Command(async () => await Browser.OpenAsync("https://developer.okta.com/docs/reference/"));
-			this.SignInCommand = new SignInCommand();
-			this.SignOutCommand = new SignOutCommand();
+            this.Title = "About";
+            this.OpenOktaApiReferenceCommand = new Command(async () => await Browser.OpenAsync("https://developer.okta.com/docs/reference/"));
+            this.SignInCommand = new SignInCommand();
+            this.SignOutCommand = new SignOutCommand();
 		}
 
 		/// <summary>
