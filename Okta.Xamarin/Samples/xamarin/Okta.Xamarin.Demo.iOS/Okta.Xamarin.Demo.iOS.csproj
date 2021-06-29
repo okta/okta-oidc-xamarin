@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <BundleResource Include="Resources\oktalogo.png" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -136,8 +137,8 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1451" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Okta.Xamarin.iOS\Okta.Xamarin.iOS.csproj">
@@ -149,6 +150,10 @@
     <ProjectReference Include="..\..\..\Okta.Xamarin\Okta.Xamarin.csproj">
       <Project>{f4056b13-ce8c-4fd7-b079-a030a1053d33}</Project>
       <Name>Okta.Xamarin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Okta.Xamarin.Demo\Okta.Xamarin.Demo.csproj">
+      <Project>{d82b6c59-231e-4d06-97c0-38cf6cae0540}</Project>
+      <Name>Okta.Xamarin.Demo</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

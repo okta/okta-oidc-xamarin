@@ -12,7 +12,7 @@ using Okta.Xamarin.Android;
 namespace Okta.Xamarin.Demo.Droid
 {
 	[Activity(Label = "Okta.Xamarin", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
-	public class MainActivity : OktaMainActivity<OktaApp>
+	public class MainActivity : OktaMainActivity<OktaDemoApp>
 	{
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
