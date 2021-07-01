@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Okta.Xamarin.Demo.Views.DemoPage">
+    <ScrollView>
+        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+            <Label 
+                AutomationId="DemoPageLabelHeader"
+                FontSize="Medium"
+                Text="Welcome to Okta's Xamarin Demo Application" 
+            />
+            <Label
+                AutomationId="DemoPageLabelMessage"
+                x:Name="Message"
+                Text="Place Holder"
+                FontSize="Default"
+            />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
+    

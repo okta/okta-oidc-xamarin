@@ -13,7 +13,7 @@ namespace Okta.Xamarin.Demo.iOS
 	// User Interface of the application, as well as listening (and optionally responding) to 
 	// application events from iOS.
 	[Register("AppDelegate")]
-	public partial class AppDelegate : OktaAppDelegate<OktaApp>
+	public partial class AppDelegate : OktaAppDelegate<OktaDemoApp>
 	{
 		//
 		// This method is invoked when the application has loaded and is ready to run. In this 
@@ -28,7 +28,7 @@ namespace Okta.Xamarin.Demo.iOS
 
 			// Additional logic to execute can go here if necessary
 
-			// for demo purposes go to the profile page
+			// for demo purposes go to the profile page after sign in and sign out
 			OktaContext.Current.SignInCompleted += (sender, args) => Shell.Current.GoToAsync("//ProfilePage");
 			OktaContext.Current.SignOutCompleted += (sender, args) => Shell.Current.GoToAsync("//ProfilePage");
 			// -- /

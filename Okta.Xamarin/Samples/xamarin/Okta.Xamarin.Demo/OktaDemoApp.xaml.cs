@@ -6,19 +6,20 @@ using Xamarin.Forms.Xaml;
 
 namespace Okta.Xamarin.Demo
 {
-    public partial class App : Application
+    public partial class OktaDemoApp : Application
     {
 
-        public App()
+        public OktaDemoApp()
         {
             InitializeComponent();
 
             DependencyService.Register<MockDataStore>();
-            MainPage = new AppShell();
+            MainPage = new OktaDemoAppShell();
         }
 
         protected override void OnStart()
         {
+			
         }
 
         protected override void OnSleep()
