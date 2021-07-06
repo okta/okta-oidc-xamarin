@@ -14,7 +14,14 @@ namespace Okta.Xamarin.ViewModels
         /// Initializes a new instance of the <see cref="RevokeAccessTokenCommand"/> class.
         /// </summary>
         public RevokeAccessTokenCommand()
-            : base(async () => await OktaContext.Current.RevokeAsync(TokenKind.AccessToken))
-        { }
+            : base(async () =>
+            {
+                if (!string.IsNullOrEmpty(OktaContext.AccessToken))
+                {
+                    await OktaContext.Current.RevokeAsync(TokenKind.AccessToken);
+                }
+            })
+        {
+        }
     }
 }
