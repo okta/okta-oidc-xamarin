@@ -12,6 +12,9 @@ namespace Okta.Xamarin.Demo
         {
             InitializeComponent();
 			Routing.RegisterRoute(nameof(DemoPage), typeof(DemoPage));
+			Routing.RegisterRoute(nameof(IntrospectPage), typeof(IntrospectPage));
+			Routing.RegisterRoute(nameof(RenewPage), typeof(RenewPage));
+			Routing.RegisterRoute(nameof(RevokePage), typeof(RevokePage));
         }
 
         private async void OnSignOutClicked(object sender, EventArgs e)

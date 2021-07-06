@@ -3,19 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Okta.Xamarin.Demo.Views.DemoPage">
     <ScrollView>
-        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <Label 
-                AutomationId="DemoPageLabelHeader"
-                FontSize="Medium"
-                Text="Welcome to Okta's Xamarin Demo Application" 
+        <StackLayout Spacing="20" Padding="15">
+            <Label Text="Demo" FontSize="Title" />
+            <BoxView HeightRequest="1" Color="#000000" />
+            <Button Margin="0,10,0,0"
+                    Text="Introspect Demo >>"
+                    Command="{Binding GoToIntrospectPageCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" 
             />
-            <Label
-                AutomationId="DemoPageLabelMessage"
-                x:Name="Message"
-                Text="Place Holder"
-                FontSize="Default"
+            <Button Margin="0,0,0,0"
+                    Text="Renew Demo >>"
+                    Command="{Binding GoToRenewPageCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" 
             />
+            <Button Margin="0,0,0,10"
+                    Text="Revoke Demo >>"
+                    Command="{Binding GoToRevokePageCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" 
+            />
+            <BoxView HeightRequest="1" Color="#000000" />
         </StackLayout>
     </ScrollView>
 </ContentPage>
-    
