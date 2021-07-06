@@ -34,7 +34,7 @@ namespace Okta.Xamarin.ViewModels
             {
                 if (!string.IsNullOrEmpty(OktaContext.RefreshToken))
                 {
-					await OktaContext.Current.RenewAsync(refreshIdToken, authorizationServerId);
+                    await OktaContext.Current.RenewAsync(refreshIdToken, authorizationServerId);
                 }
             })
         {
