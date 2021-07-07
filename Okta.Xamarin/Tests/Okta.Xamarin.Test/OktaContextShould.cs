@@ -3,19 +3,47 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-using FluentAssertions;
-using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using NSubstitute;
 using Xunit;
 
 namespace Okta.Xamarin.Test
 {
     public class OktaContextShould
     {
+        [Fact]
+        public void RaiseEventOnRequestException()
+        {
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.okta.com", "com.test:/redirect", "com.test:/logout"));
+            IOktaStateManager oktaStateManager = new TestOktaStateManager();
+            OktaContext oktaContext = new OktaContext();
+            bool? clientEventRaised = false;
+            bool? stateManagerEventRaised = false;
+            bool? contextEventRaised = false;
+            client.RequestException += (sender, args) => clientEventRaised = true;
+            oktaStateManager.RequestException += (sender, args) => stateManagerEventRaised = true;
+            oktaContext.RequestException += (sender, args) => contextEventRaised = true;
+
+            oktaStateManager.Client = client;
+            oktaContext.StateManager = oktaStateManager;
+
+            Assert.False(clientEventRaised);
+            Assert.False(stateManagerEventRaised);
+            Assert.False(contextEventRaised);
+
+            client.RaiseRequestExceptionEvent(new RequestExceptionEventArgs(new Exception("Test exception"), HttpMethod.Post, "/test/path", new Dictionary<string, string>(), "default", new KeyValuePair<string, string>[] { }));
+
+            Assert.True(clientEventRaised);
+            Assert.True(stateManagerEventRaised);
+            Assert.True(contextEventRaised);
+        }
+
         [Fact]
         public void RaiseSignInEventsOnSignIn()
         {

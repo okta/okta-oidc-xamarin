@@ -18,6 +18,11 @@ namespace Okta.Xamarin
         public IOktaStateManager StateManager{ get; set; }
 
         /// <summary>
+        /// Gets or sets the refresh token.
+        /// </summary>
+        public string RefreshToken { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indication whether the id token is refreshed.
         /// </summary>
         public bool RefreshIdToken { get; set; }

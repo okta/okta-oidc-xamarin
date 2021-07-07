@@ -11,12 +11,12 @@ using Xamarin.Forms.Xaml;
 namespace Okta.Xamarin.Demo.Views
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class DemoPage : ContentPage
+	public partial class RevokePage : ContentPage
 	{
-		public DemoPage()
+		public RevokePage()
 		{
 			InitializeComponent();
-			BindingContext = new DemoPageViewModel(this);
+			BindingContext = new RevokeViewModel(this);
 		}
 	}
 }

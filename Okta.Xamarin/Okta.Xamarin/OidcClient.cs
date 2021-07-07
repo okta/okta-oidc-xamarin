@@ -3,16 +3,15 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Okta.Xamarin
 {
@@ -21,12 +20,17 @@ namespace Okta.Xamarin
     /// </summary>
     public abstract class OidcClient : IOidcClient
     {
-        OAuthException oauthException;
+        private OAuthException oauthException;
 
         /// <summary>
-        /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
+        /// The event that is raised when an API exception occurs.
         /// </summary>
-        public OAuthException OAuthException 
+        public event EventHandler<RequestExceptionEventArgs> RequestException;
+
+        /// <summary>
+        /// Gets or sets the OAuthException that occurred if any.  Is null if no exception occurred.
+        /// </summary>
+        public OAuthException OAuthException
         {
             get
             {
@@ -213,6 +217,7 @@ namespace Okta.Xamarin
 
         protected async Task<string> GetRenewJsonAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
         {
+            // for details see: https://developer.okta.com/docs/guides/refresh-tokens/use-refresh-token/
             string scope = "offline_access";
             if (refreshIdToken)
             {
@@ -234,7 +239,6 @@ namespace Okta.Xamarin
             {
                 { "token", token },
                 { "token_type_hint", tokenTypeHint },
-                { "client_id", Config.ClientId },
             }, authorizationServerId);
         }
 
@@ -290,23 +294,42 @@ namespace Okta.Xamarin
 
         protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = "default", params KeyValuePair<string, string>[] formUrlEncodedContent)
         {
-            FormUrlEncodedContent content = null;
-            if ((bool)formUrlEncodedContent?.Any())
+            try
             {
-                content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
-            }
+                FormUrlEncodedContent content = null;
+                if ((bool)formUrlEncodedContent?.Any())
+                {
+                    content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
+                }
 
-            if (!path.StartsWith("/"))
+                if (!path.StartsWith("/"))
+                {
+                    path = $"/{path}";
+                }
+
+                var request = GetHttpRequestMessage(httpMethod, $"{GetAuthorizationServerBasePath(authorizationServerId)}{path}", headers);
+                request.Content = content;
+
+                HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                this.LastApiResponse = response;
+                response.EnsureSuccessStatusCode();
+
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
             {
-                path = $"/{path}";
+                this.OnRequestException(new RequestExceptionEventArgs(ex, httpMethod, path, headers, authorizationServerId, formUrlEncodedContent));
+                return string.Empty;
             }
+        }
 
-            var request = GetHttpRequestMessage(httpMethod, $"{GetAuthorizationServerBasePath(authorizationServerId)}{path}", headers);
-            request.Content = content;
-
-            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-            LastApiResponse = response;
-            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        /// <summary>
+        /// Raises the RequestException event.
+        /// </summary>
+        /// <param name="args">Data relevant to the event.</param>
+        protected virtual void OnRequestException(RequestExceptionEventArgs args)
+        {
+            this.RequestException?.Invoke(this, args);
         }
 
         protected virtual string GetBasePath()
@@ -452,7 +475,7 @@ namespace Okta.Xamarin
                 data["token_type"],
                 data.GetValueOrDefault("id_token"),
                 data.GetValueOrDefault("refresh_token"),
-                data.ContainsKey("expires_in") ? (int?)(int.Parse(data["expires_in"])) : null,
+                data.ContainsKey("expires_in") ? (int?)int.Parse(data["expires_in"]) : null,
                 data.GetValueOrDefault("scope") ?? this.Config.Scope)
             {
                 Config = Config,

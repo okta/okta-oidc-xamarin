@@ -3,6 +3,7 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
@@ -16,14 +17,19 @@ namespace Okta.Xamarin
     public interface IOidcClient
     {
         /// <summary>
-        /// Gets or sets the last API response, primarily for debugging.
+        /// The event that is raised when an API exception occurs.
+        /// </summary>
+        event EventHandler<RequestExceptionEventArgs> RequestException;
+
+        /// <summary>
+        /// Gets the last API response, primarily for debugging.
         /// </summary>
         HttpResponseMessage LastApiResponse { get; }
 
         /// <summary>
         /// Gets the OAuthException that occurred if any.  Will be null if no exception occurred.
         /// </summary>
-        OAuthException OAuthException{ get; }
+        OAuthException OAuthException { get; }
 
         /// <summary>
         /// The configuration for this client instance.

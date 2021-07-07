@@ -18,21 +18,5 @@ namespace Okta.Xamarin.Demo.Views
 			InitializeComponent();
 			BindingContext = new ProfileViewModel(this);
 		}
-
-		public void SetClaims(Dictionary<string, object> claims)
-		{
-			StackLayout claimsLayout = (StackLayout)this.FindByName("Claims");
-			claimsLayout.Children.Clear();
-			foreach (string key in claims.Keys)
-			{
-				Label label = new Label { Text = key };
-				label.FontSize = Device.GetNamedSize(NamedSize.Medium, label);
-				Label value = new Label { Text = claims[key]?.ToString() };
-				value.FontSize = Device.GetNamedSize(NamedSize.Small, value);
-
-				claimsLayout.Children.Add(label);
-				claimsLayout.Children.Add(value);
-			}
-		}
 	}
 }

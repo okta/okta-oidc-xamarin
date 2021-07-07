@@ -20,7 +20,7 @@ namespace Okta.Xamarin.Demo.ViewModels
 
 		protected ProfilePage Page { get; }
 
-		public Command GoToDemoPageCommand => new Command(async () => await Shell.Current.GoToAsync("DemoPage"));
+		public Command GoToDemoPageCommand => new Command(async () => await Shell.Current.GoToAsync(nameof(DemoPage)));
 		public Command SignInCommand => new SignInCommand();
 		public Command SignOutCommand => new SignOutCommand();
 
@@ -88,7 +88,7 @@ namespace Okta.Xamarin.Demo.ViewModels
 
 		private void SetClaims()
 		{
-			Page?.SetClaims(this.BearerToken?.GetClaims());
+			Page?.SetChildData("Claims", this.BearerToken?.GetClaims());
 		}
 	}
 }
