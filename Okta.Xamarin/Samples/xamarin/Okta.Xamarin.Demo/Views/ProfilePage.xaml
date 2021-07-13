@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Okta.Xamarin.Demo.Views.ProfilePage">
+    <ScrollView>
+        <StackLayout Spacing="20" Padding="15">
+            <Label Text="Profile" FontSize="Title" />
+            <BoxView HeightRequest="1" Color="#000000" />
+            <Button Text="Demo >>"
+                    Margin="0,10,0,10" 
+                    Command="{Binding GoToDemoPageCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" />
+            
+            <Button AutomationId="ProfilePageButtonSignOut"
+                            Margin="0,10,0,0" Text="Sign Out"
+                            Command="{Binding SignOutCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+            
+            <Button AutomationId="ProfilePageButtonSignIn"
+                            Margin="0,0,0,0" Text="Sign In"
+                            Command="{Binding SignInCommand}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+
+            <BoxView HeightRequest="1" Color="#000000" />   
+            
+            <Label Text="Claims" FontSize="Large" />
+            <StackLayout AutomationId="Claims" x:Name="Claims">
+            </StackLayout>
+
+            <Label AutomationId="LabelBearerTokenHeader" Text="Bearer Token Header: " FontSize="Medium" />
+            <Label AutomationId="BearerTokenHeader" Text="{Binding Header}" FontSize="Small" />
+
+            <Label AutomationId="LabelBearerTokenPayload" Text="Bearer Token Payload: " FontSize="Medium" />
+            <Label AutomationId="BearerTokenPayload" Text="{Binding Payload}" FontSize="Small" />
+
+            <Label AutomationId="LabelBearerTokenSignature" Text="Bearer Token Signature: " FontSize="Medium" />
+            <Label AutomationId="BearerTokenSignature" Text="{Binding Signature}" FontSize="Small" />
+
+            <Label AutomationId="LabelAccessToken" Text="Access Token (Bearer): " FontSize="Medium" />
+            <Label AutomationId="AccessToken" Text="{Binding AccessToken}" FontSize="Small"/>
+            
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

@@ -16,6 +16,8 @@ namespace Okta.Xamarin
     /// </summary>
     public class OktaStateManager : IOktaStateManager
     {
+        private IOidcClient client;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OktaStateManager"/> class.
         /// </summary>
@@ -41,6 +43,9 @@ namespace Okta.Xamarin
             this.Expires = expiresIn.HasValue ? new DateTimeOffset(DateTime.UtcNow.AddSeconds(expiresIn.Value)) : default;
             this.Scope = scope;
         }
+
+        /// <inheritdoc/>
+        public event EventHandler<RequestExceptionEventArgs> RequestException;
 
         /// <inheritdoc/>
         public string TokenType { get; private set; }
@@ -69,20 +74,28 @@ namespace Okta.Xamarin
         public IOktaConfig Config { get; set; }
 
         /// <inheritdoc/>
-        public IOidcClient Client { get; set; }
+        public IOidcClient Client
+        {
+            get => this.client;
+            set
+            {
+                this.client = value;
+                this.client.RequestException += (sender, args) => this.RequestException?.Invoke(sender, args);
+            }
+        }
 
         /// <inheritdoc/>
         public bool IsAuthenticated
         {
             get
             {
-                return !string.IsNullOrEmpty(AccessToken) && // there is an access token
-                                (Expires == default(DateTimeOffset) || Expires > DateTime.UtcNow);    // and it's not yet expired
+                return !string.IsNullOrEmpty(this.AccessToken) && // there is an access token
+                                (this.Expires == default(DateTimeOffset) || this.Expires > DateTime.UtcNow);    // and it's not yet expired
             }
         }
 
         /// <inheritdoc/>
-        public HttpResponseMessage LastApiResponse { get => Client?.LastApiResponse; }
+        public HttpResponseMessage LastApiResponse { get => this.Client?.LastApiResponse; }
 
         /// <inheritdoc/>
         public string GetToken(TokenKind tokenKind)
@@ -91,23 +104,23 @@ namespace Okta.Xamarin
             {
                 case Xamarin.TokenKind.Invalid:
                 case Xamarin.TokenKind.AccessToken:
-                    return AccessToken;
+                    return this.AccessToken;
                 case Xamarin.TokenKind.IdToken:
-                    return IdToken;
+                    return this.IdToken;
                 case Xamarin.TokenKind.RefreshToken:
                 default:
-                    return RefreshToken;
+                    return this.RefreshToken;
             }
         }
 
         /// <inheritdoc/>
-        public async Task WriteToSecureStorageAsync() // to be implemented on OKTA-363613 v1.1
+        public async Task WriteToSecureStorageAsync() // to be implemented on OKTA-363613 v2.1
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public async Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config) // to be implemented on OKTA-363613 v1.1
+        public async Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config) // to be implemented on OKTA-363613 v2.1
         {
             throw new NotImplementedException();
         }
@@ -118,11 +131,11 @@ namespace Okta.Xamarin
             switch (tokenType)
             {
                 case Xamarin.TokenKind.AccessToken:
-                    await Client.RevokeAccessTokenAsync(AccessToken);
+                    await this.Client.RevokeAccessTokenAsync(this.AccessToken);
                     break;
                 case Xamarin.TokenKind.RefreshToken:
                 default:
-                    await Client.RevokeRefreshTokenAsync(RefreshToken);
+                    await this.Client.RevokeRefreshTokenAsync(this.RefreshToken);
                     break;
             }
         }
@@ -130,21 +143,21 @@ namespace Okta.Xamarin
         /// <inheritdoc/>
         public async Task<T> GetUserAsync<T>(string authorizationServerId = "default")
         {
-            return await Client.GetUserAsync<T>(AccessToken, authorizationServerId);
+            return await this.Client.GetUserAsync<T>(this.AccessToken, authorizationServerId);
         }
 
         /// <inheritdoc/>
         public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default")
         {
-            return await Client.GetUserAsync(AccessToken, authorizationServerId);
+            return await this.Client.GetUserAsync(this.AccessToken, authorizationServerId);
         }
 
         /// <inheritdoc/>
         public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string authorizationServerId = "default")
         {
-            return await Client.IntrospectAsync(new IntrospectOptions
+            return await this.Client.IntrospectAsync(new IntrospectOptions
             {
-                Token = GetToken(tokenKind),
+                Token = this.GetToken(tokenKind),
                 TokenKind = tokenKind,
                 AuthorizationServerId = authorizationServerId,
             });
@@ -153,20 +166,27 @@ namespace Okta.Xamarin
         /// <inheritdoc/>
         public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default")
         {
-            return await Client.GetClaimsPincipalAsync(AccessToken, authorizationServerId);
+            return await this.Client.GetClaimsPincipalAsync(this.AccessToken, authorizationServerId);
         }
 
         /// <inheritdoc/>
         public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
         {
-            RenewResponse renewResponse = await Client.RenewAsync<RenewResponse>(RefreshToken, refreshIdToken, authorizationServerId);
-            RenewResponse = renewResponse;
-            TokenType = renewResponse.TokenType;
-            AccessToken = renewResponse.AccessToken;
-            RefreshToken = renewResponse.RefreshToken;
-            if(refreshIdToken && !string.IsNullOrEmpty(renewResponse?.IdToken))
+            return await this.RenewAsync(this.RefreshToken, refreshIdToken, authorizationServerId);
+        }
+
+        /// <inheritdoc/>
+        public async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
+        {
+            RenewResponse renewResponse = await this.Client.RenewAsync<RenewResponse>(refreshToken, refreshIdToken, authorizationServerId);
+            this.RenewResponse = renewResponse;
+            this.TokenType = renewResponse.TokenType;
+            this.AccessToken = renewResponse.AccessToken;
+            this.RefreshToken = renewResponse.RefreshToken;
+            this.Expires = new DateTimeOffset(DateTime.UtcNow.AddSeconds(renewResponse.ExpiresIn));
+            if (refreshIdToken && !string.IsNullOrEmpty(renewResponse?.IdToken))
             {
-                IdToken = renewResponse.IdToken;
+                this.IdToken = renewResponse.IdToken;
             }
 
             return renewResponse;
@@ -175,11 +195,11 @@ namespace Okta.Xamarin
         /// <inheritdoc/>
         public void Clear()
         {
-            AccessToken = string.Empty;
-            IdToken = string.Empty;
-            RefreshToken = string.Empty;
-            Scope = string.Empty;
-            Expires = null;
+            this.AccessToken = string.Empty;
+            this.IdToken = string.Empty;
+            this.Scope = string.Empty;
+            this.Expires = null;
+            this.RefreshToken = string.Empty;
         }
     }
 }

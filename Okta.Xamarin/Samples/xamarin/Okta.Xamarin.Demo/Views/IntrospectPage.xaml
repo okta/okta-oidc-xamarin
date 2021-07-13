@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Okta.Xamarin.Demo.Views.IntrospectPage">
+    <ScrollView>
+        <StackLayout Spacing="20" Padding="15">
+            <RelativeLayout>
+                <Label Text="Introspect" FontSize="Title" />
+                <Image Source="Spinner.gif" x:Name="WorkingImage" HeightRequest="35" Margin="125,0,0,0" IsAnimationPlaying="true"  IsVisible="false" />
+            </RelativeLayout>
+            <BoxView HeightRequest="1" Color="#000000" />
+            <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" x:Name="ResponseDisplay" />
+
+            <BoxView HeightRequest="1" Color="#000000" />
+            
+            <Button Margin="0,0,0,0"
+                    Text="Introspect Access Token"
+                    Command="{Binding IntrospectAccessTokenCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" 
+            />
+                        
+            <Button Margin="0,20,0,0"
+                    Text="Renew Demo >>"
+                    Command="{Binding GoToRenewPageCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" 
+            />
+            <Button Margin="0,0,0,0"
+                    Text="Revoke Demo >>"
+                    Command="{Binding GoToRevokePageCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" 
+            />
+            <BoxView HeightRequest="1" Color="#000000" />
+
+            <Label FontSize="Title" Text="Access Token" />
+            <Label FontSize="Body" x:Name="AccessTokenLabel" Text="{Binding AccessToken}"/>
+            <Label FontSize="Title" Text="Id Token" />
+            <Label FontSize="Body" x:Name="IdTokenLabel" Text="{Binding IdToken}" />
+        </StackLayout>        
+    </ScrollView>
+</ContentPage>
+    

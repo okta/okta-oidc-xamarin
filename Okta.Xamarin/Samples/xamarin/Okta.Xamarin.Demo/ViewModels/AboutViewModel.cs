@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Okta.Xamarin.ViewModels;
+using System;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -9,10 +10,25 @@ namespace Okta.Xamarin.Demo.ViewModels
     {
         public AboutViewModel()
         {
-            Title = "About";
-            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
-        }
+            this.Title = "About";
+            this.OpenOktaApiReferenceCommand = new Command(async () => await Browser.OpenAsync("https://developer.okta.com/docs/reference/"));
+            this.SignInCommand = new SignInCommand();
+            this.SignOutCommand = new SignOutCommand();
+		}
 
-        public ICommand OpenWebCommand { get; }
-    }
+		/// <summary>
+		/// Gets the command that opens Okta Api reference.
+		/// </summary>
+		public ICommand OpenOktaApiReferenceCommand { get; }
+
+		/// <summary>
+		/// Gets or sets the command used to sign in.
+		/// </summary>
+		public SignInCommand SignInCommand { get; set; }
+
+		/// <summary>
+		/// Gets or sets the command used to sign out.
+		/// </summary>
+		public SignOutCommand SignOutCommand { get; set; }
+	}
 }

@@ -17,6 +17,11 @@ namespace Okta.Xamarin
     public interface IOktaStateManager
     {
         /// <summary>
+        /// The event that is raised when an API exception occurs.
+        /// </summary>
+        event EventHandler<RequestExceptionEventArgs> RequestException;
+
+        /// <summary>
         /// Gets the access token.
         /// </summary>
         string AccessToken { get; }
@@ -113,8 +118,17 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="refreshIdToken">A value indicating whether to also renew the ID token.</param>
         /// <param name="authorizationServerId">The authorization server ID.</param>
-        /// <returns>Task{RenewResponse}</returns>
+        /// <returns>Task{RenewResponse}.</returns>
         Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default");
+
+        /// <summary>
+        /// Renews tokens.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
+        /// <param name="authorizationServerId">The authorization server.</param>
+        /// <returns>Task{RenewResponse}.</returns>
+        Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default");
 
         /// <summary>
         /// Revokes tokens associated with this OktaState.

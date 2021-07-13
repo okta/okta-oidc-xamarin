@@ -26,5 +26,10 @@ namespace Okta.Xamarin
         /// Gets or sets the state manager.
         /// </summary>
         public IOktaStateManager StateManager { get; set; }
+
+        /// <summary>
+        /// Gets or sets the response object.
+        /// </summary>
+        public object Response { get; set; }
     }
 }
