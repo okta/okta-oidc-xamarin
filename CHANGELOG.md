@@ -1,6 +1,13 @@
 # Changelog
 Running changelog of releases since `1.0.0-beta01`
 
+## v2.0.0
+
+Cleanup and continued refinement of existing features.
+
+- Removed demo application from primary binaries
+- Fixed Revoke & Renew implementations
+
 ## v1.0.0
 
 This is the first stable release of the Okta Xamarin Sdk. 
