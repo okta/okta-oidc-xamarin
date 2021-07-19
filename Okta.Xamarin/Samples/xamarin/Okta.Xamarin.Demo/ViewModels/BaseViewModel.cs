@@ -62,6 +62,12 @@ namespace Okta.Xamarin.Demo.ViewModels
 		public string IdToken { get => OktaContext.IdToken; }
 		public string RefreshToken { get => OktaContext.RefreshToken; }
 
+		protected void OnAuthenticationFailed(object sender, EventArgs e)
+		{
+			AuthenticationFailedEventArgs args = (AuthenticationFailedEventArgs)e;
+			this.Page?.DisplayAlert(args?.OAuthException?.ErrorTitle, args?.OAuthException?.ErrorDescription, "OK");
+		}
+
 		protected void OnSignInCompleted(object sender, EventArgs e)
 		{
 			this.OktaStateManager = ((SignInEventArgs)e).StateManager;

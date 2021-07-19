@@ -29,8 +29,9 @@ namespace Okta.Xamarin.Demo.iOS
 			// Additional logic to execute can go here if necessary
 
 			// for demo purposes go to the profile page after sign in and sign out
-			OktaContext.Current.SignInCompleted += (sender, args) => Shell.Current.GoToAsync("//ProfilePage");
-			OktaContext.Current.SignOutCompleted += (sender, args) => Shell.Current.GoToAsync("//ProfilePage");
+			OktaContext.AddSignInCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+			OktaContext.AddSignOutCompletedListener((sender, args) => Shell.Current.GoToAsync("//ProfilePage"));
+			
 			// -- /
 
 			return result;

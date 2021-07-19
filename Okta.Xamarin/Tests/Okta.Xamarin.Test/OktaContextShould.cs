@@ -18,6 +18,24 @@ namespace Okta.Xamarin.Test
     public class OktaContextShould
     {
         [Fact]
+        public void NotRaiseSignInCompleteOnOAuthException()
+        {
+            IOidcClient mockOidcClient = Substitute.For<IOidcClient>();
+            mockOidcClient.When(oidcClient => oidcClient.SignInWithBrowserAsync()).Do(mockOidcClient => throw new OAuthException());
+
+            OktaContext oktaContext = new OktaContext();
+            bool? authenticationFailedEventRaised = false;
+            bool? signInCompletedEventRaised = false;
+            oktaContext.AuthenticationFailed += (sender, args) => authenticationFailedEventRaised = true;
+            oktaContext.SignInCompleted += (sender, args) => signInCompletedEventRaised = true;
+
+            oktaContext.SignInAsync(mockOidcClient);
+
+            Assert.True(authenticationFailedEventRaised);
+            Assert.False(signInCompletedEventRaised);
+        }
+
+        [Fact]
         public void RaiseEventOnRequestException()
         {
             TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.okta.com", "com.test:/redirect", "com.test:/logout"));
