@@ -8,12 +8,18 @@ namespace Okta.Xamarin.Demo.ViewModels
 {
     public class AboutViewModel : BaseViewModel
     {
-        public AboutViewModel()
+		public AboutViewModel() : base()
+		{ }
+
+		public AboutViewModel(ContentPage page)
         {
-            this.Title = "About";
-            this.OpenOktaApiReferenceCommand = new Command(async () => await Browser.OpenAsync("https://developer.okta.com/docs/reference/"));
-            this.SignInCommand = new SignInCommand();
-            this.SignOutCommand = new SignOutCommand();
+			this.Title = "About";
+			this.Page = page;
+			this.OpenOktaApiReferenceCommand = new Command(async () => await Browser.OpenAsync("https://developer.okta.com/docs/reference/"));
+			this.SignInCommand = new SignInCommand();
+			this.SignOutCommand = new SignOutCommand();
+
+			OktaContext.AddAuthenticationFailedListener(this.OnAuthenticationFailed);
 		}
 
 		/// <summary>

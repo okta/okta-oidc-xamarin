@@ -321,6 +321,7 @@ namespace Okta.Xamarin
             catch (OAuthException ex)
             {
                 this.OAuthException = ex;
+                return this.StateManager;
             }
 
             this.SignInCompleted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
