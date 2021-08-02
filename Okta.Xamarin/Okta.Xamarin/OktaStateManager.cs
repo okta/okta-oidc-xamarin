@@ -246,6 +246,14 @@ namespace Okta.Xamarin
             }
         }
 
+        /// <inheritdoc/>
+        public async Task<OktaStateManager> ClearSecureStorageStateAsync()
+        {
+            this.Clear();
+            await this.WriteToSecureStorageAsync();
+            return this;
+        }
+
         protected void OnSecureStorageReadStarted(SecureStorageEventArgs eventArgs)
         {
             this.SecureStorageReadStarted?.Invoke(this, eventArgs);

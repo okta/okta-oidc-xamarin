@@ -289,6 +289,25 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Clear state data from secure storage.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task ClearStateAsync()
+        {
+            await this.StateManager.ClearSecureStorageStateAsync();
+        }
+
+        /// <summary>
+        /// Clear state data from secure storage.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task ClearStateAsync(OktaContext oktaContext = null)
+        {
+            oktaContext = oktaContext ?? Current;
+            await oktaContext.ClearStateAsync();
+        }
+
+        /// <summary>
         /// Get an instance of the specified generic type T from the underlying IoC container.
         /// </summary>
         /// <typeparam name="T">The type to return.</typeparam>

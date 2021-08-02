@@ -207,5 +207,11 @@ namespace Okta.Xamarin
         /// <param name="client">The IOidcClient implementation to apply to the resulting state manager.</param>
         /// <returns><see cref="OktaStateManager"/>.</returns>
         Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config, IOidcClient client);
+
+        /// <summary>
+        /// Calls Clear() then WriteToSecureStorageAsync, effectively writing a stateless state manager to secure storage.
+        /// </summary>
+        /// <returns>The current instance.</returns>
+        Task<OktaStateManager> ClearSecureStorageStateAsync();
     }
 }
