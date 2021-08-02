@@ -64,7 +64,7 @@ namespace Okta.Xamarin.iOS
 
 
 		/// <summary>
-		/// This is used to handle the callback from the Safari view controller after a user logs in.  You need to forward calls to AppDelegate.OpenUrl to this function.  Please see the documentation for more information.
+		/// This is used to handle the callback from the Safari view controller after a user logs in.
 		/// </summary>
 		/// <returns><see langword="true"/> if this url can be handled by an <see cref="OidcClient"/>, or <see langword="false"/> if it is some other url which is not handled by the login flow.</returns>
 		public static bool IsOktaCallback(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)

@@ -6,8 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
+using Okta.Xamarin.Services;
+using Okta.Xamarin.TinyIoC;
 
 namespace Okta.Xamarin
 {
@@ -19,6 +20,59 @@ namespace Okta.Xamarin
         private static Lazy<OktaContext> current = new Lazy<OktaContext>(() => new OktaContext());
         private IOktaStateManager stateManager;
         private OAuthException oAuthException;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OktaContext"/> class.
+        /// </summary>
+        public OktaContext()
+        {
+            this.IoCContainer = new TinyIoCContainer();
+        }
+
+        /// <summary>
+        /// The event that is raised when initialization of services is started.
+        /// </summary>
+        public event EventHandler<InitServicesEventArgs> InitServicesStarted;
+
+        /// <summary>
+        /// The event that is raised when initialization of services completes.
+        /// </summary>
+        public event EventHandler<InitServicesEventArgs> InitServicesCompleted;
+
+        /// <summary>
+        /// The event that is raised when an exception occurs during initialization of services.
+        /// </summary>
+        public event EventHandler<InitServicesEventArgs> InitServicesException;
+
+        /// <summary>
+        /// The event that is raised before writing to secure storage.
+        /// </summary>
+        public event EventHandler<SecureStorageEventArgs> SecureStorageWriteStarted;
+
+        /// <summary>
+        /// The event that is raised when writing to secure storage completes.
+        /// </summary>
+        public event EventHandler<SecureStorageEventArgs> SecureStorageWriteCompleted;
+
+        /// <summary>
+        /// The event that is raised when an exception occurrs writing to secure storage.
+        /// </summary>
+        public event EventHandler<SecureStorageExceptionEventArgs> SecureStorageWriteException;
+
+        /// <summary>
+        /// The event that is raised before reading from secure storage.
+        /// </summary>
+        public event EventHandler<SecureStorageEventArgs> SecureStorageReadStarted;
+
+        /// <summary>
+        /// The event that is raised when reading from secure storage completes.
+        /// </summary>
+        public event EventHandler<SecureStorageEventArgs> SecureStorageReadCompleted;
+
+        /// <summary>
+        /// The event that is raised when an exception occurrs reading from secure storage.
+        /// </summary>
+        public event EventHandler<SecureStorageExceptionEventArgs> SecureStorageReadException;
 
         /// <summary>
         /// The event that is raised when a non success status code is received from the API.
@@ -149,6 +203,11 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Gets or sets the secure key-value store.
+        /// </summary>
+        public SecureKeyValueStore SecureKeyValueStore { get; set; }
+
+        /// <summary>
         /// Gets or sets the default client.
         /// </summary>
         public IOidcClient OidcClient { get; set; }
@@ -170,8 +229,96 @@ namespace Okta.Xamarin
                 if (this.stateManager != null)
                 {
                     this.stateManager.RequestException += (sender, args) => this.RequestException?.Invoke(sender, args);
+                    this.stateManager.SecureStorageReadStarted += (sender, args) => this.SecureStorageReadStarted?.Invoke(sender, args);
+                    this.stateManager.SecureStorageReadCompleted += (sender, args) => this.SecureStorageReadCompleted?.Invoke(sender, args);
+                    this.stateManager.SecureStorageReadException += (sender, args) => this.SecureStorageReadException?.Invoke(sender, args);
+                    this.stateManager.SecureStorageWriteStarted += (sender, args) => this.SecureStorageWriteStarted?.Invoke(sender, args);
+                    this.stateManager.SecureStorageWriteCompleted += (sender, args) => this.SecureStorageWriteCompleted?.Invoke(sender, args);
+                    this.stateManager.SecureStorageWriteException += (sender, args) => this.SecureStorageWriteException?.Invoke(sender, args);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the IoC containter.
+        /// </summary>
+        public TinyIoCContainer IoCContainer { get; set; }
+
+        /// <summary>
+        /// Write the current state to secure storage.
+        /// </summary>
+        public async Task SaveStateAsync()
+        {
+            await this.StateManager.WriteToSecureStorageAsync();
+        }
+
+        /// <summary>
+        /// Write the current state to secure storage.
+        /// </summary>
+        /// <param name="oktaContext">OktaContext whose state is saved.  Default is OktaContext.Current.</param>
+        public static async Task SaveState(OktaContext oktaContext = null)
+        {
+            oktaContext = oktaContext ?? Current;
+            await oktaContext.SaveStateAsync();
+        }
+
+        /// <summary>
+        /// Load state from secure storage.
+        /// </summary>
+        /// <returns>A value indicating if state was loaded successfully.</returns>
+        public async Task<bool> LoadStateAsync()
+        {
+            OktaStateManager stateManager = await this.StateManager.ReadFromSecureStorageAsync();
+            if (stateManager != null)
+            {
+                this.StateManager = stateManager;
+            }
+
+            return stateManager != null;
+        }
+
+        /// <summary>
+        /// Get an instance of the specified generic type T from the underlying IoC container.
+        /// </summary>
+        /// <typeparam name="T">The type to return.</typeparam>
+        /// <returns>{T}.</returns>
+        public static T GetService<T>()
+            where T : class
+        {
+            return Current?.IoCContainer?.Resolve<T>();
+        }
+
+        /// <summary>
+        /// Register default implementations of Okta services into the specified container.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        public static void RegisterOktaDefaults(TinyIoCContainer container)
+        {
+            // additional future service registrations go here
+            container.Register<SecureKeyValueStore, OktaSecureKeyValueStore>();
+            Current.IoCContainer = container;
+        }
+
+        /// <summary>
+        /// Creates or replaces a registration for the specified interface with the specified implementation.
+        /// </summary>
+        /// <typeparam name="TInterfaceType">Type to register</typeparam>
+        /// <typeparam name="TImplementationType">Type to instantiate that implements RegisterType</typeparam>
+        public static void RegisterServiceImplementation<TInterfaceType, TImplementationType>()
+            where TInterfaceType : class
+            where TImplementationType : class, TInterfaceType
+        {
+            Current?.IoCContainer?.Register<TInterfaceType, TImplementationType>();
+        }
+
+        /// <summary>
+        /// Creates or replaces a container class registration with a specific, strong referenced, instance.
+        /// </summary>
+        /// <typeparam name="TInterfaceType">The type to register.</typeparam>
+        /// <param name="instance">Instance of RegisterType to register.</param>
+        public static void RegisterServiceImplementation<TInterfaceType>(object instance)
+        {
+            Current?.IoCContainer?.Register(typeof(TInterfaceType), instance);
         }
 
         /// <summary>
@@ -292,7 +439,41 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Initialize OktaContext.Current with the specified default client.
+        /// Initialize OktaContext.Current services with the implementations in the specified inverson of control container.
+        /// </summary>
+        /// <param name="iocContainer">The inversion of control container.</param>
+        public static void ServiceInit(TinyIoCContainer iocContainer)
+        {
+            Current.InitServices(iocContainer);
+        }
+
+        /// <summary>
+        /// Initialize services using the specified container.
+        /// </summary>
+        /// <param name="iocContainer">The inversion of control container.</param>
+        public void InitServices(TinyIoCContainer iocContainer)
+        {
+            try
+            {
+                this.InitServicesStarted?.Invoke(this, new InitServicesEventArgs { TinyIoCContainer = iocContainer });
+                this.IoCContainer = iocContainer;
+
+                this.OidcClient = iocContainer.Resolve<IOidcClient>();
+                this.SecureKeyValueStore = iocContainer.Resolve<SecureKeyValueStore>();
+
+                // future services
+                // to be added here
+
+                this.InitServicesCompleted?.Invoke(this, new InitServicesEventArgs { TinyIoCContainer = iocContainer });
+            }
+            catch (Exception ex)
+            {
+                this.InitServicesException?.Invoke(this, new InitServicesEventArgs { Exception = ex });
+            }
+        }
+
+        /// <summary>
+        /// Initialize OktaContext.Current with the specified client.
         /// </summary>
         /// <param name="oidcClient">The client.</param>
         public static void Init(IOidcClient oidcClient)

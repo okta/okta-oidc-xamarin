@@ -5,7 +5,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using TinyIoC;
+using Okta.Xamarin.TinyIoC;
 using Xunit;
 
 namespace Okta.Xamarin.Test
