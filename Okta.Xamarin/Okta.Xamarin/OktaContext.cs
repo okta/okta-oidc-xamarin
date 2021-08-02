@@ -256,7 +256,7 @@ namespace Okta.Xamarin
         /// Write the current state to secure storage.
         /// </summary>
         /// <param name="oktaContext">OktaContext whose state is saved.  Default is OktaContext.Current.</param>
-        public static async Task SaveState(OktaContext oktaContext = null)
+        public static async Task SaveStateAsync(OktaContext oktaContext = null)
         {
             oktaContext = oktaContext ?? Current;
             await oktaContext.SaveStateAsync();
@@ -275,6 +275,17 @@ namespace Okta.Xamarin
             }
 
             return stateManager != null;
+        }
+
+        /// <summary>
+        /// Load state from secure storage.
+        /// </summary>
+        /// <param name="oktaContext">The context to load state for.</param>
+        /// <returns>A value indicating if state was loaded successfully.</returns>
+        public static async Task<bool> LoadStateAsync(OktaContext oktaContext = null)
+        {
+            oktaContext = oktaContext ?? Current;
+            return await oktaContext.LoadStateAsync();
         }
 
         /// <summary>
@@ -319,6 +330,60 @@ namespace Okta.Xamarin
         public static void RegisterServiceImplementation<TInterfaceType>(object instance)
         {
             Current?.IoCContainer?.Register(typeof(TInterfaceType), instance);
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.SecureStorageReadStarted event.
+        /// </summary>
+        /// <param name="secureStorageReadEventHandler">The event handler.</param>
+        public static void AddSecureStorageReadStartedListener(EventHandler<SecureStorageEventArgs> secureStorageReadEventHandler)
+        {
+            Current.SecureStorageReadStarted += secureStorageReadEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.SecureStorageReadCompleted event.
+        /// </summary>
+        /// <param name="secureStorageReadEventHandler">The event handler.</param>
+        public static void AddSecureStorageReadCompletedListener(EventHandler<SecureStorageEventArgs> secureStorageReadEventHandler)
+        {
+            Current.SecureStorageReadCompleted += secureStorageReadEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.SecureStorageReadException event.
+        /// </summary>
+        /// <param name="secureStorageExceptionHandler">The event handler.</param>
+        public static void AddSecureStorageReadExceptionListener(EventHandler<SecureStorageExceptionEventArgs> secureStorageExceptionHandler)
+        {
+            Current.SecureStorageReadException += secureStorageExceptionHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.SecureStorageWriteStarted event.
+        /// </summary>
+        /// <param name="secureStorageWriteEventHandler">The event handler.</param>
+        public static void AddSecureStorageWriteStartedListener(EventHandler<SecureStorageEventArgs> secureStorageWriteEventHandler)
+        {
+            Current.SecureStorageWriteStarted += secureStorageWriteEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.SecureStorageWriteCompleted event.
+        /// </summary>
+        /// <param name="secureStorageWriteEventHandler">The event handler.</param>
+        public static void AddSecureStorageWriteCompletedListener(EventHandler<SecureStorageEventArgs> secureStorageWriteEventHandler)
+        {
+            Current.SecureStorageWriteCompleted += secureStorageWriteEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.SecureStorageWriteException event.
+        /// </summary>
+        /// <param name="secureStorageExceptionHandler">The event handler.</param>
+        public static void AddSecureStorageWriteExceptionListener(EventHandler<SecureStorageExceptionEventArgs> secureStorageExceptionHandler)
+        {
+            Current.SecureStorageWriteException += secureStorageExceptionHandler;
         }
 
         /// <summary>

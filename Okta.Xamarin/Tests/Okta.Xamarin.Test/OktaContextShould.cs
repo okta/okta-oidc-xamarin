@@ -22,6 +22,9 @@ namespace Okta.Xamarin.Test
         public void RaiseSecureStorageWriteEventsOnSaveStateAsync()
         {
             TestOktaStateManager testOktaStateManager = new TestOktaStateManager();
+            OktaContext oktaContext = new OktaContext() { StateManager = testOktaStateManager };
+            OktaContext.Current = oktaContext;
+
             IOktaConfig testConfig = Substitute.For<IOktaConfig>();
             IOidcClient testClient = Substitute.For<IOidcClient>();
             SecureKeyValueStore testSecureKeyValueStore = Substitute.For<SecureKeyValueStore>();
@@ -29,13 +32,13 @@ namespace Okta.Xamarin.Test
             OktaContext.RegisterServiceImplementation<SecureKeyValueStore>(testSecureKeyValueStore);
             OktaContext.RegisterServiceImplementation<IOktaConfig>(testConfig);
             OktaContext.RegisterServiceImplementation<IOidcClient>(testClient);
-            OktaContext oktaContext = new OktaContext() { StateManager = testOktaStateManager };
+
             bool? startedEventWasRaised = false;
             bool? completedEventWasRaised = false;
-            oktaContext.SecureStorageWriteStarted += (sender, args) => startedEventWasRaised = true;
-            oktaContext.SecureStorageWriteCompleted += (sender, args) => completedEventWasRaised = true;
+            OktaContext.AddSecureStorageWriteStartedListener((sender, args) => startedEventWasRaised = true);
+            OktaContext.AddSecureStorageWriteCompletedListener((sender, args) => completedEventWasRaised = true);
 
-            oktaContext.SaveStateAsync().Wait();
+            OktaContext.SaveStateAsync().Wait();
 
             startedEventWasRaised.Should().BeTrue();
             completedEventWasRaised.Should().BeTrue();
@@ -45,6 +48,9 @@ namespace Okta.Xamarin.Test
         public void RaiseSecureStorageReadEventsOnLoadStateAsync()
         {
             TestOktaStateManager testOktaStateManager = new TestOktaStateManager();
+            OktaContext oktaContext = new OktaContext() { StateManager = testOktaStateManager };
+            OktaContext.Current = oktaContext;
+
             IOktaConfig testConfig = Substitute.For<IOktaConfig>();
             IOidcClient testClient = Substitute.For<IOidcClient>();
             SecureKeyValueStore testSecureKeyValueStore = Substitute.For<SecureKeyValueStore>();
@@ -52,13 +58,13 @@ namespace Okta.Xamarin.Test
             OktaContext.RegisterServiceImplementation<SecureKeyValueStore>(testSecureKeyValueStore);
             OktaContext.RegisterServiceImplementation<IOktaConfig>(testConfig);
             OktaContext.RegisterServiceImplementation<IOidcClient>(testClient);
-            OktaContext oktaContext = new OktaContext() { StateManager = testOktaStateManager };
+
             bool? startedEventWasRaised = false;
             bool? completedEventWasRaised = false;
-            oktaContext.SecureStorageReadStarted += (sender, args) => startedEventWasRaised = true;
-            oktaContext.SecureStorageReadCompleted += (sender, args) => completedEventWasRaised = true;
+            OktaContext.AddSecureStorageReadStartedListener((sender, args) => startedEventWasRaised = true);
+            OktaContext.AddSecureStorageReadCompletedListener((sender, args) => completedEventWasRaised = true);
 
-            bool loaded = oktaContext.LoadStateAsync().Result;
+            bool loaded = OktaContext.LoadStateAsync().Result;
 
             loaded.Should().BeTrue();
             startedEventWasRaised.Should().BeTrue();
