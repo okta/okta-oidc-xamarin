@@ -300,7 +300,7 @@ namespace Okta.Xamarin
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ClearStateAsync()
         {
-            await this.StateManager.ClearSecureStorageStateAsync();
+            await this.StateManager?.ClearSecureStorageStateAsync();
         }
 
         /// <summary>
