@@ -250,7 +250,7 @@ namespace Okta.Xamarin
         /// </summary>
         public async Task SaveStateAsync()
         {
-            await this.StateManager.WriteToSecureStorageAsync();
+            await this.StateManager?.WriteToSecureStorageAsync();
         }
 
         /// <summary>
