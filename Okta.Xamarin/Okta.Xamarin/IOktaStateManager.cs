@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Okta.Xamarin
 {
@@ -213,5 +214,12 @@ namespace Okta.Xamarin
         /// </summary>
         /// <returns>The current instance.</returns>
         Task<OktaStateManager> ClearSecureStorageStateAsync();
+
+        /// <summary>
+        /// Convert the current state manager instance to the json equivalent.
+        /// </summary>
+        /// <param name="formatting">The formatting.</param>
+        /// <returns>json string.</returns>
+        string ToJson(Formatting formatting = Formatting.Indented);
     }
 }

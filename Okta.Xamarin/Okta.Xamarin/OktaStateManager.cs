@@ -30,18 +30,6 @@ namespace Okta.Xamarin
         /// </summary>
         public OktaStateManager()
         {
-            try
-            {
-                OktaStateManager fromSecureStorage = this.ReadFromSecureStorageAsync().Result;
-                if (fromSecureStorage != null)
-                {
-                    this.Copy(fromSecureStorage);
-                }
-            }
-            catch
-            {
-                // swallow
-            }
         }
 
         /// <summary>
@@ -136,6 +124,7 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
+        [JsonIgnore]
         public HttpResponseMessage LastApiResponse { get => this.Client?.LastApiResponse; }
 
         /// <inheritdoc/>
@@ -350,6 +339,7 @@ namespace Okta.Xamarin
             this.RefreshToken = string.Empty;
         }
 
+        /// <inheritdoc/>
         public string ToJson(Formatting formatting = Formatting.Indented)
         {
             return JsonConvert.SerializeObject(this, formatting);

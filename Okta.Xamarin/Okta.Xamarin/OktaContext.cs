@@ -26,6 +26,7 @@ namespace Okta.Xamarin
         /// </summary>
         public OktaContext()
         {
+            this.stateManager = new OktaStateManager();
             this.IoCContainer = new TinyIoCContainer();
         }
 
@@ -268,6 +269,11 @@ namespace Okta.Xamarin
         /// <returns>A value indicating if state was loaded successfully.</returns>
         public async Task<bool> LoadStateAsync()
         {
+            if (this.StateManager == null)
+            {
+                this.StateManager = new OktaStateManager();
+            }
+
             OktaStateManager stateManager = await this.StateManager.ReadFromSecureStorageAsync();
             if (stateManager != null)
             {
