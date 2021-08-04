@@ -9,7 +9,7 @@ using Okta.Xamarin.TinyIoC;
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// Represents arguments relevant to initializing services events.
+    /// Arguments relevant to events that occur during service initialization.
     /// </summary>
     public class InitServicesEventArgs : EventArgs
     {

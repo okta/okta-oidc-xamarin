@@ -260,11 +260,11 @@ namespace Okta.Xamarin
             this.SecureStorageReadStarted?.Invoke(this, eventArgs);
         }
 
-		/// <summary>
-		/// Raises the SecureStorageReadCompleted event.
-		/// </summary>
-		/// <param name="eventArgs">The event arguments.</param>
-		protected void OnSecureStorageReadCompleted(SecureStorageEventArgs eventArgs)
+        /// <summary>
+        /// Raises the SecureStorageReadCompleted event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
+        protected void OnSecureStorageReadCompleted(SecureStorageEventArgs eventArgs)
         {
             this.SecureStorageReadCompleted?.Invoke(this, eventArgs);
         }
