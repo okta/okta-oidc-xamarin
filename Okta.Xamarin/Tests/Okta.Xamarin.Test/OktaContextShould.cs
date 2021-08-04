@@ -168,7 +168,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public void RaiseEventOnSecureStorageReadException()
+        public void RaiseEventOnStateManagerSecureStorageReadException()
         {
             TestOktaStateManager testStateManager = new TestOktaStateManager();
             OktaContext oktaContext = new OktaContext() { StateManager = testStateManager };
@@ -186,7 +186,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public void RaiseEventOnSecureStorageWriteException()
+        public void RaiseEventOnStateManagerSecureStorageWriteException()
         {
             TestOktaStateManager testStateManger = new TestOktaStateManager();
             OktaContext oktaContext = new OktaContext() { StateManager = testStateManger };
