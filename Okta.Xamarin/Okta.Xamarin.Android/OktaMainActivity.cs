@@ -81,6 +81,9 @@ namespace Okta.Xamarin.Android
 			// extenders may override this method to execute code when sign out completes.
 		}
 
+		/// <summary>
+		/// Gets the inversion of control container.
+		/// </summary>
 		protected TinyIoCContainer OktaContainer { get; }
 
 		private void RegisterOktaServices()
