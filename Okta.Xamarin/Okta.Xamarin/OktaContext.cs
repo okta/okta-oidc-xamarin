@@ -46,6 +46,21 @@ namespace Okta.Xamarin
         public event EventHandler<InitServicesEventArgs> InitServicesException;
 
         /// <summary>
+        /// The event that is raised when LoadStateAsync is started.
+        /// </summary>
+        public event EventHandler<SecureStorageEventArgs> LoadStateStarted;
+
+        /// <summary>
+        /// The event that is raised when LoadStateAsync completes.
+        /// </summary>
+        public event EventHandler<SecureStorageEventArgs> LoadStateCompleted;
+
+        /// <summary>
+        /// The event that is raised when an exception occurs in LoadStateAsync.
+        /// </summary>
+        public event EventHandler<SecureStorageExceptionEventArgs> LoadStateException;
+
+        /// <summary>
         /// The event that is raised before writing to secure storage.
         /// </summary>
         public event EventHandler<SecureStorageEventArgs> SecureStorageWriteStarted;
@@ -274,13 +289,27 @@ namespace Okta.Xamarin
                 this.StateManager = new OktaStateManager();
             }
 
-            OktaStateManager stateManager = await this.StateManager.ReadFromSecureStorageAsync();
-            if (stateManager != null)
+            try
             {
-                this.StateManager = stateManager;
-            }
+                this.LoadStateStarted?.Invoke(this, new SecureStorageEventArgs { OktaStateManager = this.StateManager });
+                OktaStateManager stateManager = await this.StateManager.ReadFromSecureStorageAsync();
+                if (stateManager != null && !string.IsNullOrEmpty(stateManager.AccessToken))
+                {
+                    this.StateManager = stateManager;
+                }
+                else
+                {
+                    stateManager = this.StateManager as OktaStateManager;
+                }
 
-            return stateManager != null;
+                this.LoadStateCompleted?.Invoke(this, new SecureStorageEventArgs { OktaStateManager = stateManager });
+                return stateManager != null;
+            }
+            catch (Exception ex)
+            {
+                this.LoadStateException?.Invoke(this, new SecureStorageExceptionEventArgs { Exception = ex });
+                return false;
+            }
         }
 
         /// <summary>
@@ -355,6 +384,33 @@ namespace Okta.Xamarin
         public static void RegisterServiceImplementation<TInterfaceType>(object instance)
         {
             Current?.IoCContainer?.Register(typeof(TInterfaceType), instance);
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.LoadStateStarted event.
+        /// </summary>
+        /// <param name="loadStateStartedEventHandler">The event handler.</param>
+        public static void AddLoadStateStartedListener(EventHandler<SecureStorageEventArgs> loadStateStartedEventHandler)
+        {
+            Current.LoadStateStarted += loadStateStartedEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.LoadStateComplted event.
+        /// </summary>
+        /// <param name="loadStateCompletedEventHandler">The event handler.</param>
+        public static void AddLoadStateCompletedListener(EventHandler<SecureStorageEventArgs> loadStateCompletedEventHandler)
+        {
+            Current.LoadStateCompleted += loadStateCompletedEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.LoadStateException event.
+        /// </summary>
+        /// <param name="loadStateExceptionEventHandler">The event handler.</param>
+        public static void AddLoadStateExceptionListener(EventHandler<SecureStorageExceptionEventArgs> loadStateExceptionEventHandler)
+        {
+            Current.LoadStateException += loadStateExceptionEventHandler;
         }
 
         /// <summary>

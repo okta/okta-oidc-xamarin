@@ -19,6 +19,102 @@ namespace Okta.Xamarin.Test
     public class OktaContextShould
     {
         [Fact]
+        public void LoadState()
+        {
+            string testAccessToken = "load state test:  access token";
+            OktaContext oktaContext = new OktaContext() { StateManager = new OktaStateManager { AccessToken = null } };
+            OktaContext.Current = oktaContext;
+
+            IOktaConfig testConfig = Substitute.For<IOktaConfig>();
+            IOidcClient testClient = Substitute.For<IOidcClient>();
+            SecureKeyValueStore testSecureKeyValueStore = Substitute.For<SecureKeyValueStore>();
+            testSecureKeyValueStore.GetAsync<OktaStateManager>(OktaStateManager.StoreKey).Returns(new OktaStateManager { AccessToken = testAccessToken }); // represents what is in secure storage
+            OktaContext.RegisterServiceImplementation<SecureKeyValueStore>(testSecureKeyValueStore);
+            OktaContext.RegisterServiceImplementation<IOktaConfig>(testConfig);
+            OktaContext.RegisterServiceImplementation<IOidcClient>(testClient);
+
+            bool? completedEventWasRaised = false;
+            OktaContext.AddLoadStateCompletedListener((sender, args) =>
+            {
+                args.OktaStateManager.AccessToken.Should().Be(testAccessToken);
+                completedEventWasRaised = true;
+            });
+
+            OktaContext.AccessToken.Should().BeNull();
+
+            OktaContext.LoadStateAsync().Wait();
+
+            completedEventWasRaised.Should().BeTrue();
+            OktaContext.AccessToken.Should().BeEquivalentTo(testAccessToken);
+        }
+
+        [Fact]
+        public void NotLoadEmptyStateOverAuthenticatedState()
+        {
+            string testAccessToken = "test access token";
+            OktaContext oktaContext = new OktaContext() { StateManager = new OktaStateManager { AccessToken = testAccessToken } };
+            OktaContext.Current = oktaContext;
+
+            IOktaConfig testConfig = Substitute.For<IOktaConfig>();
+            IOidcClient testClient = Substitute.For<IOidcClient>();
+            SecureKeyValueStore testSecureKeyValueStore = Substitute.For<SecureKeyValueStore>();
+            testSecureKeyValueStore.GetAsync<OktaStateManager>(OktaStateManager.StoreKey).Returns(new OktaStateManager { AccessToken = null }); // represents what is in secure storage
+            OktaContext.RegisterServiceImplementation<SecureKeyValueStore>(testSecureKeyValueStore);
+            OktaContext.RegisterServiceImplementation<IOktaConfig>(testConfig);
+            OktaContext.RegisterServiceImplementation<IOidcClient>(testClient);
+
+            bool? completedEventWasRaised = false;
+            OktaContext.AddLoadStateCompletedListener((sender, args) =>
+            {
+                args.OktaStateManager.AccessToken.Should().Be(testAccessToken);
+                completedEventWasRaised = true;
+            });
+
+            OktaContext.AccessToken.Should().BeEquivalentTo(testAccessToken);
+
+            OktaContext.LoadStateAsync().Wait();
+
+            completedEventWasRaised.Should().BeTrue();
+            OktaContext.AccessToken.Should().BeEquivalentTo(testAccessToken); // Loading state should not overwrite existing access token with empty string
+        }
+
+        [Fact]
+        public void RaiseLoadStateExceptionEvent()
+        {
+            IOktaStateManager stateManager = Substitute.For<IOktaStateManager>();
+            stateManager.ReadFromSecureStorageAsync().Returns(new OktaStateManager());
+            OktaContext oktaContext = new OktaContext() { StateManager = stateManager };
+            OktaContext.Current = oktaContext;
+
+            bool? exceptionEventWasRaised = false;
+            OktaContext.AddLoadStateStartedListener((sender, args) => throw new Exception("This is a test exception to test that the exception event is raised"));
+            OktaContext.AddLoadStateExceptionListener((sender, args) => exceptionEventWasRaised = true);
+
+            OktaContext.LoadStateAsync().Wait();
+
+            exceptionEventWasRaised.Should().BeTrue();
+        }
+
+        [Fact]
+        public void RaiseLoadStateEvents()
+        {
+            IOktaStateManager stateManager = Substitute.For<IOktaStateManager>();
+            stateManager.ReadFromSecureStorageAsync().Returns(new OktaStateManager());
+            OktaContext oktaContext = new OktaContext() { StateManager = stateManager };
+            OktaContext.Current = oktaContext;
+
+            bool? startedEventWasRaised = false;
+            bool? completedEventWasRaised = false;
+            OktaContext.AddLoadStateStartedListener((sender, args) => startedEventWasRaised = true);
+            OktaContext.AddLoadStateCompletedListener((sender, args) => completedEventWasRaised = true);
+
+            OktaContext.LoadStateAsync().Wait();
+
+            startedEventWasRaised.Should().BeTrue();
+            completedEventWasRaised.Should().BeTrue();
+        }
+
+        [Fact]
         public void RaiseSecureStorageWriteEventsOnSaveStateAsync()
         {
             TestOktaStateManager testOktaStateManager = new TestOktaStateManager();
