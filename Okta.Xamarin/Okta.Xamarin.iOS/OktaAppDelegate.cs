@@ -63,35 +63,66 @@ namespace Okta.Xamarin.iOS
 		// OktaAppDelegate, the call to base.FinishedLaunching results in the Forms.SetFlags and Forms.Init 
 		// methods being called twice; this causes an exception to be thrown.
 
+		/// <summary>
+		/// Executes code in response to the sign in completed event.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signInEventArgs"></param>
 		protected void HandleSignInCompleted(object sender, SignInEventArgs signInEventArgs)
 		{
 			// future Okta specific updates go here
 			this.OnSignInCompleted(sender, signInEventArgs);
 		}
 
+		/// <summary>
+		/// A virtual method to be overridden by consumers to execute code when sign in completes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signInEventArgs"></param>
 		public virtual void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
 		{
 			// extenders may override this method to execute code when sign in completes
 		}
 
+		/// <summary>
+		/// Executes code in response to the sign out completed event.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signOutEventArgs"></param>
 		protected void HandleSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
 		{
 			// future Okta specific updates go here
 			this.OnSignOutCompleted(sender, signOutEventArgs);
 		}
 
+		/// <summary>
+		/// A virtual method to be overridden by consumers to execute code when sign out completes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signOutEventArgs"></param>
 		public virtual void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
 		{
 			// extenders may override this method to execute code when sign out completes.
 		}
 
+		/// <summary>
+		/// Gets the Okta inversion of control container.
+		/// </summary>
 		protected TinyIoCContainer OktaContainer { get; }
 
+		/// <summary>
+		/// Registers Okta services with the inversion of control container.
+		/// </summary>
 		protected void RegisterOktaServices()
 		{
 			RegisterOktaServices(OktaContainer);
 		}
 
+		/// <summary>
+		/// A virtual method to be overridden by consumers to examine, interact with and change the 
+		/// inversion of control container.
+		/// </summary>
+		/// <param name="iocContainer">The inversion of control container.</param>
 		protected virtual void RegisterOktaServices(TinyIoCContainer iocContainer)
 		{
 			// extenders may override this method to register their services with the IoCContainer
@@ -136,35 +167,66 @@ namespace Okta.Xamarin.iOS
 			return iOsOidcClient.IsOktaCallback(application, url, sourceApplication, annotation);
 		}
 
+		/// <summary>
+		/// Executes code in response to the sign in completed event.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signInEventArgs"></param>
 		protected void HandleSignInCompleted(object sender, SignInEventArgs signInEventArgs)
 		{
 			// future Okta specific updates go here
 			this.OnSignInCompleted(sender, signInEventArgs);
 		}
 
+		/// <summary>
+		/// A virtual method to be overridden by consumers to execute code when sign in completes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signInEventArgs"></param>
 		public virtual void OnSignInCompleted(object sender, SignInEventArgs signInEventArgs)
 		{
 			// extenders may override this method to execute code when sign in completes
 		}
 
+		/// <summary>
+		/// Executes code in response to the sign out completed event.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signOutEventArgs"></param>
 		protected void HandleSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
 		{
 			// future Okta specific updates go here
 			this.OnSignOutCompleted(sender, signOutEventArgs);
 		}
 
+		/// <summary>
+		/// A virtual method to be overridden by consumers to execute code when sign out completes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="signOutEventArgs"></param>
 		public virtual void OnSignOutCompleted(object sender, SignOutEventArgs signOutEventArgs)
 		{
 			// extenders may override this method to execute code when sign out completes.
 		}
 
+		/// <summary>
+		/// Gets the Okta inversion of control container.
+		/// </summary>
 		protected TinyIoCContainer OktaContainer { get; }
 
+		/// <summary>
+		/// Registers Okta services with the inversion of control container.
+		/// </summary>
 		protected void RegisterOktaServices()
 		{
 			RegisterOktaServices(OktaContainer);
 		}
 
+		/// <summary>
+		/// A virtual method to be overridden by consumers to examine, interact with and change the 
+		/// inversion of control container.
+		/// </summary>
+		/// <param name="iocContainer">The inversion of control container.</param>
 		protected virtual void RegisterOktaServices(TinyIoCContainer iocContainer)
 		{
 			// extenders may override this method to register their services with the IoCContainer
