@@ -10,7 +10,7 @@ using System.Text;
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// Arguments relevant to to secure storage exceptions.
+    /// Arguments relevant to secure storage exceptions.
     /// </summary>
     public class SecureStorageExceptionEventArgs : EventArgs
     {

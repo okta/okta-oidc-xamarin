@@ -180,11 +180,19 @@ namespace Okta.Xamarin
             }
         }
 
+        /// <summary>
+        /// Raises the SecureStorageWriteStarted event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
         protected void OnSecureStorageWriteStarted(SecureStorageEventArgs eventArgs)
         {
             this.SecureStorageWriteStarted?.Invoke(this, eventArgs);
         }
 
+        /// <summary>
+        /// Raises the SecureStorageWriteCompleted event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
         protected void OnSecureStorageWriteCompleted(SecureStorageEventArgs eventArgs)
         {
             this.SecureStorageWriteCompleted?.Invoke(this, eventArgs);
