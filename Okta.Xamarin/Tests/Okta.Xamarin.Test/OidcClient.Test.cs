@@ -4,6 +4,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -86,7 +87,7 @@ namespace Okta.Xamarin
         /// Allows setting a custom <see cref="HttpMessageHandler"/> for use by this client's <see cref="HttpClient"/>, in order to mock of HTTP requests
         /// </summary>
         /// <param name="handler"></param>
-        public void SetHttpMock(HttpMessageHandler handler)
+        public void SetMockHttpMessageHandler(HttpMessageHandler handler)
         {
             if (handler == null)
                 client = new HttpClient();
@@ -106,6 +107,11 @@ namespace Okta.Xamarin
         public void RaiseRequestExceptionEvent(RequestExceptionEventArgs requestExceptionEventArgs)
         {
             this.OnRequestException(requestExceptionEventArgs);
+        }
+
+        public void CallPerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = null, params KeyValuePair<string, string>[] formUrlEncodedContent)
+        {
+            base.PerformAuthorizationServerRequestAsync(httpMethod, path, headers, authorizationServerId, formUrlEncodedContent);
         }
     }
 }

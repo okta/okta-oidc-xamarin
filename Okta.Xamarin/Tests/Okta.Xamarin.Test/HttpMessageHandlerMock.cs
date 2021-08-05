@@ -16,8 +16,12 @@ namespace Okta.Xamarin.Test
     {
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var content = await request.Content.ReadAsStringAsync();
-            System.Collections.Specialized.NameValueCollection data = System.Web.HttpUtility.ParseQueryString(content);
+            System.Collections.Specialized.NameValueCollection data = new System.Collections.Specialized.NameValueCollection();
+            if (request.Content != null)
+            {
+                string content = await request.Content.ReadAsStringAsync();
+                data = System.Web.HttpUtility.ParseQueryString(content);
+            }
             var response = Responder(
                 new Tuple<string, Dictionary<string, string>>(request.RequestUri.ToString(), data.ToDictionary()));
 

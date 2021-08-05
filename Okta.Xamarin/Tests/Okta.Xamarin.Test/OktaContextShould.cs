@@ -409,5 +409,47 @@ namespace Okta.Xamarin.Test
             OktaContext context = new OktaContext();
             context.IoCContainer.Should().NotBeNull();
         }
+
+        [Fact]
+        public void RaiseRenewExceptionEvent()
+        {
+            bool? renewExceptionEventRaised = false;
+            Exception testException = new Exception("This is a test exception");
+            IOidcClient mockClient = Substitute.For<IOidcClient>();
+            mockClient.RenewAsync<RenewResponse>(Arg.Any<string>()).Returns(new RenewResponse());
+            OktaContext.Current.StateManager.Client = mockClient;
+            OktaContext.AddRenewExceptionListener((sender, renewExceptionEventArgs) =>
+            {
+                renewExceptionEventArgs.Exception.Should().Be(testException);
+                renewExceptionEventRaised = true;
+            });
+
+            OktaContext.AddRenewCompletedListener((sender, renewEventArgs) => throw testException);
+
+            OktaContext.Current.RenewAsync().Wait();
+
+            renewExceptionEventRaised.Should().BeTrue();
+        }
+
+        [Fact]
+        public void RaiseRevokeExceptionEvent()
+        {
+            bool? revokeExceptionEventRaised = false;
+            Exception testException = new Exception("This is a test exception");
+            IOktaStateManager mockStateManager = Substitute.For<IOktaStateManager>();
+
+            OktaContext.AddRevokeExceptionListener((sender, revokeExceptionEventArgs) =>
+            {
+                revokeExceptionEventArgs.Exception.Should().Be(testException);
+                revokeExceptionEventRaised = true;
+            });
+
+            OktaContext.AddRevokeCompletedListener((sender, renewEventArgs) => throw testException);
+
+            OktaContext.Current.StateManager = mockStateManager;
+            OktaContext.Current.RevokeAsync().Wait();
+
+            revokeExceptionEventRaised.Should().BeTrue();
+        }
     }
 }

@@ -3,14 +3,16 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
+using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Okta.Xamarin.Test
 {
-	public class OidcClientShould
+    public class OidcClientShould
     {
         [Fact]
         public void FailWithInvalidConfig()
@@ -21,7 +23,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public void GetCorrectAuthUrl()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect+&TEST!@url%20Encode#*^(0)", "com.test:/logout") { Scope = "test hello test_scope" });
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect+&TEST!@url%20Encode#*^(0)", "com.test:/logout") { Scope = "test hello test_scope" });
 
             string url = client.GenerateAuthorizeUrlTest();
             Assert.StartsWith("https://dev-00000.oktapreview.com/oauth2/default/v1/authorize?", url);
@@ -33,7 +35,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void LaunchBrowserCorrectly()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             bool didLaunchBrowser = false;
 
@@ -51,7 +53,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void CloseBrowserCorrectly()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             bool didCloseBrowser = false;
 
@@ -73,7 +75,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void RequestAccessToken()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             bool didRequestAccessToken = false;
 
@@ -93,7 +95,7 @@ namespace Okta.Xamarin.Test
                     @"{ ""access_token"": ""access_token_example"", ""token_type"": ""testing""}");
             };
 
-            client.SetHttpMock(mockHttpClient);
+            client.SetMockHttpMessageHandler(mockHttpClient);
 
             client.OnLaunchBrowser = new Action<string>(url =>
             {
@@ -109,7 +111,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public void SuccessfullyGetAccessToken()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             HttpMessageHandlerMock mockHttpClient = new HttpMessageHandlerMock();
             mockHttpClient.Responder = (request) =>
@@ -122,7 +124,7 @@ namespace Okta.Xamarin.Test
                     @"{ ""access_token"": ""access_token_example"", ""token_type"": ""testing""}");
             };
 
-            client.SetHttpMock(mockHttpClient);
+            client.SetMockHttpMessageHandler(mockHttpClient);
 
             client.OnLaunchBrowser = new Action<string>(url =>
                 OidcClient.CaptureRedirectUrl(new Uri(client.Config.RedirectUri + "?code=12345&state=" + client.State_Internal)));
@@ -153,7 +155,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void FailOnStateMismatchInInitialRequest()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             client.OnLaunchBrowser = new Action<string>(url =>
             {
@@ -167,7 +169,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void FailOnErrorInInitialRequest()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             client.OnLaunchBrowser = new Action<string>(url =>
             {
@@ -181,7 +183,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void RaiseAuthenticationFailedEvent()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             client.OnLaunchBrowser = new Action<string>(url =>
             {
@@ -207,7 +209,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void FailOnErrorDataInAccessTokenRequest()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             HttpMessageHandlerMock mockHttpClient = new HttpMessageHandlerMock();
             mockHttpClient.Responder = (request) =>
@@ -220,7 +222,7 @@ namespace Okta.Xamarin.Test
                     @"{ ""error"": ""test_failure"", ""token_type"": ""testing""}");
             };
 
-            client.SetHttpMock(mockHttpClient);
+            client.SetMockHttpMessageHandler(mockHttpClient);
 
             client.OnLaunchBrowser = new Action<string>(url =>
             {
@@ -233,7 +235,7 @@ namespace Okta.Xamarin.Test
         [Fact]
         public async void FailGracefullyOnHttpErrorInAccessTokenRequest()
         {
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
 
             HttpMessageHandlerMock mockHttpClient = new HttpMessageHandlerMock();
             mockHttpClient.Responder = (request) =>
@@ -246,7 +248,7 @@ namespace Okta.Xamarin.Test
                     @"{ ""error"": ""not_authorized"", ""token_type"": ""testing""}");
             };
 
-            client.SetHttpMock(mockHttpClient);
+            client.SetMockHttpMessageHandler(mockHttpClient);
 
             client.OnLaunchBrowser = new Action<string>(url =>
             {
@@ -275,7 +277,7 @@ namespace Okta.Xamarin.Test
         public async void LaunchBrowserIfAuthenticatedOnSignOut()
         {
             bool? browserLaunched = false;
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
             client.OnLaunchBrowser = (url) => browserLaunched = true;
             client.SignOutOfOktaAsync(new OktaStateManager("testAccessToken", "testTokenType"));
             Assert.True(browserLaunched);
@@ -285,10 +287,200 @@ namespace Okta.Xamarin.Test
         public void NotLaunchBrowserIfNotAuthenticatedOnSignOut()
         {
             bool? browserLaunched = false;
-			TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
+            TestOidcClient client = new TestOidcClient(new OktaConfig("testoktaid", "https://dev-00000.oktapreview.com", "com.test:/redirect", "com.test:/logout"));
             client.OnLaunchBrowser = (url) => browserLaunched = true;
             client.SignOutOfOktaAsync(new OktaStateManager(string.Empty, string.Empty));
             Assert.False(browserLaunched);
+        }
+
+        [Fact]
+        public void UseAuthorizationServerIdFromConfig()
+        {
+            string testClientId = "test client id";
+            string testAuthorizationServerId = "test authorization server id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = testAuthorizationServerId,
+            };
+            bool? requestReceived = false;
+            string testResponse = "test response";
+            HttpMessageHandlerMock mockHttpMessageHandler = new HttpMessageHandlerMock();
+            mockHttpMessageHandler.Responder = (request) =>
+            {
+                string url = request.Item1;
+                Dictionary<string, string> data = request.Item2;
+
+                Assert.Equal($"https://fake.cxm/oauth2/{testAuthorizationServerId}/v1/testPath", url);
+
+                requestReceived = true;
+
+                return new Tuple<System.Net.HttpStatusCode, string>(
+                    System.Net.HttpStatusCode.OK, testResponse);
+            };
+            TestOidcClient testOidcClient = new TestOidcClient(testConfig);
+            testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
+
+            testOidcClient.CallPerformAuthorizationServerRequestAsync(HttpMethod.Post, "/testPath", new Dictionary<string, string>());
+
+            Assert.True(requestReceived);
+        }
+
+        [Fact]
+        public void UseAuthorizationServerIdFromConfigOnRevokeAccessToken()
+        {
+            string testClientId = "test client id";
+            string testAccessToken = "test access token";
+            string testAuthorizationServerId = "test authorization server id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = testAuthorizationServerId,
+            };
+            bool? requestReceived = false;
+            string testResponse = "test response";
+            HttpMessageHandlerMock mockHttpMessageHandler = new HttpMessageHandlerMock();
+            mockHttpMessageHandler.Responder = (request) =>
+            {
+                string url = request.Item1;
+                Dictionary<string, string> data = request.Item2;
+
+                Assert.Equal($"https://fake.cxm/oauth2/{testAuthorizationServerId}/v1/revoke", url);
+                Assert.Equal(testAccessToken, data["token"]);
+                Assert.Equal("access_token", data["token_type_hint"]);
+                Assert.Equal(testClientId, data["client_id"]);
+                requestReceived = true;
+
+                return new Tuple<System.Net.HttpStatusCode, string>(
+                    System.Net.HttpStatusCode.OK, testResponse);
+            };
+            TestOidcClient testOidcClient = new TestOidcClient(testConfig);
+            testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
+
+            testOidcClient.RevokeAccessTokenAsync(testAccessToken).Wait();
+
+            Assert.True(requestReceived);
+        }
+
+        [Fact]
+        public void UseAuthorizationServerIdFromConfigOnRevokeRefreshToken()
+        {
+            string testClientId = "test client id";
+            string testRefreshToken = "test refresh token";
+            string testAuthorizationServerId = "test authorization server id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = testAuthorizationServerId,
+            };
+            bool? requestReceived = false;
+            string testResponse = "test response";
+            HttpMessageHandlerMock mockHttpMessageHandler = new HttpMessageHandlerMock();
+            mockHttpMessageHandler.Responder = (request) =>
+            {
+                string url = request.Item1;
+                Dictionary<string, string> data = request.Item2;
+
+                Assert.Equal($"https://fake.cxm/oauth2/{testAuthorizationServerId}/v1/revoke", url);
+                Assert.Equal(testRefreshToken, data["token"]);
+                Assert.Equal("refresh_token", data["token_type_hint"]);
+                Assert.Equal(testClientId, data["client_id"]);
+                requestReceived = true;
+
+                return new Tuple<System.Net.HttpStatusCode, string>(
+                    System.Net.HttpStatusCode.OK, testResponse);
+            };
+            TestOidcClient testOidcClient = new TestOidcClient(testConfig);
+            testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
+
+            testOidcClient.RevokeRefreshTokenAsync(testRefreshToken).Wait();
+
+            Assert.True(requestReceived);
+        }
+
+        [Fact]
+        public void UseDefaultAuthorizationServerIfNullInConfigOnRevokeAccessToken()
+        {
+            string testAccessToken = "test access token";
+            string testClientId = "test client id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = null,
+            };
+            bool? requestReceived = false;
+            string testResponse = "test response";
+            HttpMessageHandlerMock mockHttpMessageHandler = new HttpMessageHandlerMock();
+            mockHttpMessageHandler.Responder = (request) =>
+            {
+                string url = request.Item1;
+                Dictionary<string, string> data = request.Item2;
+
+                Assert.Equal($"https://fake.cxm/oauth2/default/v1/revoke", url);
+                Assert.Equal(testAccessToken, data["token"]);
+                Assert.Equal("access_token", data["token_type_hint"]);
+                Assert.Equal(testClientId, data["client_id"]);
+                requestReceived = true;
+
+                return new Tuple<System.Net.HttpStatusCode, string>(
+                    System.Net.HttpStatusCode.OK, testResponse);
+            };
+            TestOidcClient testOidcClient = new TestOidcClient(testConfig);
+            testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
+
+            testOidcClient.RevokeAccessTokenAsync(testAccessToken).Wait();
+
+            Assert.True(requestReceived);
+        }
+
+        [Fact]
+        public void UseDefaultAuthorizationServerIfNullInConfigOnRevokeRefreshToken()
+        {
+            string testRefreshToken = "test access token";
+            string testClientId = "test client id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = null,
+            };
+            bool? requestReceived = false;
+            string testResponse = "test response";
+            HttpMessageHandlerMock mockHttpMessageHandler = new HttpMessageHandlerMock();
+            mockHttpMessageHandler.Responder = (request) =>
+            {
+                string url = request.Item1;
+                Dictionary<string, string> data = request.Item2;
+
+                Assert.Equal($"https://fake.cxm/oauth2/default/v1/revoke", url);
+                Assert.Equal(testRefreshToken, data["token"]);
+                Assert.Equal("refresh_token", data["token_type_hint"]);
+                Assert.Equal(testClientId, data["client_id"]);
+                requestReceived = true;
+
+                return new Tuple<System.Net.HttpStatusCode, string>(
+                    System.Net.HttpStatusCode.OK, testResponse);
+            };
+            TestOidcClient testOidcClient = new TestOidcClient(testConfig);
+            testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
+
+            testOidcClient.RevokeRefreshTokenAsync(testRefreshToken).Wait();
+
+            Assert.True(requestReceived);
         }
     }
 }

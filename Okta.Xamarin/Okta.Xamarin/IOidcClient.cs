@@ -77,7 +77,7 @@ namespace Okta.Xamarin
         /// <param name="accessToken">The access token used for authorization.</param>
         /// <param name="authorizationServerId">The authorization server id or null.</param>
         /// <returns>Task{Dictionary{string, object}}</returns>
-        Task<Dictionary<string, object>> GetUserAsync(string accessToken, string authorizationServerId = "default");
+        Task<Dictionary<string, object>> GetUserAsync(string accessToken, string authorizationServerId = null);
 
         /// <summary>
         /// Gets user information.
@@ -86,7 +86,7 @@ namespace Okta.Xamarin
         /// <param name="accessToken">The access token used for authorization.</param>
         /// <param name="authorizationServerId">The authorization server id or null.</param>
         /// <returns>Task{T}.</returns>
-        Task<T> GetUserAsync<T>(string accessToken, string authorizationServerId = "default");
+        Task<T> GetUserAsync<T>(string accessToken, string authorizationServerId = null);
 
         /// <summary>
         /// Gets user information as a ClaimsPrincipal instance.
@@ -95,7 +95,7 @@ namespace Okta.Xamarin
         /// <param name="accessToken">The access token used for authorization.</param>
         /// <param name="authorizationServerId">The authorization server id or null.</param>
         /// <returns>Task{ClaimsPrincipal}.</returns>
-        Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken, string authorizationServerId = "default");
+        Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken, string authorizationServerId = null);
 
         /// <summary>
         /// Gets information about the state of the specified token.
@@ -111,7 +111,7 @@ namespace Okta.Xamarin
         /// <param name="token">The token to introspect.</param>
         /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>Dictionary{string, object}.</returns>
-        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string token, string authorizationServerId = "default");
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string token, string authorizationServerId = null);
 
         /// <summary>
         /// Renews tokens.
@@ -121,6 +121,6 @@ namespace Okta.Xamarin
         /// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
         /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>T.</returns>
-        Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default");
+        Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false, string authorizationServerId = null);
     }
 }
