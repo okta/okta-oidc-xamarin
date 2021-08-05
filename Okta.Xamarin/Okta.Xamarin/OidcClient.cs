@@ -667,7 +667,7 @@ namespace Okta.Xamarin
         /// <returns>Task representing the operation.</returns>
         public async Task RevokeAccessTokenAsync(string accessToken)
         {
-            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", accessToken }, { "token_type_hint", "access_token" }, { "client_id", this.Config.ClientId } });
+            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", accessToken }, { "token_type_hint", "access_token" }, { "client_id", this.Config.ClientId } }, this.Config.AuthorizationServerId ?? "default");
         }
 
         /// <summary>
@@ -677,7 +677,7 @@ namespace Okta.Xamarin
         /// <returns>Task representing the operation.</returns>
         public async Task RevokeRefreshTokenAsync(string refreshToken)
         {
-            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", refreshToken }, { "token_type_hint", "refresh_token" }, { "client_id", this.Config.ClientId } });
+            _ = await this.PerformAuthorizationServerRequestAsync(HttpMethod.Post, "/revoke", new Dictionary<string, string>(), new Dictionary<string, string> { { "token", refreshToken }, { "token_type_hint", "refresh_token" }, { "client_id", this.Config.ClientId } }, this.Config.AuthorizationServerId ?? "default");
         }
     }
 }

@@ -4,6 +4,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -103,9 +104,33 @@ namespace Okta.Xamarin
             return GenerateAuthorizeUrl();
         }
 
-		public void RaiseRequestExceptionEvent(RequestExceptionEventArgs requestExceptionEventArgs)
-		{
-			this.OnRequestException(requestExceptionEventArgs);
-		}
-	}
+        public void RaiseRequestExceptionEvent(RequestExceptionEventArgs requestExceptionEventArgs)
+        {
+            this.OnRequestException(requestExceptionEventArgs);
+        }
+
+        /// <summary>
+        /// Gets or sets the number of time the PerformAuthorizationServerRequestAsync method was called.
+        /// </summary>
+        public int PerformAuthorizationServerRequestCallCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets a dynamic object representing the arguments passed to the PerformAuthorizationServerRequestAsync method.
+        /// </summary>
+        public dynamic PerformAuthorizationServerRequestArgumentsReceived { get; set; }
+
+        protected override async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = "default", params KeyValuePair<string, string>[] formUrlEncodedContent)
+        {
+            ++this.PerformAuthorizationServerRequestCallCount;
+            this.PerformAuthorizationServerRequestArgumentsReceived = new
+            {
+                HttpMethod = httpMethod,
+                Path = path,
+                Headers = headers,
+                AuthorizationServerId = authorizationServerId,
+                FormUrlEncodedContent = formUrlEncodedContent,
+            };
+            return "test response";
+        }
+    }
 }

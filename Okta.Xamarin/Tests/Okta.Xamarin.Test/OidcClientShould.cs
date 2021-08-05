@@ -263,9 +263,9 @@ namespace Okta.Xamarin.Test
             Assert.True(string.IsNullOrEmpty(client.State_Internal));
             Assert.True(string.IsNullOrEmpty(client.CodeChallenge_Internal));
             Assert.True(string.IsNullOrEmpty(client.CodeVerifier_Internal));
-            
+
             client.SignOutOfOktaAsync(new OktaStateManager("testAccessToken", "testTokenType"));
-            
+
             Assert.False(string.IsNullOrEmpty(client.State_Internal));
             Assert.False(string.IsNullOrEmpty(client.CodeChallenge_Internal));
             Assert.False(string.IsNullOrEmpty(client.CodeVerifier_Internal));
@@ -280,7 +280,7 @@ namespace Okta.Xamarin.Test
             client.SignOutOfOktaAsync(new OktaStateManager("testAccessToken", "testTokenType"));
             Assert.True(browserLaunched);
         }
-        
+
         [Fact]
         public void NotLaunchBrowserIfNotAuthenticatedOnSignOut()
         {
@@ -289,6 +289,141 @@ namespace Okta.Xamarin.Test
             client.OnLaunchBrowser = (url) => browserLaunched = true;
             client.SignOutOfOktaAsync(new OktaStateManager(string.Empty, string.Empty));
             Assert.False(browserLaunched);
+        }
+
+        [Fact]
+        public void UseAuthorizationServerIdFromConfigOnRevokeAccessToken()
+        {
+            string testAccessToken = "test access token";
+            string testClientId = "test client id";
+            string testAuthorizationServerId = "test authorization server id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = testAuthorizationServerId,
+            };
+
+            TestOidcClient testClient = new TestOidcClient(testConfig);
+
+            testClient.RevokeAccessTokenAsync(testAccessToken).Wait();
+
+            string receivedAuthorizationServerId = testClient.PerformAuthorizationServerRequestArgumentsReceived.AuthorizationServerId;
+            KeyValuePair<string, string> recievedAccesToken = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[0];
+            KeyValuePair<string, string> recievedTokenType = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[1];
+            KeyValuePair<string, string> recievedClientId = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[2];
+
+            Assert.Equal("token", recievedAccesToken.Key);
+            Assert.Equal(testAccessToken, recievedAccesToken.Value);
+            Assert.Equal("token_type_hint", recievedTokenType.Key);
+            Assert.Equal("access_token", recievedTokenType.Value);
+            Assert.Equal("client_id", recievedClientId.Key);
+            Assert.Equal(testClientId, recievedClientId.Value);
+            Assert.Equal(testAuthorizationServerId, receivedAuthorizationServerId);
+        }
+
+        [Fact]
+        public void UseAuthorizationServerIdFromConfigOnRevokeRefreshToken()
+        {
+            string testRefreshToken = "test refresh token";
+            string testClientId = "test client id";
+            string testAuthorizationServerId = "test authorization server id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = testAuthorizationServerId,
+            };
+
+            TestOidcClient testClient = new TestOidcClient(testConfig);
+
+            testClient.RevokeRefreshTokenAsync(testRefreshToken).Wait();
+
+            string receivedAuthorizationServerId = testClient.PerformAuthorizationServerRequestArgumentsReceived.AuthorizationServerId;
+            KeyValuePair<string, string> recievedAccesToken = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[0];
+            KeyValuePair<string, string> recievedTokenType = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[1];
+            KeyValuePair<string, string> recievedClientId = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[2];
+
+            Assert.Equal("token", recievedAccesToken.Key);
+            Assert.Equal(testRefreshToken, recievedAccesToken.Value);
+            Assert.Equal("token_type_hint", recievedTokenType.Key);
+            Assert.Equal("refresh_token", recievedTokenType.Value);
+            Assert.Equal("client_id", recievedClientId.Key);
+            Assert.Equal(testClientId, recievedClientId.Value);
+            Assert.Equal(testAuthorizationServerId, receivedAuthorizationServerId);
+        }
+
+        [Fact]
+        public void UseDefaultAuthorizationServerIfNullInConfigOnRevokeAccessToken()
+        {
+            string testAccessToken = "test access token";
+            string testClientId = "test client id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = null,
+            };
+
+            Assert.Null(testConfig.AuthorizationServerId);
+
+            TestOidcClient testClient = new TestOidcClient(testConfig);
+
+            testClient.RevokeAccessTokenAsync(testAccessToken).Wait();
+
+            string receivedAuthorizationServerId = testClient.PerformAuthorizationServerRequestArgumentsReceived.AuthorizationServerId;
+            KeyValuePair<string, string> recievedAccesToken = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[0];
+            KeyValuePair<string, string> recievedTokenType = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[1];
+            KeyValuePair<string, string> recievedClientId = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[2];
+
+            Assert.Equal("token", recievedAccesToken.Key);
+            Assert.Equal(testAccessToken, recievedAccesToken.Value);
+            Assert.Equal("token_type_hint", recievedTokenType.Key);
+            Assert.Equal("access_token", recievedTokenType.Value);
+            Assert.Equal("client_id", recievedClientId.Key);
+            Assert.Equal(testClientId, recievedClientId.Value);
+            Assert.Equal("default", receivedAuthorizationServerId);
+        }
+
+        [Fact]
+        public void UseDefaultAuthorizationServerIfNullInConfigOnRevokeRefreshToken()
+        {
+            string testRefreshToken = "test refresh token";
+            string testClientId = "test client id";
+            string testAuthorizationServerId = "test authorization server id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = null,
+            };
+
+            Assert.Null(testConfig.AuthorizationServerId);
+
+            TestOidcClient testClient = new TestOidcClient(testConfig);
+
+            testClient.RevokeRefreshTokenAsync(testRefreshToken).Wait();
+
+            string receivedAuthorizationServerId = testClient.PerformAuthorizationServerRequestArgumentsReceived.AuthorizationServerId;
+            KeyValuePair<string, string> recievedAccesToken = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[0];
+            KeyValuePair<string, string> recievedTokenType = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[1];
+            KeyValuePair<string, string> recievedClientId = testClient.PerformAuthorizationServerRequestArgumentsReceived.FormUrlEncodedContent[2];
+
+            Assert.Equal("token", recievedAccesToken.Key);
+            Assert.Equal(testRefreshToken, recievedAccesToken.Value);
+            Assert.Equal("token_type_hint", recievedTokenType.Key);
+            Assert.Equal("refresh_token", recievedTokenType.Value);
+            Assert.Equal("client_id", recievedClientId.Key);
+            Assert.Equal(testClientId, recievedClientId.Value);
+            Assert.Equal("default", receivedAuthorizationServerId);
         }
     }
 }
