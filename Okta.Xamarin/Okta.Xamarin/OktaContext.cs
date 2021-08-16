@@ -585,7 +585,7 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Initialize OktaContext.Current services with the implementations in the specified inverson of control container.
+        /// Initialize OktaContext.Current services with the implementations in the specified inversion of control container.
         /// </summary>
         /// <param name="iocContainer">The inversion of control container.</param>
         public static void ServiceInit(TinyIoCContainer iocContainer)
