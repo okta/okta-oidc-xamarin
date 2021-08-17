@@ -293,6 +293,7 @@ namespace Okta.Xamarin
             }
         }
 
+        /// <inheritdoc/>
         public virtual async Task RevokeAsync(TokenKind tokenKind, string token)
         {
             switch (tokenKind)
@@ -307,11 +308,13 @@ namespace Okta.Xamarin
             }
         }
 
+        /// <inheritdoc/>
         public async Task RevokeAccessTokenAsync(string token)
         {
             await this.Client.RevokeAccessTokenAsync(token);
         }
 
+        /// <inheritdoc/>
         public async Task RevokeRefreshTokenAsync(string token)
         {
             await this.Client.RevokeRefreshTokenAsync(token);
