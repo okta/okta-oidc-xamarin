@@ -103,9 +103,9 @@ namespace Okta.Xamarin
             return GenerateAuthorizeUrl();
         }
 
-		public void RaiseRequestExceptionEvent(RequestExceptionEventArgs requestExceptionEventArgs)
-		{
-			this.OnRequestException(requestExceptionEventArgs);
-		}
-	}
+        public void RaiseRequestExceptionEvent(RequestExceptionEventArgs requestExceptionEventArgs)
+        {
+            this.OnRequestException(requestExceptionEventArgs);
+        }
+    }
 }

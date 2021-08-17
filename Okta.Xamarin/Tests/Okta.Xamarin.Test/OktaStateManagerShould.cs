@@ -4,6 +4,9 @@
 // </copyright>
 
 using FluentAssertions;
+using Newtonsoft.Json;
+using NSubstitute;
+using Okta.Xamarin.Services;
 using System;
 using Xunit;
 
@@ -47,6 +50,74 @@ namespace Okta.Xamarin.Test
             testOktaStateManager.RefreshToken.Should().BeNullOrEmpty();
             testOktaStateManager.Scope.Should().BeNullOrEmpty();
             testOktaStateManager.Expires.Should().BeNull();
+        }
+
+        [Fact]
+        public void SerializeAndDeserialize()
+        {
+            string testAccessToken = "test access token";
+            string testTokenType = "test token type";
+            string testRefreshToken = "test refresh token";
+            string testIdToken = "test id token";
+            string testScope = "test scope";
+            OktaStateManager testOktaStateManager = new OktaStateManager(testAccessToken, testTokenType, testIdToken, testRefreshToken, 300 /* seconds */, testScope);
+
+            string json = testOktaStateManager.ToJson();
+            OktaStateManager deserializedStateManager = JsonConvert.DeserializeObject<OktaStateManager>(json);
+
+            deserializedStateManager.AccessToken.Should().Be(testAccessToken);
+            deserializedStateManager.IdToken.Should().Be(testIdToken);
+            deserializedStateManager.RefreshToken.Should().Be(testRefreshToken);
+            deserializedStateManager.Scope.Should().Be(testScope);
+            deserializedStateManager.Expires.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void WriteToSecureStorage()
+        {
+            string testAccessToken = "test access token";
+            string testTokenType = "test token type";
+            string testRefreshToken = "test refresh token";
+            string testIdToken = "test id token";
+            string testScope = "test scope";
+            OktaStateManager testOktaStateManager = new OktaStateManager(testAccessToken, testTokenType, testIdToken, testRefreshToken, 300 /* seconds */, testScope);
+
+            SecureKeyValueStore mockSecureKeyValueStore = Substitute.For<SecureKeyValueStore>();
+            OktaContext.RegisterServiceImplementation<SecureKeyValueStore>(mockSecureKeyValueStore);
+
+            testOktaStateManager.WriteToSecureStorageAsync().Wait();
+
+            string json = testOktaStateManager.ToJson();
+            mockSecureKeyValueStore.Received().SetAsync(OktaStateManager.StoreKey, json);
+        }
+
+        [Fact]
+        public void ReadFromSecureStorage()
+        {
+            string testAccessToken = "test access token";
+            string testTokenType = "test token type";
+            string testRefreshToken = "test refresh token";
+            string testIdToken = "test id token";
+            string testScope = "test scope";
+            OktaStateManager testOktaStateManagerInSecureStorage = new OktaStateManager(testAccessToken, testTokenType, testIdToken, testRefreshToken, 300 /* seconds */, testScope);
+
+            SecureKeyValueStore mockSecureKeyValueStore = Substitute.For<SecureKeyValueStore>();
+            mockSecureKeyValueStore.GetAsync<OktaStateManager>(OktaStateManager.StoreKey).Returns(testOktaStateManagerInSecureStorage);
+            IOktaConfig testConfig = Substitute.For<IOktaConfig>();
+            IOidcClient testClient = Substitute.For<IOidcClient>();
+            OktaContext.RegisterServiceImplementation<SecureKeyValueStore>(mockSecureKeyValueStore);
+            OktaContext.RegisterServiceImplementation<IOktaConfig>(testConfig);
+            OktaContext.RegisterServiceImplementation<IOidcClient>(testClient);
+
+            OktaStateManager reader = new OktaStateManager();
+            OktaStateManager result = reader.ReadFromSecureStorageAsync().Result;
+            result.Config.Should().Be(testConfig);
+            result.Client.Should().Be(testClient);
+            result.AccessToken.Should().BeEquivalentTo(testAccessToken);
+            result.TokenType.Should().BeEquivalentTo(testTokenType);
+            result.RefreshToken.Should().BeEquivalentTo(testRefreshToken);
+            result.IdToken.Should().BeEquivalentTo(testIdToken);
+            result.Scope.Should().BeEquivalentTo(testScope);
         }
     }
 }

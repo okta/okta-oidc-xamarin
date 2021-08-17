@@ -94,7 +94,7 @@
 using System.Runtime.Serialization;
 #endif
 
-namespace TinyIoC
+namespace Okta.Xamarin.TinyIoC
 {
     using System;
     using System.Collections.Generic;
