@@ -120,7 +120,6 @@ namespace Okta.Xamarin.Test
             result.Scope.Should().BeEquivalentTo(testScope);
         }
 
-        // OKTA-417977
         [Fact]
         public void CallClientRevokeAccessToken()
         {
@@ -144,6 +143,5 @@ namespace Okta.Xamarin.Test
 
             mockClient.Received().RevokeRefreshTokenAsync(testRefreshToken);
         }
-        // - OKTA-417977
     }
 }
