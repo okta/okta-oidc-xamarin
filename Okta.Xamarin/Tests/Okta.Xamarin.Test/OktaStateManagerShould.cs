@@ -144,7 +144,6 @@ namespace Okta.Xamarin.Test
 
             mockClient.Received().RevokeRefreshTokenAsync(testRefreshToken);
         }
-
         // - OKTA-417977
     }
 }

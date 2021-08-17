@@ -451,5 +451,20 @@ namespace Okta.Xamarin.Test
 
             revokeExceptionEventRaised.Should().BeTrue();
         }
+
+        [Fact]
+        public void RevokeSpecifiedAccessToken()
+        {
+            string goodAccessToken = "this is the one";
+            string badAccessToken = "this is the wrong one";
+            IOktaStateManager mockOktaStateManager = Substitute.For<IOktaStateManager>();
+            mockOktaStateManager.AccessToken.Returns(badAccessToken);
+
+            OktaContext oktaContext = new OktaContext() { StateManager = mockOktaStateManager };
+            OktaContext.Current = oktaContext;
+            OktaContext.RevokeAccessTokenAsync(goodAccessToken).Wait();
+
+            mockOktaStateManager.Received().RevokeAccessTokenAsync(goodAccessToken);
+        }
     }
 }

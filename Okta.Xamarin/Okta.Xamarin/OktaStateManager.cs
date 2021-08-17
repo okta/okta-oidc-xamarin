@@ -293,6 +293,30 @@ namespace Okta.Xamarin
             }
         }
 
+        public virtual async Task RevokeAsync(TokenKind tokenKind, string token)
+        {
+            switch (tokenKind)
+            {
+                case Xamarin.TokenKind.AccessToken:
+                    await this.Client.RevokeAccessTokenAsync(token);
+                    break;
+                case Xamarin.TokenKind.RefreshToken:
+                default:
+                    await this.Client.RevokeRefreshTokenAsync(token);
+                    break;
+            }
+        }
+
+        public async Task RevokeAccessTokenAsync(string token)
+        {
+            await this.Client.RevokeAccessTokenAsync(token);
+        }
+
+        public async Task RevokeRefreshTokenAsync(string token)
+        {
+            await this.Client.RevokeRefreshTokenAsync(token);
+        }
+
         /// <inheritdoc/>
         public async Task<T> GetUserAsync<T>(string authorizationServerId = null)
         {

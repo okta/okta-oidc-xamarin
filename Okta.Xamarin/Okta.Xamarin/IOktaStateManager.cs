@@ -169,6 +169,28 @@ namespace Okta.Xamarin
         Task RevokeAsync(TokenKind tokenKind);
 
         /// <summary>
+        /// Revoke the specified token.
+        /// </summary>
+        /// <param name="tokenKind">The kind of the token.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        Task RevokeAsync(TokenKind tokenKind, string token);
+
+        /// <summary>
+        /// Revoke the specified access token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        Task RevokeAccessTokenAsync(string token);
+
+        /// <summary>
+        /// Revoke the specified refresh token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        Task RevokeRefreshTokenAsync(string token);
+
+        /// <summary>
         /// Stores the tokens securely in platform-specific secure storage.
         /// Subscribe to SecureStorageWriteException event for exception details
         /// if an exception occurs, see event <see cref="SecureStorageWriteException"/>.

@@ -604,6 +604,15 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RenewException event.
+        /// </summary>
+        /// <param name="renewExceptionEventHandler">The event handler.</param>
+        public static void AddRenewExceptionListener(EventHandler<RenewExceptionEventArgs> renewExceptionEventHandler)
+        {
+            Current.RenewException += renewExceptionEventHandler;
+        }
+
+        /// <summary>
         /// Initialize OktaContext.Current services with the implementations in the specified inversion of control container.
         /// </summary>
         /// <param name="iocContainer">The inversion of control container.</param>
@@ -728,6 +737,17 @@ namespace Okta.Xamarin
             {
                 token = token ?? this.StateManager.GetToken(tokenKind);
                 this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
+
+                switch (tokenKind)
+                {
+                    case Xamarin.TokenKind.AccessToken:
+                        await this.StateManager.RevokeAccessTokenAsync(token);
+                        break;
+                    case Xamarin.TokenKind.RefreshToken:
+                    default:
+                        await this.StateManager.RevokeRefreshTokenAsync(token);
+                        break;
+                }
 
                 await this.StateManager.RevokeAsync(tokenKind);
 
