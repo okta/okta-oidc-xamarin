@@ -342,7 +342,7 @@ namespace Okta.Xamarin
         protected virtual string GetAuthorizationServerBasePath(string authorizationServerId = null)
         {
             string domain = Config?.OktaDomain;
-            if (domain.EndsWith("/"))
+            if ((bool)domain?.EndsWith("/"))
             {
                 domain = domain.Substring(0, domain.Length - 1);
             }

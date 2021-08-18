@@ -749,8 +749,6 @@ namespace Okta.Xamarin
                         break;
                 }
 
-                await this.StateManager.RevokeAsync(tokenKind);
-
                 this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Response = this.StateManager.LastApiResponse });
             }
             catch (Exception ex)
