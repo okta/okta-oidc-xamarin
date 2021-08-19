@@ -109,6 +109,14 @@ namespace Okta.Xamarin
             this.OnRequestException(requestExceptionEventArgs);
         }
 
+        /// <summary>
+        /// Provides internal access to the call the PerformAuthorizationServerRequestAsync method.
+        /// </summary>
+        /// <param name="httpMethod">The http method.</param>
+        /// <param name="path">The path.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <param name="formUrlEncodedContent">The content.</param>
         public void CallPerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId = null, params KeyValuePair<string, string>[] formUrlEncodedContent)
         {
             base.PerformAuthorizationServerRequestAsync(httpMethod, path, headers, authorizationServerId, formUrlEncodedContent);
