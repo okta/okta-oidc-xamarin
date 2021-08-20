@@ -321,44 +321,44 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
-        public async Task<T> GetUserAsync<T>(string authorizationServerId = null)
+        public async Task<T> GetUserAsync<T>()//string authorizationServerId = null)
         {
-            return await this.Client.GetUserAsync<T>(this.AccessToken, authorizationServerId);
+			return await this.Client.GetUserAsync<T>(this.AccessToken);//, authorizationServerId);
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = null)
+        public async Task<Dictionary<string, object>> GetUserAsync()//string authorizationServerId = null)
         {
-            return await this.Client.GetUserAsync(this.AccessToken, authorizationServerId);
+			return await this.Client.GetUserAsync(this.AccessToken);//, authorizationServerId);
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string authorizationServerId = null)
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind)//, string authorizationServerId = null)
         {
             return await this.Client.IntrospectAsync(new IntrospectOptions
             {
                 Token = this.GetToken(tokenKind),
                 TokenKind = tokenKind,
-                AuthorizationServerId = authorizationServerId,
+                // AuthorizationServerId = authorizationServerId,
             });
         }
 
         /// <inheritdoc/>
-        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = null)
+        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync()//string authorizationServerId = null)
         {
-            return await this.Client.GetClaimsPincipalAsync(this.AccessToken, authorizationServerId);
+			return await this.Client.GetClaimsPincipalAsync(this.AccessToken);//, authorizationServerId);
         }
 
         /// <inheritdoc/>
-        public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = null)
+        public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false)//, string authorizationServerId = null)
         {
-            return await this.RenewAsync(this.RefreshToken, refreshIdToken, authorizationServerId);
+			return await this.RenewAsync(this.RefreshToken, refreshIdToken);//, authorizationServerId);
         }
 
         /// <inheritdoc/>
-        public async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = null)
+        public async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false)//, string authorizationServerId = null)
         {
-            RenewResponse renewResponse = await this.Client.RenewAsync<RenewResponse>(refreshToken, refreshIdToken, authorizationServerId);
+			RenewResponse renewResponse = await this.Client.RenewAsync<RenewResponse>(refreshToken, refreshIdToken);//, authorizationServerId);
             this.RenewResponse = renewResponse;
             this.TokenType = renewResponse.TokenType;
             this.AccessToken = renewResponse.AccessToken;

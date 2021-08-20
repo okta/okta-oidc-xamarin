@@ -15,7 +15,7 @@ namespace Okta.Xamarin
         /// </summary>
         public IntrospectOptions()
         {
-            AuthorizationServerId = "default";
+            //AuthorizationServerId = "default";
         }
 
         /// <summary>
@@ -31,6 +31,6 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the authorization server id.
         /// </summary>
-        public string AuthorizationServerId { get; set; }
+        //public string AuthorizationServerId { get; set; }
     }
 }

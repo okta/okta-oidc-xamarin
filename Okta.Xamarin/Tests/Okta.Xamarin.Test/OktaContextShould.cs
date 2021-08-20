@@ -345,6 +345,7 @@ namespace Okta.Xamarin.Test
         public void RaiseRenewEvents()
         {
             IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
+            testStateManager.RefreshToken.Returns("test refresh token");
             Task<RenewResponse> testRenewResponse = Task.FromResult(new RenewResponse());
             testStateManager.RenewAsync().Returns(testRenewResponse);
             OktaContext.Current.StateManager = testStateManager;
@@ -415,9 +416,12 @@ namespace Okta.Xamarin.Test
         {
             bool? renewExceptionEventRaised = false;
             Exception testException = new Exception("This is a test exception");
+            IOktaStateManager mockStateManager = Substitute.For<IOktaStateManager>();
+            mockStateManager.RefreshToken.Returns("test refresh token");
             IOidcClient mockClient = Substitute.For<IOidcClient>();
             mockClient.RenewAsync<RenewResponse>(Arg.Any<string>()).Returns(new RenewResponse());
-            OktaContext.Current.StateManager.Client = mockClient;
+            mockStateManager.Client.Returns(mockClient);
+            OktaContext.Current.StateManager = mockStateManager;
             OktaContext.AddRenewExceptionListener((sender, renewExceptionEventArgs) =>
             {
                 renewExceptionEventArgs.Exception.Should().Be(testException);
