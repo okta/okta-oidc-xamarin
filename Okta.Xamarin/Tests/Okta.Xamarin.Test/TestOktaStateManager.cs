@@ -3,8 +3,8 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-using System;
 using System.Threading.Tasks;
+using NSubstitute;
 
 namespace Okta.Xamarin.Test
 {
@@ -15,6 +15,7 @@ namespace Okta.Xamarin.Test
         public TestOktaStateManager(string accessToken, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
         : base(accessToken, null, idToken, refreshToken, expiresIn, scope) 
         {
+            this.Client = Substitute.For<IOidcClient>();
         }
 
         public TestOktaStateManager(string accessToken, string refreshToken) : this(accessToken, null, refreshToken) { }

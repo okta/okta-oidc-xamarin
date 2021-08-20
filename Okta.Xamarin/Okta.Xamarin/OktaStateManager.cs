@@ -294,44 +294,70 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
-        public async Task<T> GetUserAsync<T>(string authorizationServerId = "default")
+        public virtual async Task RevokeAsync(TokenKind tokenKind, string token)
         {
-            return await this.Client.GetUserAsync<T>(this.AccessToken, authorizationServerId);
+            switch (tokenKind)
+            {
+                case Xamarin.TokenKind.AccessToken:
+                    await this.Client.RevokeAccessTokenAsync(token);
+                    break;
+                case Xamarin.TokenKind.RefreshToken:
+                default:
+                    await this.Client.RevokeRefreshTokenAsync(token);
+                    break;
+            }
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default")
+        public async Task RevokeAccessTokenAsync(string token)
         {
-            return await this.Client.GetUserAsync(this.AccessToken, authorizationServerId);
+            await this.Client.RevokeAccessTokenAsync(token);
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string authorizationServerId = "default")
+        public async Task RevokeRefreshTokenAsync(string token)
+        {
+            await this.Client.RevokeRefreshTokenAsync(token);
+        }
+
+        /// <inheritdoc/>
+        public async Task<T> GetUserAsync<T>()
+        {
+            return await this.Client.GetUserAsync<T>(this.AccessToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Dictionary<string, object>> GetUserAsync()
+        {
+            return await this.Client.GetUserAsync(this.AccessToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind)
         {
             return await this.Client.IntrospectAsync(new IntrospectOptions
             {
                 Token = this.GetToken(tokenKind),
                 TokenKind = tokenKind,
-                AuthorizationServerId = authorizationServerId,
             });
         }
 
         /// <inheritdoc/>
-        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default")
+        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync()
         {
-            return await this.Client.GetClaimsPincipalAsync(this.AccessToken, authorizationServerId);
+            return await this.Client.GetClaimsPincipalAsync(this.AccessToken);
         }
 
         /// <inheritdoc/>
-        public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
+        public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false)
         {
-            return await this.RenewAsync(this.RefreshToken, refreshIdToken, authorizationServerId);
+            return await this.RenewAsync(this.RefreshToken, refreshIdToken);
         }
 
         /// <inheritdoc/>
-        public async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
+        public async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false)
         {
-            RenewResponse renewResponse = await this.Client.RenewAsync<RenewResponse>(refreshToken, refreshIdToken, authorizationServerId);
+            RenewResponse renewResponse = await this.Client.RenewAsync<RenewResponse>(refreshToken, refreshIdToken);
             this.RenewResponse = renewResponse;
             this.TokenType = renewResponse.TokenType;
             this.AccessToken = renewResponse.AccessToken;

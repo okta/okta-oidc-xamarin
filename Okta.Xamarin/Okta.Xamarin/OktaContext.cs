@@ -131,6 +131,11 @@ namespace Okta.Xamarin
         public event EventHandler<RevokeEventArgs> RevokeCompleted;
 
         /// <summary>
+        /// The event that is raised when an exception occurs during revocation.
+        /// </summary>
+        public event EventHandler<RevokeExceptionEventArgs> RevokeException;
+
+        /// <summary>
         /// The event that is raised when getting user.
         /// </summary>
         public event EventHandler<GetUserEventArgs> GetUserStarted;
@@ -159,6 +164,11 @@ namespace Okta.Xamarin
         /// The event that is raised when token renewal (refresh) completes.
         /// </summary>
         public event EventHandler<RenewEventArgs> RenewCompleted;
+
+        /// <summary>
+        /// The event that is raised when an exception occurs during renewal (refresh).
+        /// </summary>
+        public event EventHandler<RenewExceptionEventArgs> RenewException;
 
         /// <summary>
         /// Gets or sets the current global context.
@@ -531,6 +541,15 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RevokeException event.
+        /// </summary>
+        /// <param name="revokeExceptionHandler">The event handler.</param>
+        public static void AddRevokeExceptionListener(EventHandler<RevokeExceptionEventArgs> revokeExceptionHandler)
+        {
+            Current.RevokeException += revokeExceptionHandler;
+        }
+
+        /// <summary>
         /// Convenience method to add a listener to the OktaContext.Current.GetUserStarted event.
         /// </summary>
         /// <param name="getUserEventHandler">The event handler.</param>
@@ -582,6 +601,15 @@ namespace Okta.Xamarin
         public static void AddRenewCompletedListener(EventHandler<RenewEventArgs> renewEventHandler)
         {
             Current.RenewCompleted += renewEventHandler;
+        }
+
+        /// <summary>
+        /// Convenience method to add a listener to the OktaContext.Current.RenewException event.
+        /// </summary>
+        /// <param name="renewExceptionEventHandler">The event handler.</param>
+        public static void AddRenewExceptionListener(EventHandler<RenewExceptionEventArgs> renewExceptionEventHandler)
+        {
+            Current.RenewException += renewExceptionEventHandler;
         }
 
         /// <summary>
@@ -669,6 +697,26 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
+        /// Revoke the specified access token.
+        /// </summary>
+        /// <param name="accessToken">The token.</param>
+        /// <returns>Task.</returns>
+        public static async Task RevokeAccessTokenAsync(string accessToken = null)
+        {
+            await Current.RevokeAsync(TokenKind.AccessToken, accessToken);
+        }
+
+        /// <summary>
+        /// Revoke the specified refresh token.
+        /// </summary>
+        /// <param name="refreshToken">The token.</param>
+        /// <returns>Task.</returns>
+        public static async Task RevokeRefreshTokenAsync(string refreshToken = null)
+        {
+            await Current.RevokeAsync(TokenKind.RefreshToken, refreshToken);
+        }
+
+        /// <summary>
         /// Revoke the access token.
         /// </summary>
         /// <returns>Task.</returns>
@@ -681,15 +729,32 @@ namespace Okta.Xamarin
         /// Revoke token of the specified kind.
         /// </summary>
         /// <param name="tokenKind">The kind of token to revoke.</param>
+        /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public virtual async Task RevokeAsync(TokenKind tokenKind)
+        public virtual async Task RevokeAsync(TokenKind tokenKind, string token = null)
         {
-            string token = this.StateManager.GetToken(tokenKind);
-            this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
+            try
+            {
+                token = token ?? this.StateManager.GetToken(tokenKind);
+                this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
 
-            await this.StateManager.RevokeAsync(tokenKind);
+                switch (tokenKind)
+                {
+                    case Xamarin.TokenKind.AccessToken:
+                        await this.StateManager.RevokeAccessTokenAsync(token);
+                        break;
+                    case Xamarin.TokenKind.RefreshToken:
+                    default:
+                        await this.StateManager.RevokeRefreshTokenAsync(token);
+                        break;
+                }
 
-            this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Response = this.StateManager.LastApiResponse });
+                this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Response = this.StateManager.LastApiResponse });
+            }
+            catch (Exception ex)
+            {
+                this.RevokeException?.Invoke(this, new RevokeExceptionEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Exception = ex });
+            }
         }
 
         /// <summary>
@@ -710,11 +775,10 @@ namespace Okta.Xamarin
         /// Renew tokens.
         /// </summary>
         /// <param name="refreshIdToken">A value indicating whether to renew the ID token, the default is false.</param>
-        /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>A <see cref="Task{RenewResponse}"/> representing the result of the asynchronous operation.</returns>
-        public virtual async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
+        public static async Task<RenewResponse> RenewAsync(bool refreshIdToken)
         {
-            return await this.RenewAsync(RefreshToken, refreshIdToken, authorizationServerId);
+            return await Current.RenewAsync(RefreshToken, refreshIdToken);
         }
 
         /// <summary>
@@ -722,15 +786,30 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="refreshToken">The refresh token.</param>
         /// <param name="refreshIdToken">A value indicating whether to renew the ID token, the default is false.</param>
-        /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>A <see cref="Task{RenewResponse}"/> representing the result of the asynchronous operation.</returns>
-        public virtual async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
+        public virtual async Task<RenewResponse> RenewAsync(string refreshToken = null, bool refreshIdToken = false)
         {
-            this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
-            RenewResponse result = await this.StateManager.RenewAsync(refreshIdToken, authorizationServerId);
-            this.RenewCompleted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, Response = result, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+            try
+            {
+                refreshToken = refreshToken ?? this.StateManager?.RefreshToken;
+                if (string.IsNullOrEmpty(refreshToken))
+                {
+                    throw new ArgumentNullException(nameof(refreshToken));
+                }
 
-            return result;
+                string authorizationServerId = this.StateManager?.Config?.AuthorizationServerId;
+
+                this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+                RenewResponse result = await this.StateManager.RenewAsync(refreshToken, refreshIdToken);
+                this.RenewCompleted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, Response = result, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                this.RenewException?.Invoke(this, new RenewExceptionEventArgs { StateManager = this.StateManager, Exception = ex });
+                return null;
+            }
         }
 
         /// <summary>
@@ -749,6 +828,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets information about the current user.
         /// </summary>
+        /// <returns>Task{Dictionary{string,object}}.</returns>
         public virtual async Task<Dictionary<string, object>> GetUserAsync()
         {
             this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });

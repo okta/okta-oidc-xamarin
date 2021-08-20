@@ -345,6 +345,7 @@ namespace Okta.Xamarin.Test
         public void RaiseRenewEvents()
         {
             IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
+            testStateManager.RefreshToken.Returns("test refresh token");
             Task<RenewResponse> testRenewResponse = Task.FromResult(new RenewResponse());
             testStateManager.RenewAsync().Returns(testRenewResponse);
             OktaContext.Current.StateManager = testStateManager;
@@ -408,6 +409,66 @@ namespace Okta.Xamarin.Test
         {
             OktaContext context = new OktaContext();
             context.IoCContainer.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void RaiseRenewExceptionEvent()
+        {
+            bool? renewExceptionEventRaised = false;
+            Exception testException = new Exception("This is a test exception");
+            IOktaStateManager mockStateManager = Substitute.For<IOktaStateManager>();
+            mockStateManager.RefreshToken.Returns("test refresh token");
+            IOidcClient mockClient = Substitute.For<IOidcClient>();
+            mockClient.RenewAsync<RenewResponse>(Arg.Any<string>()).Returns(new RenewResponse());
+            mockStateManager.Client.Returns(mockClient);
+            OktaContext.Current.StateManager = mockStateManager;
+            OktaContext.AddRenewExceptionListener((sender, renewExceptionEventArgs) =>
+            {
+                renewExceptionEventArgs.Exception.Should().Be(testException);
+                renewExceptionEventRaised = true;
+            });
+
+            OktaContext.AddRenewCompletedListener((sender, renewEventArgs) => throw testException);
+
+            OktaContext.Current.RenewAsync().Wait();
+
+            renewExceptionEventRaised.Should().BeTrue();
+        }
+
+        [Fact]
+        public void RaiseRevokeExceptionEvent()
+        {
+            bool? revokeExceptionEventRaised = false;
+            Exception testException = new Exception("This is a test exception");
+            IOktaStateManager mockStateManager = Substitute.For<IOktaStateManager>();
+
+            OktaContext.AddRevokeExceptionListener((sender, revokeExceptionEventArgs) =>
+            {
+                revokeExceptionEventArgs.Exception.Should().Be(testException);
+                revokeExceptionEventRaised = true;
+            });
+
+            OktaContext.AddRevokeCompletedListener((sender, renewEventArgs) => throw testException);
+
+            OktaContext.Current.StateManager = mockStateManager;
+            OktaContext.Current.RevokeAsync().Wait();
+
+            revokeExceptionEventRaised.Should().BeTrue();
+        }
+
+        [Fact]
+        public void RevokeSpecifiedAccessToken()
+        {
+            string goodAccessToken = "this is the one";
+            string badAccessToken = "this is the wrong one";
+            IOktaStateManager mockOktaStateManager = Substitute.For<IOktaStateManager>();
+            mockOktaStateManager.AccessToken.Returns(badAccessToken);
+
+            OktaContext oktaContext = new OktaContext() { StateManager = mockOktaStateManager };
+            OktaContext.Current = oktaContext;
+            OktaContext.RevokeAccessTokenAsync(goodAccessToken).Wait();
+
+            mockOktaStateManager.Received().RevokeAccessTokenAsync(goodAccessToken);
         }
     }
 }
