@@ -339,7 +339,6 @@ namespace Okta.Xamarin
             {
                 Token = this.GetToken(tokenKind),
                 TokenKind = tokenKind,
-                // AuthorizationServerId = authorizationServerId,
             });
         }
 
