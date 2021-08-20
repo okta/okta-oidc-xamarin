@@ -151,11 +151,11 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets introspection details.
         /// </summary>
-        /// <param name="options">IntrospectionOptions</param>
+        /// <param name="options">IntrospectionOptions.</param>
         /// <returns>Dicationary{string, object}.</returns>
         public async Task<Dictionary<string, object>> IntrospectAsync(IntrospectOptions options)
         {
-            return await IntrospectAsync(options.TokenKind, options.Token);//, options.AuthorizationServerId);
+            return await IntrospectAsync(options.TokenKind, options.Token);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace Okta.Xamarin
                     break;
             }
 
-            return await IntrospectAsync(token, tokenHint);//, authorizationServerId);
+            return await IntrospectAsync(token, tokenHint);
         }
 
         /// <summary>
@@ -193,9 +193,9 @@ namespace Okta.Xamarin
         /// <param name="accessToken">The access token used to authorize the request.</param>
         /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>Dictionary{string, object}.</returns>
-        public async Task<Dictionary<string, object>> GetUserAsync(string accessToken)//, string authorizationServerId = null)
+        public async Task<Dictionary<string, object>> GetUserAsync(string accessToken)
         {
-            return await GetUserAsync<Dictionary<string, object>>(accessToken);//, authorizationServerId);
+            return await GetUserAsync<Dictionary<string, object>>(accessToken);
         }
 
         /// <summary>
@@ -205,9 +205,9 @@ namespace Okta.Xamarin
         /// <param name="accessToken">The access token used to authorize the request.</param>
         /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>T.</returns>
-        public async Task<T> GetUserAsync<T>(string accessToken)//, string authorizationServerId = null)
+        public async Task<T> GetUserAsync<T>(string accessToken)
         {
-            string userInfoJson = await GetUserInfoJsonAsync(accessToken);//, authorizationServerId);
+            string userInfoJson = await GetUserInfoJsonAsync(accessToken);
             return JsonConvert.DeserializeObject<T>(userInfoJson);
         }
 
@@ -217,9 +217,9 @@ namespace Okta.Xamarin
         /// <param name="accessToken">The access token used to authorize the request.</param>
         /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>ClaimsPrincipal</returns>
-        public async Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken)//, string authorizationServerId = null)
+        public async Task<ClaimsPrincipal> GetClaimsPincipalAsync(string accessToken)
         {
-            string userInfoJson = await GetUserInfoJsonAsync(accessToken);//, authorizationServerId);
+            string userInfoJson = await GetUserInfoJsonAsync(accessToken);
 
             UserInfo userInfo = JsonConvert.DeserializeObject<UserInfo>(userInfoJson); // OKTA-371439 added to ensure proper mapping of all claims to ClaimsPrincipal
 
@@ -236,13 +236,13 @@ namespace Okta.Xamarin
         /// <param name="refreshIdToken">A value indicating whether the id token should be refreshed.</param>
         /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>T.</returns>
-        public async Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false)//, string authorizationServerId = null)
+        public async Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false)
         {
-            string responseJson = await GetRenewJsonAsync(refreshToken, refreshIdToken);//, authorizationServerId);
+            string responseJson = await GetRenewJsonAsync(refreshToken, refreshIdToken);
             return JsonConvert.DeserializeObject<T>(responseJson);
         }
 
-        protected async Task<string> GetRenewJsonAsync(string refreshToken, bool refreshIdToken = false)//, string authorizationServerId = null)
+        protected async Task<string> GetRenewJsonAsync(string refreshToken, bool refreshIdToken = false)
         {
             // for details see: https://developer.okta.com/docs/guides/refresh-tokens/use-refresh-token/
             string scope = "offline_access";
@@ -257,30 +257,30 @@ namespace Okta.Xamarin
                 { "redirect_uri", Config.RedirectUri },
                 { "scope", scope },
                 { "refresh_token", refreshToken },
-            });//, authorizationServerId);
+            });
         }
 
-        protected async Task<string> GetIntrospectJsonAsync(string token, string tokenTypeHint)//, string authorizationServerId = null)
+        protected async Task<string> GetIntrospectJsonAsync(string token, string tokenTypeHint)
         {
             return await PerformAuthorizationServerRequestAsync(HttpMethod.Post, $"/introspect?client_id={Config.ClientId}", new Dictionary<string, string>(), new Dictionary<string, string>
             {
                 { "token", token },
                 { "token_type_hint", tokenTypeHint },
-            });//, authorizationServerId);
+            });
         }
 
-        protected async Task<Dictionary<string, object>> IntrospectAsync(string token, string tokenTypeHint)//, string authorizationServerId = null)
+        protected async Task<Dictionary<string, object>> IntrospectAsync(string token, string tokenTypeHint)
         {
-            string responseJson = await GetIntrospectJsonAsync(token, tokenTypeHint);//, authorizationServerId);
+            string responseJson = await GetIntrospectJsonAsync(token, tokenTypeHint);
             return JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson);
         }
 
-        protected async Task<string> GetUserInfoJsonAsync(string accessToken)//, string authorizationServerId = null)
+        protected async Task<string> GetUserInfoJsonAsync(string accessToken)
         {
             return await PerformAuthorizationServerRequestAsync(HttpMethod.Get, "/userinfo", new Dictionary<string, string>
             {
                 {"Authorization", $"Bearer {accessToken}" }
-            });//, authorizationServerId);
+            });
         }
 
         protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers)
@@ -314,17 +314,15 @@ namespace Okta.Xamarin
             return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
-        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)//, string authorizationServerId = null)
+        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)
         {
-            return await PerformAuthorizationServerRequestAsync(httpMethod, path, headers, /* authorizationServerId, */ formUrlEncodedContent.ToArray());
+            return await PerformAuthorizationServerRequestAsync(httpMethod, path, headers, formUrlEncodedContent.ToArray());
         }
 
-        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, /*string authorizationServerId = null,*/ params KeyValuePair<string, string>[] formUrlEncodedContent)
+        protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, params KeyValuePair<string, string>[] formUrlEncodedContent)
         {
             try
             {
-                //authorizationServerId = authorizationServerId ?? this.Config.AuthorizationServerId ?? "default";
-
                 FormUrlEncodedContent content = null;
                 if ((bool)formUrlEncodedContent?.Any())
                 {
@@ -366,7 +364,7 @@ namespace Okta.Xamarin
             return $"{Config?.OktaDomain}/oauth2/v1";
         }
 
-        protected virtual string GetAuthorizationServerBasePath()//string authorizationServerId = null)
+        protected virtual string GetAuthorizationServerBasePath()
         {
             string domain = Config?.OktaDomain;
             if ((bool)domain?.EndsWith("/"))

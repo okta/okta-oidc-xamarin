@@ -784,46 +784,23 @@ namespace Okta.Xamarin
         /// <summary>
         /// Renew tokens.
         /// </summary>
-        /// <param name="refreshToken">The refresh token.  The default is StateManager.RefreshToken.</param>
-        /// <param name="refreshIdToken">A value indicating whether to renew the ID token, the default is false.</param>
-        /// <returns>A <see cref="Task{RenewResponse}"/> representing the result of the asynchronous operation.</returns>
-/*        public static async Task<RenewResponse> RenewAsync(string refreshToken = null, bool refreshIdToken = false)
-        {
-            return await Current.RenewAsync(refreshToken, refreshIdToken);
-        }*/
-
-        /// <summary>
-        /// Renew tokens.
-        /// </summary>
-        /// <param name="refreshIdToken">A value indicating whether to renew the ID token, the default is false.</param>
-        /// <param name="authorizationServerId">The authorization server id.</param>
-        /// <returns>A <see cref="Task{RenewResponse}"/> representing the result of the asynchronous operation.</returns>
-/*        public virtual async Task<RenewResponse> RenewAsync(bool refreshIdToken = false)//, string authorizationServerId = null)
-        {
-            return await this.RenewAsync(RefreshToken, refreshIdToken);//, authorizationServerId);
-        }*/
-
-        /// <summary>
-        /// Renew tokens.
-        /// </summary>
         /// <param name="refreshToken">The refresh token.</param>
         /// <param name="refreshIdToken">A value indicating whether to renew the ID token, the default is false.</param>
-        /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>A <see cref="Task{RenewResponse}"/> representing the result of the asynchronous operation.</returns>
-        public virtual async Task<RenewResponse> RenewAsync(string refreshToken = null, bool refreshIdToken = false)//, string authorizationServerId = null)
+        public virtual async Task<RenewResponse> RenewAsync(string refreshToken = null, bool refreshIdToken = false)
         {
             try
             {
                 refreshToken = refreshToken ?? this.StateManager?.RefreshToken;
-				if (string.IsNullOrEmpty(refreshToken))
-				{
-					throw new ArgumentNullException(nameof(refreshToken));
-				}
+                if (string.IsNullOrEmpty(refreshToken))
+                {
+                    throw new ArgumentNullException(nameof(refreshToken));
+                }
 
                 string authorizationServerId = this.StateManager?.Config?.AuthorizationServerId;
 
                 this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
-                RenewResponse result = await this.StateManager.RenewAsync(refreshToken, refreshIdToken);//, authorizationServerId);
+                RenewResponse result = await this.StateManager.RenewAsync(refreshToken, refreshIdToken);
                 this.RenewCompleted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, Response = result, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
 
                 return result;
@@ -851,6 +828,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets information about the current user.
         /// </summary>
+        /// <returns>Task{Dictionary{string,object}}.</returns>
         public virtual async Task<Dictionary<string, object>> GetUserAsync()
         {
             this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });

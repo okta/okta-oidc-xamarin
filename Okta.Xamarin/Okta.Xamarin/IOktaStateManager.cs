@@ -114,52 +114,49 @@ namespace Okta.Xamarin
         /// <returns>string.</returns>
         string GetToken(TokenKind tokenKind);
 
-		/// <summary>
-		/// Gets an instance of the generic type T representing the current user.
-		/// </summary>
-		/// <typeparam name="T">The type to deserialize the response as.</typeparam>
-		/// <param name="authorizationServerId">The authorization server ID.</param>
-		/// <returns>T.</returns>
-		Task<T> GetUserAsync<T>();// string authorizationServerId = null);
+        /// <summary>
+        /// Gets an instance of the generic type T representing the current user.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the response as.</typeparam>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
+        /// <returns>T.</returns>
+        Task<T> GetUserAsync<T>();
 
-		/// <summary>
-		/// Gets information about the current user.
-		/// </summary>
-		/// <param name="authorizationServerId">The authorization server ID.</param>
-		/// <returns>Dictionary{string, object}.</returns>
-		Task<Dictionary<string, object>> GetUserAsync();// string authorizationServerId = null);
+        /// <summary>
+        /// Gets information about the current user.
+        /// </summary>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
+        /// <returns>Dictionary{string, object}.</returns>
+        Task<Dictionary<string, object>> GetUserAsync();
 
-		/// <summary>
-		/// Gets information about the current user as a ClaimsPrincipal.
-		/// </summary>
-		/// <param name="authorizationServerId">The authorization server ID.</param>
-		/// <returns>ClaimsPrincipal.</returns>
-		Task<ClaimsPrincipal> GetClaimsPrincipalAsync();// string authorizationServerId = null);
+        /// <summary>
+        /// Gets information about the current user as a ClaimsPrincipal.
+        /// </summary>
+        /// <param name="authorizationServerId">The authorization server ID.</param>
+        /// <returns>ClaimsPrincipal.</returns>
+        Task<ClaimsPrincipal> GetClaimsPrincipalAsync();
 
-		/// <summary>
-		/// Gets information about the state of the specified token.
-		/// </summary>
-		/// <param name="tokenKind">The kind of token.</param>
-		/// <param name="authorizationServerId">The authorization server ID.</param>
-		/// <returns>Dictoinary{string, object}.</returns>
-		Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind);//, string authorizationServerId = null);
+        /// <summary>
+        /// Gets information about the state of the specified token.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token.</param>
+        /// <returns>Dictoinary{string, object}.</returns>
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind);
 
-		/// <summary>
-		/// Renews tokens.
-		/// </summary>
-		/// <param name="refreshIdToken">A value indicating whether to also renew the ID token.</param>
-		/// <param name="authorizationServerId">The authorization server ID.</param>
-		/// <returns>Task{RenewResponse}.</returns>
-		Task<RenewResponse> RenewAsync(bool refreshIdToken = false);//, string authorizationServerId = null);
+        /// <summary>
+        /// Renews tokens.
+        /// </summary>
+        /// <param name="refreshIdToken">A value indicating whether to also renew the ID token.</param>
+        /// <returns>Task{RenewResponse}.</returns>
+        Task<RenewResponse> RenewAsync(bool refreshIdToken = false);
 
-		/// <summary>
-		/// Renews tokens.
-		/// </summary>
-		/// <param name="refreshToken">The refresh token.</param>
-		/// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
-		/// <param name="authorizationServerId">The authorization server.</param>
-		/// <returns>Task{RenewResponse}.</returns>
-		Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false);//, string authorizationServerId = null);
+        /// <summary>
+        /// Renews tokens.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
+        /// <returns>Task{RenewResponse}.</returns>
+        Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false);
 
         /// <summary>
         /// Revokes tokens associated with this OktaState.
