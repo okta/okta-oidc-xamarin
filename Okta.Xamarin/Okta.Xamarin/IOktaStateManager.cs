@@ -235,6 +235,24 @@ namespace Okta.Xamarin
         Task<OktaStateManager> ClearSecureStorageStateAsync();
 
         /// <summary>
+        /// Gets the access token.
+        /// </summary>
+        /// <returns>The access token.</returns>
+        string GetAccessToken();
+
+        /// <summary>
+        /// Gets the refresh token.
+        /// </summary>
+        /// <returns>The refresh token.</returns>
+        string GetRefreshToken();
+
+        /// <summary>
+        /// Gets the id token.
+        /// </summary>
+        /// <returns>The id token.</returns>
+        string GetIdToken();
+
+        /// <summary>
         /// Convert the current state manager instance to the json equivalent.
         /// </summary>
         /// <param name="formatting">The formatting.</param>
