@@ -224,8 +224,17 @@ namespace Okta.Xamarin
             private set
             {
                 this.oAuthException = value;
-                this.AuthenticationFailed?.Invoke(this, new AuthenticationFailedEventArgs(value));
+                OnAuthenticationFailed(value);
             }
+        }
+
+        /// <summary>
+        /// Raise the `AuthenticationFailed` event.
+        /// </summary>
+        /// <param name="value">The OAuthException that occurred.</param>
+        protected void OnAuthenticationFailed(OAuthException value)
+        {
+            this.AuthenticationFailed?.Invoke(this, new AuthenticationFailedEventArgs(value));
         }
 
         /// <summary>
@@ -254,15 +263,85 @@ namespace Okta.Xamarin
                 this.stateManager = value;
                 if (this.stateManager != null)
                 {
-                    this.stateManager.RequestException += (sender, args) => this.RequestException?.Invoke(sender, args);
-                    this.stateManager.SecureStorageReadStarted += (sender, args) => this.SecureStorageReadStarted?.Invoke(sender, args);
-                    this.stateManager.SecureStorageReadCompleted += (sender, args) => this.SecureStorageReadCompleted?.Invoke(sender, args);
-                    this.stateManager.SecureStorageReadException += (sender, args) => this.SecureStorageReadException?.Invoke(sender, args);
-                    this.stateManager.SecureStorageWriteStarted += (sender, args) => this.SecureStorageWriteStarted?.Invoke(sender, args);
-                    this.stateManager.SecureStorageWriteCompleted += (sender, args) => this.SecureStorageWriteCompleted?.Invoke(sender, args);
-                    this.stateManager.SecureStorageWriteException += (sender, args) => this.SecureStorageWriteException?.Invoke(sender, args);
+                    this.stateManager.RequestException += this.OnRequestException;
+                    this.stateManager.SecureStorageReadStarted += this.OnSecureStorageReadStarted;
+                    this.stateManager.SecureStorageReadCompleted += this.OnSecureStorageReadCompleted;
+                    this.stateManager.SecureStorageReadException += this.OnSecureStorageReadException;
+                    this.stateManager.SecureStorageWriteStarted += this.OnSecureStorageWriteStarted;
+                    this.stateManager.SecureStorageWriteCompleted += this.OnSecureStorageWriteCompleted;
+                    this.stateManager.SecureStorageWriteException += this.OnSecureStorageWriteException;
                 }
             }
+        }
+
+        /// <summary>
+        /// Raise the `RequestException` event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The arguments.</param>
+        protected void OnRequestException(object sender, RequestExceptionEventArgs args)
+        {
+            this.RequestException?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Raise the `SecureStorageReadStarted` event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The arguments.</param>
+        protected void OnSecureStorageReadStarted(object sender, SecureStorageEventArgs args)
+        {
+            this.SecureStorageReadStarted?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Raise the `SecureStorageReadCompleted` event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The arguments.</param>
+        protected void OnSecureStorageReadCompleted(object sender, SecureStorageEventArgs args)
+        {
+            this.SecureStorageReadCompleted?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Raise the `SecureStorageReadException` event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The arguments.</param>
+        protected void OnSecureStorageReadException(object sender, SecureStorageExceptionEventArgs args)
+        {
+            this.SecureStorageReadException?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Raise the `SecureStorageWriteStarted` event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The arguments.</param>
+        protected void OnSecureStorageWriteStarted(object sender, SecureStorageEventArgs args)
+        {
+            this.SecureStorageWriteStarted?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Raise the `SecureStorageWriteCompleted` event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The arguments.</param>
+        protected void OnSecureStorageWriteCompleted(object sender, SecureStorageEventArgs args)
+        {
+            this.SecureStorageWriteCompleted?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Raise the `SecureStorageWriteException` event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The arguments.</param>
+        protected void OnSecureStorageWriteException(object sender, SecureStorageExceptionEventArgs args)
+        {
+            this.SecureStorageWriteException?.Invoke(sender, args);
         }
 
         /// <summary>
@@ -301,7 +380,7 @@ namespace Okta.Xamarin
 
             try
             {
-                this.LoadStateStarted?.Invoke(this, new SecureStorageEventArgs { OktaStateManager = this.StateManager });
+                this.OnLoadStateStarted();
                 OktaStateManager stateManager = await this.StateManager.ReadFromSecureStorageAsync();
                 if (stateManager != null && !string.IsNullOrEmpty(stateManager.AccessToken))
                 {
@@ -312,14 +391,40 @@ namespace Okta.Xamarin
                     stateManager = this.StateManager as OktaStateManager;
                 }
 
-                this.LoadStateCompleted?.Invoke(this, new SecureStorageEventArgs { OktaStateManager = stateManager });
+                this.OnLoadStateCompleted(stateManager);
                 return stateManager != null;
             }
             catch (Exception ex)
             {
-                this.LoadStateException?.Invoke(this, new SecureStorageExceptionEventArgs { Exception = ex });
+                this.OnLoadStateException(ex);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Raise the `LoadStateException` event.
+        /// </summary>
+        /// <param name="ex">The exception</param>
+        protected void OnLoadStateException(Exception ex)
+        {
+            this.LoadStateException?.Invoke(this, new SecureStorageExceptionEventArgs { Exception = ex });
+        }
+
+        /// <summary>
+        /// Raise the `LoadStateCompleted` event.
+        /// </summary>
+        /// <param name="stateManager">The state manager.</param>
+        protected void OnLoadStateCompleted(OktaStateManager stateManager)
+        {
+            this.LoadStateCompleted?.Invoke(this, new SecureStorageEventArgs { OktaStateManager = stateManager });
+        }
+
+        /// <summary>
+        /// Raise the `LoadStateStarted` event.
+        /// </summary>
+        protected void OnLoadStateStarted()
+        {
+            this.LoadStateStarted?.Invoke(this, new SecureStorageEventArgs { OktaStateManager = this.StateManager });
         }
 
         /// <summary>
@@ -662,7 +767,7 @@ namespace Okta.Xamarin
         /// <returns>OktaState.</returns>
         public virtual async Task<IOktaStateManager> SignInAsync(IOidcClient oidcClient = null)
         {
-            this.SignInStarted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
+            this.OnSignInStarted();
             oidcClient = oidcClient ?? this.OidcClient;
             this.OktaConfig = oidcClient.Config;
             try
@@ -679,8 +784,24 @@ namespace Okta.Xamarin
                 return this.StateManager;
             }
 
-            this.SignInCompleted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
+            this.OnSignInCompleted();
             return this.StateManager;
+        }
+
+        /// <summary>
+        /// Raise the `SingInCompleted` event.
+        /// </summary>
+        protected void OnSignInCompleted()
+        {
+            this.SignInCompleted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
+        }
+
+        /// <summary>
+        /// Raise the `SignInStarted` event.
+        /// </summary>
+        protected void OnSignInStarted()
+        {
+            this.SignInStarted?.Invoke(this, new SignInEventArgs { StateManager = this.StateManager });
         }
 
         /// <summary>
@@ -690,10 +811,26 @@ namespace Okta.Xamarin
         /// <returns>Task.</returns>
         public virtual async Task SignOutAsync(IOidcClient oidcClient = null)
         {
-            this.SignOutStarted?.Invoke(this, new SignOutEventArgs { StateManager = this.StateManager });
+            this.OnSignOutStarted();
             oidcClient = oidcClient ?? this.OidcClient;
             this.StateManager = await oidcClient.SignOutOfOktaAsync(this.StateManager);
+            this.OnSignOutCompleted();
+        }
+
+        /// <summary>
+        /// Raise the `SignOutCompleted` event.
+        /// </summary>
+        protected void OnSignOutCompleted()
+        {
             this.SignOutCompleted?.Invoke(this, new SignOutEventArgs { StateManager = this.StateManager });
+        }
+
+        /// <summary>
+        /// Raise the `SignOutStarted` event.
+        /// </summary>
+        protected void OnSignOutStarted()
+        {
+            this.SignOutStarted?.Invoke(this, new SignOutEventArgs { StateManager = this.StateManager });
         }
 
         /// <summary>
@@ -736,7 +873,7 @@ namespace Okta.Xamarin
             try
             {
                 token = token ?? this.StateManager.GetToken(tokenKind);
-                this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
+                this.OnRevokeStarted(tokenKind, token);
 
                 switch (tokenKind)
                 {
@@ -749,12 +886,41 @@ namespace Okta.Xamarin
                         break;
                 }
 
-                this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Response = this.StateManager.LastApiResponse });
+                this.OnRevokeCompleted(tokenKind);
             }
             catch (Exception ex)
             {
-                this.RevokeException?.Invoke(this, new RevokeExceptionEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Exception = ex });
+                this.OnRevokeException(tokenKind, ex);
             }
+        }
+
+        /// <summary>
+        /// Raise the `RevokeException` event.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token.</param>
+        /// <param name="ex">The exception.</param>
+        protected void OnRevokeException(TokenKind tokenKind, Exception ex)
+        {
+            this.RevokeException?.Invoke(this, new RevokeExceptionEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Exception = ex });
+        }
+
+        /// <summary>
+        /// Raise the `RevokeCompleted` event.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token.</param>
+        protected void OnRevokeCompleted(TokenKind tokenKind)
+        {
+            this.RevokeCompleted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Response = this.StateManager.LastApiResponse });
+        }
+
+        /// <summary>
+        /// Raise the `RevokeStarted` event.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token.</param>
+        /// <param name="token">The token.</param>
+        protected void OnRevokeStarted(TokenKind tokenKind, string token)
+        {
+            this.RevokeStarted?.Invoke(this, new RevokeEventArgs { StateManager = this.StateManager, TokenKind = tokenKind, Token = token });
         }
 
         /// <summary>
@@ -765,10 +931,31 @@ namespace Okta.Xamarin
         public virtual async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind)
         {
             string token = this.StateManager.GetToken(tokenKind);
-            this.IntrospectStarted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind });
+            this.OnIntrospectStarted(tokenKind, token);
             Dictionary<string, object> result = await this.StateManager.IntrospectAsync(tokenKind);
-            this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind, Response = result });
+            this.OnIntrospectCompleted(tokenKind, token, result);
             return result;
+        }
+
+        /// <summary>
+        /// Raise the `IntrospectCompleted` event.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="result">The result.</param>
+        protected void OnIntrospectCompleted(TokenKind tokenKind, string token, Dictionary<string, object> result)
+        {
+            this.IntrospectCompleted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind, Response = result });
+        }
+
+        /// <summary>
+        /// Raise the `IntrospectStarted` event.
+        /// </summary>
+        /// <param name="tokenKind">The kind of token.</param>
+        /// <param name="token">The token.</param>
+        protected void OnIntrospectStarted(TokenKind tokenKind, string token)
+        {
+            this.IntrospectStarted?.Invoke(this, new IntrospectEventArgs { StateManager = this.StateManager, Token = token, TokenKind = tokenKind });
         }
 
         /// <summary>
@@ -799,17 +986,49 @@ namespace Okta.Xamarin
 
                 string authorizationServerId = this.StateManager?.Config?.AuthorizationServerId;
 
-                this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+                this.OnRenewStarted(refreshToken, refreshIdToken, authorizationServerId);
                 RenewResponse result = await this.StateManager.RenewAsync(refreshToken, refreshIdToken);
-                this.RenewCompleted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, Response = result, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+                this.OnRenewCompleted(refreshToken, refreshIdToken, authorizationServerId, result);
 
                 return result;
             }
             catch (Exception ex)
             {
-                this.RenewException?.Invoke(this, new RenewExceptionEventArgs { StateManager = this.StateManager, Exception = ex });
+                OnRenewException(ex);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Raise the `RenewException` event.
+        /// </summary>
+        /// <param name="ex">The exception.</param>
+        protected void OnRenewException(Exception ex)
+        {
+            this.RenewException?.Invoke(this, new RenewExceptionEventArgs { StateManager = this.StateManager, Exception = ex });
+        }
+
+        /// <summary>
+        /// Raise the `RenewCompleted` event.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <param name="refreshIdToken">A value indicating whether to refresh the id token.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        /// <param name="result">The result.</param>
+        protected void OnRenewCompleted(string refreshToken, bool refreshIdToken, string authorizationServerId, RenewResponse result)
+        {
+            this.RenewCompleted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, Response = result, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
+        }
+
+        /// <summary>
+        /// Raise the `RenewStarted` event.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <param name="refreshIdToken">A value indicating whether to refresh the id token.</param>
+        /// <param name="authorizationServerId">The authorization server id.</param>
+        protected void OnRenewStarted(string refreshToken, bool refreshIdToken, string authorizationServerId)
+        {
+            this.RenewStarted?.Invoke(this, new RenewEventArgs { StateManager = this.StateManager, RefreshToken = refreshToken, RefreshIdToken = refreshIdToken, AuthorizationServerId = authorizationServerId });
         }
 
         /// <summary>
@@ -819,10 +1038,18 @@ namespace Okta.Xamarin
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task<T> GetUserAsync<T>()
         {
-            this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });
+            this.OnGetUserStarted();
             T user = await this.StateManager.GetUserAsync<T>();
-            this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = user });
+            this.OnGetUserCompleted(user);
             return user;
+        }
+
+        /// <summary>
+        /// Raise the `GetUserStarted` event.
+        /// </summary>
+        protected void OnGetUserStarted()
+        {
+            this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });
         }
 
         /// <summary>
@@ -831,10 +1058,19 @@ namespace Okta.Xamarin
         /// <returns>Task{Dictionary{string,object}}.</returns>
         public virtual async Task<Dictionary<string, object>> GetUserAsync()
         {
-            this.GetUserStarted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager });
+            this.OnGetUserStarted();
             Dictionary<string, object> userInfo = await this.StateManager.GetUserAsync();
-            this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = userInfo });
+            this.OnGetUserCompleted(userInfo);
             return userInfo;
+        }
+
+        /// <summary>
+        /// Raise the `GetUserCompleted` event.
+        /// </summary>
+        /// <param name="userInfo">The user information.</param>
+        protected void OnGetUserCompleted(object userInfo)
+        {
+            this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = userInfo });
         }
 
         /// <summary>
@@ -843,9 +1079,9 @@ namespace Okta.Xamarin
         /// <returns>ClaimsPrincipal.</returns>
         public virtual async Task<System.Security.Claims.ClaimsPrincipal> GetClaimsPrincipalAsync()
         {
-            this.GetUserStarted?.Invoke(this, new GetUserEventArgs());
+            this.OnGetUserStarted();
             ClaimsPrincipal claimsPrincipal = await this.StateManager.GetClaimsPrincipalAsync();
-            this.GetUserCompleted?.Invoke(this, new GetUserEventArgs { StateManager = this.StateManager, UserInfo = claimsPrincipal });
+            this.OnGetUserCompleted(claimsPrincipal);
             return claimsPrincipal;
         }
 
