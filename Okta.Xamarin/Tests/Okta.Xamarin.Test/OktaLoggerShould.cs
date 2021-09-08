@@ -488,5 +488,29 @@ namespace Okta.Xamarin.Test
             wasCalled.Should().BeTrue();
             mockLogger.Received().Error(Arg.Any<string>(), Arg.Any<object[]>());
         }
+
+		[Fact]
+		public void LogWarning()
+		{
+			ILogger mockLogger = Substitute.For<ILogger>();
+			OktaLogger testLogger = new OktaLogger(mockLogger);			
+			string format = "this is a test {0}";
+			object[] args = new[] { "message" };
+			testLogger.Warning(format, args);
+
+			mockLogger.Received().Warning(format, args);
+		}
+
+		[Fact]
+		public void LogFatal()
+		{
+			ILogger mockLogger = Substitute.For<ILogger>();
+			OktaLogger testLogger = new OktaLogger(mockLogger);
+			string format = "this is a test {0}";
+			object[] args = new[] { "message" };
+			testLogger.Fatal(format, args);
+
+			mockLogger.Received().Fatal(format, args);
+		}
     }
 }
