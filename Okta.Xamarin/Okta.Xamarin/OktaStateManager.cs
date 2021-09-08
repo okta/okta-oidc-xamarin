@@ -372,6 +372,24 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
+        public virtual string GetAccessToken()
+        {
+            return this.AccessToken;
+        }
+
+        /// <inheritdoc/>
+        public virtual string GetRefreshToken()
+        {
+            return this.RefreshToken;
+        }
+
+        /// <inheritdoc/>
+        public virtual string GetIdToken()
+        {
+            return this.IdToken;
+        }
+
+        /// <inheritdoc/>
         public void Clear()
         {
             this.AccessToken = string.Empty;

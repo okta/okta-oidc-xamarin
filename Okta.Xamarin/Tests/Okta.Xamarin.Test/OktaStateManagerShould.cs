@@ -143,5 +143,38 @@ namespace Okta.Xamarin.Test
 
             mockClient.Received().RevokeRefreshTokenAsync(testRefreshToken);
         }
-    }
+
+		[Fact]
+		public void GetAccessToken()
+		{
+			string testAccessToken = "this is a test access token";
+			OktaStateManager oktaStateManager = new OktaStateManager { AccessToken = testAccessToken };
+
+			string retrieved = oktaStateManager.GetAccessToken();
+
+			retrieved.Should().BeEquivalentTo(testAccessToken);
+		}
+
+		[Fact]
+		public void GetRefreshToken()
+		{
+			string testRefreshToken = "this is a test refresh token";
+			OktaStateManager oktaStateManager = new OktaStateManager { RefreshToken = testRefreshToken };
+
+			string retrieved = oktaStateManager.GetRefreshToken();
+
+			retrieved.Should().BeEquivalentTo(testRefreshToken);
+		}
+
+		[Fact]
+		public void GetIdToken()
+		{
+			string testIdToken = "this is a test id token";
+			OktaStateManager oktaStateManager = new OktaStateManager { RefreshToken = testIdToken };
+
+			string retrieved = oktaStateManager.GetRefreshToken();
+
+			retrieved.Should().BeEquivalentTo(testIdToken);
+		}
+	}
 }
