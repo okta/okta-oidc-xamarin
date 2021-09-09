@@ -72,7 +72,7 @@ namespace Okta.Xamarin.Services
         void LogSecureStorageReadCompletedEvents(EventHandler<SecureStorageEventArgs> eventHandler = null);
 
         /// <summary>
-        /// 
+        /// Subscribes to and logs `SecureStorageReadException` events.
         /// </summary>
         /// <param name="eventHandler">The event handler.</param>
         void LogSecureStorageReadExceptionEvents(EventHandler<SecureStorageExceptionEventArgs> eventHandler = null);
