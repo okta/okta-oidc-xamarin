@@ -7,10 +7,10 @@ using System;
 
 namespace Okta.Xamarin.Services
 {
-	/// <summary>
-	/// An interface defining Okta specific event subscription handling methods.
-	/// </summary>
-	public interface IOktaLogger : ILogger
+    /// <summary>
+    /// An interface defining Okta specific event subscription handling methods.
+    /// </summary>
+    public interface IOktaLogger : ILogger
     {
         /// <summary>
         /// Subscribes to and logs all relevant events.
@@ -18,7 +18,7 @@ namespace Okta.Xamarin.Services
         void LogAllEvents();
 
         /// <summary>
-        /// Subscribes to and logs `ReqeustException` events.
+        /// Subscribes to and logs `RequestException` events.
         /// </summary>
         /// <param name="eventHandler">The event handler.</param>
         void LogRequestExceptionEvents(EventHandler<RequestExceptionEventArgs> eventHandler = null);
