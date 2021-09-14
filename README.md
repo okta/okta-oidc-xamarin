@@ -383,12 +383,58 @@ See [Refresh Tokens](#refresh-tokens) to ensure your app is configured properly 
 OktaContext.Current.RenewAsync(TokenKind.AccessToken);
 ```
 
+#### RevokeAccessToken
+
+Calls the revocation endpoint to revoke the access token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
+
+```csharp
+OktaContext.RevokeAccessToken(); 
+
+// or revoke a specific access token
+OktaContext.RevokeAccessToken("<YOUR-ACCESS-TOKEN>");
+```
+
+#### RevokeRefreshToken
+
+Calls the revocation endpoint to revoke the refresh token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
+
+```csharp
+OktaContext.RevokeRefreshToken();
+
+// or revoke a specific refresh token
+OktaContext.RevokeRefreshToken("<YOUR-REFRESH-TOKEN>");
+```
+
 #### RevokeAsync
 
 Calls the revocation endpoint to revoke the specified kind of token.  See also, [RevokeStarted event](#revokestarted-event) and [RevokeCompleted event](#revokecompleted-event).
 
 ```csharp
 OktaContext.Current.RevokeAsync();
+```
+
+#### SaveStateAsync
+
+Saves current state to secure storage.  See also, [LoadSateAsync](#loadstateasync).
+
+```csharp
+// using static convenience method
+OktaContet.SaveStateAsync(); 
+
+// using OktaContext.Current
+OktaContext.Current.SaveSatateAsync();
+```
+
+#### LoadStateAsync
+
+Loads previously saved state from secure storage.  See also, [SaveStateAsync](#savestateasync).
+
+```csharp
+// using static convenience method
+OktaContext.LoadStateAsync();
+
+// using OktaContext.Current
+OktaContext.Current.LoadStateAsync();
 ```
 
 #### GetUserAsync
@@ -413,6 +459,33 @@ Gets the token of the specified kind from the state manager.
 
 ```csharp
 OktaContext.GetToken(TokenKind.AccessToken);
+```
+
+#### InitServicesStarted event
+
+The `OktaContext.Current.InitServicesStarted` event is raised before internal Okta services are initialized.  To execute code when the `InitServicesStarted` event is raised, add an event handler to the `OktAcontext.Current.InitServicesStarted` event.
+
+```csharp
+OktaContext.Current.InitServicesStarted += (sender, initServicesEventArgs) => Console.WriteLine("Init services started");
+
+```
+
+#### InitServicesCompleted event
+
+The `OktaContext.Current.InitServicesCompleted` event is raised after internal Okta services are initialized.  To execute code when the `InitServicesCompleted` event is raised, add an event handler to the `OktAcontext.Current.InitServicesCompleted` event.
+
+```csharp
+OktaContext.Current.InitServicesCompleted += (sender, initServicesEventArgs) => Console.WriteLine("Init services completed");
+
+```
+
+#### InitServicesException event
+
+The `OktaContext.Current.InitServicesException` event is raised if an exception occurs initializing internal Okta services.  To execute code when the `InitServicesException` event is raised, add an event handler to the `OktAcontext.Current.InitServicesException` event.
+
+```csharp
+OktaContext.Current.InitServicesException += (sender, initServicesEventArgs) => Console.WriteLine("Init services exception: {0}", initServicesEventArgs.Exception.Message);
+
 ```
 
 #### SignInStarted event
@@ -485,6 +558,198 @@ OktaContext.AddAuthenticationFailedListener((sender, authenticationFailedEventAr
 })
 ```
 
+#### LoadStateStarted event
+
+The `OktaContext.Current.LoadStateStarted`  event is raised before state is loaded from secure storage.  To execute code when the `LoadStateStarted` event is raised, add an event handler to the `OktaContext.Current.LoadStateStarted` event.
+
+```csharp
+// directly
+OktaContext.Current.LoadStateStarted += (sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+}
+
+// using AddLoadStateStartedListener
+OktaContext.AddLoadStateStartedListener((sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+})
+```
+
+### LoadStateCompleted event
+The `OktaContext.Current.LoadStateCompleted` event is raised after state is loaded.  To execute code when the `LoadStateCompleted` event is raised, add an event handler to the `OktaContext.Current.LoadStateCompleted` event.
+
+```csharp
+// directly
+OktaContext.Current.LoadStateCompleted += (sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+}
+
+// using AddLoadStateCompletedListener
+OktaContext.AddLoadStateCompletedListener((sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+})
+```
+
+### LoadStateException event
+The `OktaContext.Current.LoadStateException` event is raised when an exception occurs when loading state.  To execute code when the `LoadStateException` event is raised, add an event handler to the `OktaContext.Current.LoadStateException` event.
+
+```csharp
+// directly
+OktaContext.Current.LoadStateException += (sender, secureStorageExceptionEventArgs) =>
+{
+    Exception exception = secureStorageExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+}
+
+// using AddLoadStateExceptionListener
+OktaContext.AddLoadStateExceptionListener((sender, secureStorageExceptionEventArgs) =>
+{
+    Exception exception = secureStorageExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+})
+```
+
+#### SecureStorageWriteStarted event
+
+The `OktaContext.Current.SecureStorageWriteStarted` event is raised before data is written to secure storage.  To execute code when the `SecureStorageWriteStarted` event is raised, add an event handler to the `OktaContext.Current.SecureStorageWriteStarted` event.
+
+```csharp
+// directly
+OktaContext.Current.SecureStorageWriteStarted += (sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+}
+
+// using AddSecureStorageWriteStartedListener
+OktaContext.AddSecureStorageWriteStartedListener((sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+})
+```
+
+### SecureStorageWriteCompleted event
+The `OktaContext.Current.SecureStorageWriteCompleted` event is raised after data is written to secure storage.  To execute code when the `SecureStorageWriteCompleted` event is raised, add an event handler to the `OktaContext.Current.SecureStorageWriteCompleted` event.
+
+```csharp
+// directly
+OktaContext.Current.SecureStorageWriteCompleted += (sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+}
+
+// using AddSecureStorageWriteCompletedListener
+OktaContext.AddSecureStorageWriteCompletedListener((sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+})
+```
+
+### SecureStorageWriteException event
+The `OktaContext.Current.SecureStorageWriteException` event is raised when an exception occurs writing to secure storage.  To execute code when the `SecureStorageWriteException` event is raised, add an event handler to the `OktaContext.Current.SecureStorageWriteException` event.
+
+```csharp
+// directly
+OktaContext.Current.SecureStorageWriteException += (sender, secureStorageExceptionEventArgs) =>
+{
+    Exception exception = secureStorageExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+}
+
+// using AddSecureStorageWriteExceptionListener
+OktaContext.AddSecureStorageWriteExceptionListener((sender, secureStorageExceptionEventArgs) =>
+{
+    Exception exception = secureStorageExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+})
+```
+
+#### SecureStorageReadStarted event
+
+The `OktaContext.Current.SecureStorageReadStarted` event is raised before data is read from secure storage.  To execute code when the `SecureStorageReadStarted` event is raised, add an event handler to the `OktaContext.Current.SecureStorageReadStarted` event.
+
+```csharp
+// directly
+OktaContext.Current.SecureStorageReadStarted += (sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+}
+
+// using AddSecureStorageReadStartedListener
+OktaContext.AddSecureStorageReadStartedListener((sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+})
+```
+
+### SecureStorageReadCompleted event
+The `OktaContext.Current.SecureStorageReadCompleted` event is raised after data is read from secure storage.  To execute code when the `SecureStorageReadCompleted` event is raised, add an event handler to the `OktaContext.Current.SecureStorageReadCompleted` event.
+
+```csharp
+// directly
+OktaContext.Current.SecureStorageReadCompleted += (sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+}
+
+// using AddSecureStorageReadCompletedListener
+OktaContext.AddSecureStorageReadCompletedListener((sender, secureStorageEventArgs) =>
+{
+    IOktaStateManager oktaStateManager = secureStorageEventArgs.OktaStateManager;
+
+    // ... additional custom logic
+})
+```
+
+### SecureStorageReadException event
+The `OktaContext.Current.SecureStorageReadException` event is raised when an exception occurs reading from secure storage.  To execute code when the `SecureStorageReadException` event is raised, add an event handler to the `OktaContext.Current.SecureStorageReadException` event.
+
+```csharp
+// directly
+OktaContext.Current.SecureStorageReadException += (sender, secureStorageExceptionEventArgs) =>
+{
+    Exception exception = secureStorageExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+}
+
+// using AddSecureStorageReadExceptionListener
+OktaContext.AddSecureStorageReadExceptionListener((sender, secureStorageExceptionEventArgs) =>
+{
+    Exception exception = secureStorageExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+})
+```
+
 #### RevokeStarted event
 
 The `OktaContext.Current.RevokeStarted` event is raised before token revocation begins.  To execute code when the `RevokeStarted` event is raised, add an event handler to the `OktaContext.Current.RevokeStarted` event.
@@ -511,7 +776,7 @@ OktaContext.AddRevokeStartedListener((sender, revokeEventArgs) =>
 
 #### RevokeCompleted event
 
-The `OktaContext.Current.RevokeCompleted` event is raised token revocation completes.  To execute code when the `RevokeCompleted` event is raised, add an event handler to the `OktaContext.Current.RevokeCompleted` event.
+The `OktaContext.Current.RevokeCompleted` event is raised when token revocation completes.  To execute code when the `RevokeCompleted` event is raised, add an event handler to the `OktaContext.Current.RevokeCompleted` event.
 
 ```csharp
 // directly
@@ -531,6 +796,28 @@ OktaContext.AddRevokeCompletedListener((sender, revokeEventArgs) =>
 
     // ... additional custom logic  
 })
+```
+
+#### RevokeException event
+
+The `OktaContext.Current.RevokeException` event is raised when an exception occurs during token revocation.  To execute code when the `RevokeException` event is raised, add an event handler to the `OktaContext.Current.RevokeException` event.
+
+```csharp
+// directly
+OktaContext.Current.RevokeException += (sender, revokeExceptionEventArgs) =>
+{
+    Exception exception = revokeExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+}
+
+// using AddRenewExceptionListener
+OktaContext.AddReokeExceptionListener((sender, revokeExceptionEventArgs =>
+{
+    Exception exception = revokeExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+}))
 ```
 
 #### GetUserStarted event
@@ -667,6 +954,44 @@ OktaContext.AddRenewCompletedListener((sender, renewEventArgs) =>
 
     // ... additional custom logic
 })
+```
+
+#### RenewException event
+
+The `OktaContext.Current.RenewException` event is raised when an exception occurs during token renewal.  To execute code when the `RenewException` event is raised, add an event handler to the `OktaContext.Current.RenewException` event.
+
+```csharp
+// directly
+OktaContext.Current.RenewException += (sender, renewExceptionEventArgs) =>
+{
+    Exception exception = renewExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+}
+
+// using AddRenewExceptionListener
+OktaContext.AddRenewExceptionListener((sender, renewExceptionEventArgs =>
+{
+    Exception exception = renewExceptionEventArgs.Exception;
+
+    // ... additional custom logic
+}))
+```
+
+#### Accessing Tokens Using OktaStateManager class
+
+After authentication completes, use `OktaContext.Current.StateManager` to access tokens for the current authenticated Okta session.
+
+```csharp
+// get access token
+string accessToken = OktaContext.Current.StateManager.GetAccessToken();
+
+// get refresh token
+string refreshToken = OktaContext.Current.StateManager.GetRefreshToken();
+
+// get Id token
+string idToken = OktaContext.Current.StateManager.GetIdToken();
+
 ```
 
 ### BearerToken and BearerTokenClaims classes
