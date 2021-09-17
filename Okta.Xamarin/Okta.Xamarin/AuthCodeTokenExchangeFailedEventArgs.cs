@@ -4,9 +4,19 @@ using System.Text;
 
 namespace Okta.Xamarin
 {
-	public class AuthCodeTokenExchangeFailedEventArgs : EventArgs
-	{
-		public IOidcClient OidcClient { get; set; }
-		public Exception Exception { get; set; }
-	}
+    /// <summary>
+    /// Data relevant to AuthCodeTokenExchangeFailed events.
+    /// </summary>
+    public class AuthCodeTokenExchangeFailedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets or sets the OidcClient.
+        /// </summary>
+        public IOidcClient OidcClient { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exception.
+        /// </summary>
+        public Exception Exception { get; set; }
+    }
 }
