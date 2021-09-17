@@ -29,6 +29,11 @@ namespace Okta.Xamarin
         public event EventHandler<RequestExceptionEventArgs> RequestException;
 
         /// <summary>
+        /// The event that is raised when the exchange of code for tokens fails.
+        /// </summary>
+        public event EventHandler<AuthCodeTokenExchangeFailedEventArgs> AuthCodeTokenExchangeFailed;
+
+        /// <summary>
         /// Gets or sets the OAuthException that occurred if any.  Is null if no exception occurred.
         /// </summary>
         public OAuthException OAuthException
@@ -401,9 +406,9 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// After a user logs in and is redirected back to the app via an intent or universal link, this method is called to parse the returned token and continue the flow
+        /// After a user logs in and is redirected back to the app via an intent or universal link, this method is called to parse the returned token and continue the flow.
         /// </summary>
-        /// <param name="url">The full callback url that the user was directed to</param>
+        /// <param name="url">The full callback url that the user was directed to.</param>
         /// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="OktaStateManager"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
         private async Task ParseRedirectedUrl(Uri url) // TODO: refactor this implementation for readability and maintenance.
         {
@@ -414,29 +419,29 @@ namespace Okta.Xamarin
             // check if there is an error
             if (queryData.ContainsKey("error"))
             {
-                OAuthException = new OAuthException()
+                this.OAuthException = new OAuthException()
                 {
                     ErrorTitle = queryData["error"],
                     ErrorDescription = queryData.GetValueOrDefault("error_description"),
-                    RequestUrl = url.ToString()
+                    RequestUrl = url.ToString(),
                 };
 
-                currentTask.SetException(OAuthException);
+                this.currentTask.SetException(this.OAuthException);
 
                 return;
             }
 
             // confirm that the url matches the redirect url we expect
-            if (!url.ToString().ToLower().StartsWith(Config.RedirectUri.ToLower()))
+            if (!url.ToString().ToLower().StartsWith(this.Config.RedirectUri.ToLower()))
             {
-                OAuthException = new OAuthException()
+                this.OAuthException = new OAuthException()
                 {
                     ErrorTitle = "RedirectUri mismatch",
-                    ErrorDescription = $"Expected RedirectUri of {Config.RedirectUri}, got {url.ToString()} instead.",
-                    RequestUrl = url.ToString()
+                    ErrorDescription = $"Expected RedirectUri of {this.Config.RedirectUri}, got {url.ToString()} instead.",
+                    RequestUrl = url.ToString(),
                 };
 
-                currentTask.SetException(OAuthException);
+                this.currentTask.SetException(OAuthException);
 
                 return;
             }
@@ -445,19 +450,19 @@ namespace Okta.Xamarin
             string code = queryData["code"];
             if (string.IsNullOrWhiteSpace(code))
             {
-                OAuthException = new OAuthException()
+                this.OAuthException = new OAuthException()
                 {
                     ErrorTitle = "No code returned in authorize request",
-                    RequestUrl = url.ToString()
+                    RequestUrl = url.ToString(),
                 };
 
-                currentTask.SetException(OAuthException);
+                this.currentTask.SetException(OAuthException);
                 return;
             }
 
-            OAuthException = null;
+            this.OAuthException = null;
             // now exchange authorization code for an access token
-            await ExchangeAuthCodeForToken(code);
+            await this.ExchangeAuthCodeForTokenAsync(code);
         }
 
         private async Task ClearStateAsync()
@@ -468,59 +473,72 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Exchange authorization code for an access token
+        /// Exchange authorization code for an access token.
         /// </summary>
         /// <param name="code">The authorization code received from the login</param>
         /// <returns>A Task which is complete when the login flow is completed.  The actual return value <see cref="OktaStateManager"/> or <see cref="OAuthException"/> is returned to the original Task returned from <see cref="SignInWithBrowserAsync"/>.</returns>
-        private async Task ExchangeAuthCodeForToken(string code)
+        protected async Task ExchangeAuthCodeForTokenAsync(string code)
         {
-            List<KeyValuePair<string, string>> kvdata = new List<KeyValuePair<string, string>>
+            try
+            {
+                List<KeyValuePair<string, string>> kvdata = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("grant_type", "authorization_code"),
                 new KeyValuePair<string, string>("code", code),
                 new KeyValuePair<string, string>("redirect_uri", this.Config.RedirectUri),
                 new KeyValuePair<string, string>("client_id", this.Config.ClientId),
-                new KeyValuePair<string, string>("code_verifier", CodeVerifier),
+                new KeyValuePair<string, string>("code_verifier", this.CodeVerifier),
             };
-            var content = new FormUrlEncodedContent(kvdata);
+                var content = new FormUrlEncodedContent(kvdata);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, this.Config.GetAccessTokenUrl())
-                {Content = content, Method = HttpMethod.Post};
-            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                var request = new HttpRequestMessage(HttpMethod.Post, this.Config.GetAccessTokenUrl())
+                { Content = content, Method = HttpMethod.Post };
+                HttpResponseMessage response = await this.client.SendAsync(request).ConfigureAwait(false);
 
-            string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            Dictionary<string, string> data = Helpers.JsonDecode(text);
+                Dictionary<string, string> data = Helpers.JsonDecode(text);
 
-            if (data.ContainsKey("error"))
-            {
-                OAuthException = new OAuthException()
+                if (data.ContainsKey("error"))
                 {
-                    ErrorTitle = data["error"],
-                    ErrorDescription = data.GetValueOrDefault("error_description"),
-                    RequestUrl = this.Config.GetAccessTokenUrl(),
-                    ExtraData = kvdata
+                    OAuthException = new OAuthException()
+                    {
+                        ErrorTitle = data["error"],
+                        ErrorDescription = data.GetValueOrDefault("error_description"),
+                        RequestUrl = this.Config.GetAccessTokenUrl(),
+                        ExtraData = kvdata
+                    };
+
+                    currentTask.SetException(OAuthException);
+
+                    return;
+                }
+
+                // TODO: add a StateManager constructor that takes Dictionary<string, string>
+                OktaStateManager stateManager = new OktaStateManager(
+                    data["access_token"],
+                    data["token_type"],
+                    data.GetValueOrDefault("id_token"),
+                    data.GetValueOrDefault("refresh_token"),
+                    data.ContainsKey("expires_in") ? (int?)int.Parse(data["expires_in"]) : null,
+                    data.GetValueOrDefault("scope") ?? this.Config.Scope)
+                {
+                    Config = this.Config,
+                    Client = this,
                 };
 
-                currentTask.SetException(OAuthException);
-
-                return;
+                this.currentTask.SetResult(stateManager);
             }
-
-            // TODO: add a StateManager constructor that takes Dictionary<string, string>
-            OktaStateManager stateManager = new OktaStateManager(
-                data["access_token"],
-                data["token_type"],
-                data.GetValueOrDefault("id_token"),
-                data.GetValueOrDefault("refresh_token"),
-                data.ContainsKey("expires_in") ? (int?)int.Parse(data["expires_in"]) : null,
-                data.GetValueOrDefault("scope") ?? this.Config.Scope)
+            catch (Exception ex)
             {
-                Config = Config,
-                Client = this,
-            };
+                this.OnAuthCodeTokenExchangeFailed(new AuthCodeTokenExchangeFailedEventArgs { OidcClient = this, Exception = ex });
+                this.currentTask.SetException(ex);
+            }
+        }
 
-            currentTask.SetResult(stateManager);
+        protected void OnAuthCodeTokenExchangeFailed(AuthCodeTokenExchangeFailedEventArgs args)
+        {
+            this.AuthCodeTokenExchangeFailed?.Invoke(this, args);
         }
 
         /// <summary>
@@ -545,7 +563,7 @@ namespace Okta.Xamarin
         protected TaskCompletionSource<IOktaStateManager> currentTask;
 
         /// <summary>
-        /// Generates a cryptographically random <see cref="State"/> and <see cref="CodeVerifier"/>, and computes the <see cref="CodeChallenge"/> for use in PKCE
+        /// Generates a cryptographically random <see cref="State"/> and <see cref="CodeVerifier"/>, and computes the <see cref="CodeChallenge"/> for use in PKCE.
         /// </summary>
         private void GenerateStateCodeVerifierAndChallenge()
         {
@@ -605,8 +623,8 @@ namespace Okta.Xamarin
             url += "response_type=code" +
                    "&client_id=" + this.Config.ClientId +
                    "&redirect_uri=" + System.Uri.EscapeDataString(this.Config.RedirectUri) +
-                   "&state=" + State +
-                   "&code_challenge=" + CodeChallenge +
+                   "&state=" + this.State +
+                   "&code_challenge=" + this.CodeChallenge +
                    "&code_challenge_method=S256" +
                    "&scope=" + System.Uri.EscapeDataString(this.Config.Scope);
 

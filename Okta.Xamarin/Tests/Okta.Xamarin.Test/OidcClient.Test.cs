@@ -124,5 +124,10 @@ namespace Okta.Xamarin
         {
             base.PerformAuthorizationServerRequestAsync(httpMethod, path, headers, formUrlEncodedContent);
         }
+
+        public async Task CallExchangeCodeForTokenAsync(string code)
+        {
+            await ExchangeAuthCodeForTokenAsync(code);
+        }
     }
 }
