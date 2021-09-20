@@ -483,7 +483,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public void RaiseAuthCodeTokenExchangeExceptionEvent()
+        public void RaiseAuthCodeTokenExchangeExceptionThrownEvent()
         {
             string testClientId = "test client id";
             OktaConfig testConfig = new OktaConfig
@@ -506,7 +506,7 @@ namespace Okta.Xamarin.Test
             testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
 
             bool? eventWasRaised = false;
-            testOidcClient.AuthCodeTokenExchangeException += (sender, args) =>
+            testOidcClient.AuthCodeTokenExchangeExceptionThrown += (sender, args) =>
             {
                 eventWasRaised = true;
             };

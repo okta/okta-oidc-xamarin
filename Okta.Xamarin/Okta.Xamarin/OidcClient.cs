@@ -31,7 +31,7 @@ namespace Okta.Xamarin
         /// <summary>
         /// The event that is raised when the exchange of code for tokens throws an exception.
         /// </summary>
-        public event EventHandler<AuthCodeTokenExchangeExceptionEventArgs> AuthCodeTokenExchangeException;
+        public event EventHandler<AuthCodeTokenExchangeExceptionEventArgs> AuthCodeTokenExchangeExceptionThrown;
 
         /// <summary>
         /// Gets or sets the OAuthException that occurred if any.  Is null if no exception occurred.
@@ -531,7 +531,7 @@ namespace Okta.Xamarin
             }
             catch (Exception ex)
             {
-                this.OnAuthCodeTokenExchangeException(new AuthCodeTokenExchangeExceptionEventArgs { OidcClient = this, Exception = ex });
+                this.OnAuthCodeTokenExchangeExceptionThrown(new AuthCodeTokenExchangeExceptionEventArgs { OidcClient = this, Exception = ex });
                 this.currentTask?.SetException(ex);
             }
         }
@@ -540,9 +540,9 @@ namespace Okta.Xamarin
         /// Invokes the `AuthCodeTokenExchangeException` event.
         /// </summary>
         /// <param name="args">The event arguments.</param>
-        protected void OnAuthCodeTokenExchangeException(AuthCodeTokenExchangeExceptionEventArgs args)
+        protected void OnAuthCodeTokenExchangeExceptionThrown(AuthCodeTokenExchangeExceptionEventArgs args)
         {
-            this.AuthCodeTokenExchangeException?.Invoke(this, args);
+            this.AuthCodeTokenExchangeExceptionThrown?.Invoke(this, args);
         }
 
         /// <summary>
