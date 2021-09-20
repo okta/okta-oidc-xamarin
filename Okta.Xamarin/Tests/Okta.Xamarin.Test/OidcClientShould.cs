@@ -483,7 +483,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public void RaiseAuthCodeTokenExchangeFailedEvent()
+        public void RaiseAuthCodeTokenExchangeExceptionEvent()
         {
             string testClientId = "test client id";
             OktaConfig testConfig = new OktaConfig
