@@ -5,7 +5,7 @@ using System.Text;
 namespace Okta.Xamarin
 {
     /// <summary>
-    /// Data relevant to AuthCodeTokenExchangeFailed events.
+    /// Data relevant to AuthCodeTokenExchangeException events.
     /// </summary>
     public class AuthCodeTokenExchangeExceptionEventArgs : EventArgs
     {
