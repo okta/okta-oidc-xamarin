@@ -333,8 +333,7 @@ namespace Okta.Xamarin.Services
         /// <inheritdoc/>
         public void LogRenewExceptionEvents(EventHandler<RenewExceptionEventArgs> eventHandler = null)
         {
-            OktaContext.AddRenewExceptionListener((sender, args)
-            =>
+            OktaContext.AddRenewExceptionListener((sender, args) =>
             {
                 if (eventHandler == null)
                 {
