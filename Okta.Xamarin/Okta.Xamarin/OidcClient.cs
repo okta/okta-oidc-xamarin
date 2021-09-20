@@ -536,6 +536,10 @@ namespace Okta.Xamarin
             }
         }
 
+        /// <summary>
+        /// Invokes the `AuthCodeTokenExchangeException` event.
+        /// </summary>
+        /// <param name="args">The event arguments.</param>
         protected void OnAuthCodeTokenExchangeException(AuthCodeTokenExchangeExceptionEventArgs args)
         {
             this.AuthCodeTokenExchangeException?.Invoke(this, args);
