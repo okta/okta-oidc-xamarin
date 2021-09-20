@@ -814,7 +814,7 @@ OktaContext.Current.RevokeException += (sender, revokeExceptionEventArgs) =>
 }
 
 // using AddRenewExceptionListener
-OktaContext.AddReokeExceptionListener((sender, revokeExceptionEventArgs =>
+OktaContext.AddRevokeExceptionListener((sender, revokeExceptionEventArgs =>
 {
     Exception exception = revokeExceptionEventArgs.Exception;
 
