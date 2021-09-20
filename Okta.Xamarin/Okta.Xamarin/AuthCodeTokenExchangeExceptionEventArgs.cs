@@ -7,7 +7,7 @@ namespace Okta.Xamarin
     /// <summary>
     /// Data relevant to AuthCodeTokenExchangeFailed events.
     /// </summary>
-    public class AuthCodeTokenExchangeFailedEventArgs : EventArgs
+    public class AuthCodeTokenExchangeExceptionEventArgs : EventArgs
     {
         /// <summary>
         /// Gets or sets the OidcClient.

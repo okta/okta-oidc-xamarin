@@ -506,7 +506,7 @@ namespace Okta.Xamarin.Test
             testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
 
             bool? eventWasRaised = false;
-            testOidcClient.AuthCodeTokenExchangeFailed += (sender, args) =>
+            testOidcClient.AuthCodeTokenExchangeException += (sender, args) =>
             {
                 eventWasRaised = true;
             };
