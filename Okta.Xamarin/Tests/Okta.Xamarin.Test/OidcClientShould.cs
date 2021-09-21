@@ -3,7 +3,6 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -265,9 +264,9 @@ namespace Okta.Xamarin.Test
             Assert.True(string.IsNullOrEmpty(client.State_Internal));
             Assert.True(string.IsNullOrEmpty(client.CodeChallenge_Internal));
             Assert.True(string.IsNullOrEmpty(client.CodeVerifier_Internal));
-            
+
             client.SignOutOfOktaAsync(new OktaStateManager("testAccessToken", "testTokenType"));
-            
+
             Assert.False(string.IsNullOrEmpty(client.State_Internal));
             Assert.False(string.IsNullOrEmpty(client.CodeChallenge_Internal));
             Assert.False(string.IsNullOrEmpty(client.CodeVerifier_Internal));
@@ -282,7 +281,7 @@ namespace Okta.Xamarin.Test
             client.SignOutOfOktaAsync(new OktaStateManager("testAccessToken", "testTokenType"));
             Assert.True(browserLaunched);
         }
-        
+
         [Fact]
         public void NotLaunchBrowserIfNotAuthenticatedOnSignOut()
         {
@@ -481,6 +480,40 @@ namespace Okta.Xamarin.Test
             testOidcClient.RevokeRefreshTokenAsync(testRefreshToken).Wait();
 
             Assert.True(requestReceived);
+        }
+
+        [Fact]
+        public void RaiseAuthCodeTokenExchangeExceptionThrownEvent()
+        {
+            string testClientId = "test client id";
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                AuthorizationServerId = null,
+            };
+
+            bool? requestReceived = false;
+            HttpMessageHandlerMock mockHttpMessageHandler = new HttpMessageHandlerMock();
+            mockHttpMessageHandler.GetTestResponse = (request, cancellationToken) =>
+            {
+                requestReceived = true;
+                throw new Exception("test exception to simulate request failure");
+            };
+            TestOidcClient testOidcClient = new TestOidcClient(testConfig);
+            testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
+
+            bool? eventWasRaised = false;
+            testOidcClient.AuthCodeTokenExchangeExceptionThrown += (sender, args) =>
+            {
+                eventWasRaised = true;
+            };
+
+            testOidcClient.CallExchangeCodeForTokenAsync("test code").Wait();
+            Assert.True(requestReceived);
+            Assert.True(eventWasRaised);
         }
     }
 }
