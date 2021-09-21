@@ -1,0 +1,53 @@
+name: Build Okta.Xamarin nuget packages
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: macos-11
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create artifacts directory
+      run: mkdir -p ./artifacts
+
+    - name: Set default Xamarin SDK versions
+      run: |
+        $VM_ASSETS/select-xamarin-sdk-v2.sh --mono=6.12 --ios=14.10
+
+    - name: Setup .NET Core SDK 5.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+
+    - name: Nuget restore
+      run: |
+        nuget restore ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj &&
+        nuget restore ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj &&
+        nuget restore ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj
+
+    - name: Build common (Okta.Xamarin) nuget package
+      run: nuget pack ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj -Build
+
+    - name: Build iOS nuget package
+      run: nuget pack ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj -Build
+
+    - name: Build Android nuget package
+      run: nuget pack ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj -Build
+
+    - name: Copy nuget artifacts
+      run: mv *.nupkg `pwd`/artifacts
+
+    - name: Set GIT_COMMIT
+      run: echo "GIT_COMMIT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
+
+    - name: Set artifacts path
+      run: echo "ARTIFACTS=`pwd`/artifacts" >> $GITHUB_ENV
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Okta.Xamarin-ARTIFACTS-${{ env.GIT_COMMIT }}
+        path: ${{ env.ARTIFACTS }}

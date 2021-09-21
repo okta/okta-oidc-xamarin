@@ -1,6 +1,6 @@
 # https://docs.microsoft.com/azure/devops/pipelines/ecosystems/xamarin
 pool:
-  vmImage: 'macOS-10.15' # For Windows, use 'windows-2019'; For Mac use 'macOS-10.15'
+  vmImage: 'macOS-11' # For Windows, use 'windows-2019'; For Mac use 'macOS-10.15'
 
 trigger:
   - master
