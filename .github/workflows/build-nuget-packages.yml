@@ -3,7 +3,7 @@ name: Build Okta.Xamarin nuget packages
 on: [push]
 
 jobs:
-  build:
+  build-nuget-packages:
 
     runs-on: macos-11
 
