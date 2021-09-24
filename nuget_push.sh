@@ -6,7 +6,7 @@ NUGET_SOURCE="OKTA_NUGET_TOPIC_REPO"
 NUGET_API_KEY=${ARTIFACTORY_NUGET_APIKEY}
 
 function configureEnvironment(){
-    echo '<configure.sh.configureLinux>'
+    echo '<nuget_push.sh.configuringEnvironment>'
 
     echo 'Assuming OS is Centos 7 (with yum)'
     yum -y update
@@ -72,7 +72,7 @@ function configureEnvironment(){
     curl https://download.mono-project.com/repo/centos7-vs.repo | tee /etc/yum.repos.d/mono-centos7-vs.repo
     yum -y install monodevelop
 
-    echo '</ configure.sh.configureLinux>'
+    echo '</ nuget_push.sh.configuringEnvironment>'
 }
 
 configureEnvironment
