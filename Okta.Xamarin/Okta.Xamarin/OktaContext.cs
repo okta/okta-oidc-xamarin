@@ -18,6 +18,7 @@ namespace Okta.Xamarin
     public class OktaContext
     {
         private static Lazy<OktaContext> current = new Lazy<OktaContext>(() => new OktaContext());
+        private static Lazy<TinyIoCContainer> container = new Lazy<TinyIoCContainer>(() => new TinyIoCContainer());
         private IOktaStateManager stateManager;
         private OAuthException oAuthException;
 
@@ -27,7 +28,6 @@ namespace Okta.Xamarin
         public OktaContext()
         {
             this.stateManager = new OktaStateManager();
-            this.IoCContainer = new TinyIoCContainer();
         }
 
         /// <summary>
@@ -347,7 +347,11 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the IoC containter.
         /// </summary>
-        public TinyIoCContainer IoCContainer { get; set; }
+        public TinyIoCContainer IoCContainer
+        {
+            get => container.Value;
+            set { container = new Lazy<TinyIoCContainer>(() => value); }
+        }
 
         /// <summary>
         /// Write the current state to secure storage.
@@ -465,7 +469,7 @@ namespace Okta.Xamarin
         public static T GetService<T>()
             where T : class
         {
-            return Current?.IoCContainer?.Resolve<T>();
+            return Current.IoCContainer.Resolve<T>();
         }
 
         /// <summary>
@@ -488,7 +492,7 @@ namespace Okta.Xamarin
             where TInterfaceType : class
             where TImplementationType : class, TInterfaceType
         {
-            Current?.IoCContainer?.Register<TInterfaceType, TImplementationType>();
+            Current.IoCContainer.Register<TInterfaceType, TImplementationType>();
         }
 
         /// <summary>
@@ -498,7 +502,7 @@ namespace Okta.Xamarin
         /// <param name="instance">Instance of RegisterType to register.</param>
         public static void RegisterServiceImplementation<TInterfaceType>(object instance)
         {
-            Current?.IoCContainer?.Register(typeof(TInterfaceType), instance);
+            Current.IoCContainer.Register(typeof(TInterfaceType), instance);
         }
 
         /// <summary>
