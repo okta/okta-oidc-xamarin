@@ -19,7 +19,7 @@ namespace Okta.Xamarin
     {
         private static Lazy<OktaContext> current = new Lazy<OktaContext>(() => new OktaContext());
         private static Lazy<TinyIoCContainer> container = new Lazy<TinyIoCContainer>(() => new TinyIoCContainer());
-        private IOktaStateManager stateManager;
+        private Lazy<IOktaStateManager> stateManager = new Lazy<IOktaStateManager>(() => new OktaStateManager());
         private OAuthException oAuthException;
 
         /// <summary>
@@ -27,7 +27,6 @@ namespace Okta.Xamarin
         /// </summary>
         public OktaContext()
         {
-            this.stateManager = new OktaStateManager();
         }
 
         /// <summary>
@@ -257,19 +256,19 @@ namespace Okta.Xamarin
         /// </summary>
         public IOktaStateManager StateManager
         {
-            get => this.stateManager;
+            get => this.stateManager.Value;
             set
             {
-                this.stateManager = value;
-                if (this.stateManager != null)
+                this.stateManager = new Lazy<IOktaStateManager>(() => value);
+                if (this.stateManager.Value != null)
                 {
-                    this.stateManager.RequestException += this.OnRequestException;
-                    this.stateManager.SecureStorageReadStarted += this.OnSecureStorageReadStarted;
-                    this.stateManager.SecureStorageReadCompleted += this.OnSecureStorageReadCompleted;
-                    this.stateManager.SecureStorageReadException += this.OnSecureStorageReadException;
-                    this.stateManager.SecureStorageWriteStarted += this.OnSecureStorageWriteStarted;
-                    this.stateManager.SecureStorageWriteCompleted += this.OnSecureStorageWriteCompleted;
-                    this.stateManager.SecureStorageWriteException += this.OnSecureStorageWriteException;
+                    this.stateManager.Value.RequestException += this.OnRequestException;
+                    this.stateManager.Value.SecureStorageReadStarted += this.OnSecureStorageReadStarted;
+                    this.stateManager.Value.SecureStorageReadCompleted += this.OnSecureStorageReadCompleted;
+                    this.stateManager.Value.SecureStorageReadException += this.OnSecureStorageReadException;
+                    this.stateManager.Value.SecureStorageWriteStarted += this.OnSecureStorageWriteStarted;
+                    this.stateManager.Value.SecureStorageWriteCompleted += this.OnSecureStorageWriteCompleted;
+                    this.stateManager.Value.SecureStorageWriteException += this.OnSecureStorageWriteException;
                 }
             }
         }
@@ -773,7 +772,7 @@ namespace Okta.Xamarin
         {
             this.OnSignInStarted();
             oidcClient = oidcClient ?? this.OidcClient;
-            this.OktaConfig = oidcClient.Config;
+            this.OktaConfig = oidcClient?.Config ?? GetService<IOktaConfig>();
             try
             {
                 this.StateManager = await oidcClient.SignInWithBrowserAsync();
@@ -817,7 +816,7 @@ namespace Okta.Xamarin
         {
             this.OnSignOutStarted();
             oidcClient = oidcClient ?? this.OidcClient;
-            this.StateManager = await oidcClient.SignOutOfOktaAsync(this.StateManager);
+            this.StateManager = await oidcClient?.SignOutOfOktaAsync(this.StateManager);
             this.OnSignOutCompleted();
         }
 
