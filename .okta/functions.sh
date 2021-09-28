@@ -57,7 +57,7 @@ function configureEnvironment(){
         cp Okta-*.pem /etc/pki/ca-trust/source/anchors/
         update-ca-trust extract
         rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-        yum -y install dotnet-sdk-3.1
+        yum -y install dotnet-sdk-5.0
     fi
     echo 'dotnet version is:'
     dotnet --version
