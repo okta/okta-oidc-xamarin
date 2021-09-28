@@ -131,7 +131,7 @@ namespace Okta.Xamarin
         {
             validator.Validate(this.Config);
             this.currentTask = new TaskCompletionSource<IOktaStateManager>();
-            if (stateManager == null || stateManager.IsAuthenticated == false)
+            if (stateManager == null || stateManager?.IsAuthenticated == false)
             {
                 this.currentTask.SetResult(stateManager ?? new OktaStateManager());
                 return this.currentTask.Task;

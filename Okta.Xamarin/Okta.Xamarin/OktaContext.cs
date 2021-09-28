@@ -18,7 +18,8 @@ namespace Okta.Xamarin
     public class OktaContext
     {
         private static Lazy<OktaContext> current = new Lazy<OktaContext>(() => new OktaContext());
-        private IOktaStateManager stateManager;
+        private static Lazy<TinyIoCContainer> container = new Lazy<TinyIoCContainer>(() => new TinyIoCContainer());
+        private Lazy<IOktaStateManager> stateManager = new Lazy<IOktaStateManager>(() => new OktaStateManager());
         private OAuthException oAuthException;
 
         /// <summary>
@@ -26,8 +27,6 @@ namespace Okta.Xamarin
         /// </summary>
         public OktaContext()
         {
-            this.stateManager = new OktaStateManager();
-            this.IoCContainer = new TinyIoCContainer();
         }
 
         /// <summary>
@@ -257,19 +256,19 @@ namespace Okta.Xamarin
         /// </summary>
         public IOktaStateManager StateManager
         {
-            get => this.stateManager;
+            get => this.stateManager.Value;
             set
             {
-                this.stateManager = value;
-                if (this.stateManager != null)
+                this.stateManager = new Lazy<IOktaStateManager>(() => value);
+                if (this.stateManager.Value != null)
                 {
-                    this.stateManager.RequestException += this.OnRequestException;
-                    this.stateManager.SecureStorageReadStarted += this.OnSecureStorageReadStarted;
-                    this.stateManager.SecureStorageReadCompleted += this.OnSecureStorageReadCompleted;
-                    this.stateManager.SecureStorageReadException += this.OnSecureStorageReadException;
-                    this.stateManager.SecureStorageWriteStarted += this.OnSecureStorageWriteStarted;
-                    this.stateManager.SecureStorageWriteCompleted += this.OnSecureStorageWriteCompleted;
-                    this.stateManager.SecureStorageWriteException += this.OnSecureStorageWriteException;
+                    this.stateManager.Value.RequestException += this.OnRequestException;
+                    this.stateManager.Value.SecureStorageReadStarted += this.OnSecureStorageReadStarted;
+                    this.stateManager.Value.SecureStorageReadCompleted += this.OnSecureStorageReadCompleted;
+                    this.stateManager.Value.SecureStorageReadException += this.OnSecureStorageReadException;
+                    this.stateManager.Value.SecureStorageWriteStarted += this.OnSecureStorageWriteStarted;
+                    this.stateManager.Value.SecureStorageWriteCompleted += this.OnSecureStorageWriteCompleted;
+                    this.stateManager.Value.SecureStorageWriteException += this.OnSecureStorageWriteException;
                 }
             }
         }
@@ -347,7 +346,11 @@ namespace Okta.Xamarin
         /// <summary>
         /// Gets or sets the IoC containter.
         /// </summary>
-        public TinyIoCContainer IoCContainer { get; set; }
+        public TinyIoCContainer IoCContainer
+        {
+            get => container.Value;
+            set { container = new Lazy<TinyIoCContainer>(() => value); }
+        }
 
         /// <summary>
         /// Write the current state to secure storage.
@@ -465,7 +468,7 @@ namespace Okta.Xamarin
         public static T GetService<T>()
             where T : class
         {
-            return Current?.IoCContainer?.Resolve<T>();
+            return Current.IoCContainer.Resolve<T>();
         }
 
         /// <summary>
@@ -488,7 +491,7 @@ namespace Okta.Xamarin
             where TInterfaceType : class
             where TImplementationType : class, TInterfaceType
         {
-            Current?.IoCContainer?.Register<TInterfaceType, TImplementationType>();
+            Current.IoCContainer.Register<TInterfaceType, TImplementationType>();
         }
 
         /// <summary>
@@ -498,7 +501,7 @@ namespace Okta.Xamarin
         /// <param name="instance">Instance of RegisterType to register.</param>
         public static void RegisterServiceImplementation<TInterfaceType>(object instance)
         {
-            Current?.IoCContainer?.Register(typeof(TInterfaceType), instance);
+            Current.IoCContainer.Register(typeof(TInterfaceType), instance);
         }
 
         /// <summary>
@@ -769,7 +772,7 @@ namespace Okta.Xamarin
         {
             this.OnSignInStarted();
             oidcClient = oidcClient ?? this.OidcClient;
-            this.OktaConfig = oidcClient.Config;
+            this.OktaConfig = oidcClient?.Config ?? GetService<IOktaConfig>();
             try
             {
                 this.StateManager = await oidcClient.SignInWithBrowserAsync();
@@ -813,7 +816,7 @@ namespace Okta.Xamarin
         {
             this.OnSignOutStarted();
             oidcClient = oidcClient ?? this.OidcClient;
-            this.StateManager = await oidcClient.SignOutOfOktaAsync(this.StateManager);
+            this.StateManager = await oidcClient?.SignOutOfOktaAsync(this.StateManager);
             this.OnSignOutCompleted();
         }
 
