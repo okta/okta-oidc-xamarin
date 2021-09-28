@@ -6,15 +6,6 @@ test_suites:
       timeout: '15'
       criteria: MERGE
       queue_name: small
-    - name: Push Nuget Packages to Artifactory
-      script_name: nuget_push
-      script_path: /root/okta/okta-oidc-xamarin/.okta
-      sort_order: '2'
-      timeout: '15'
-      criteria: MERGE
-      queue_name: small
-      script_env:
-        BUILD_ENVIRONMENT: "BACON" 
         
 task_triggers:
   post_merge:
