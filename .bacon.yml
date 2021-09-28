@@ -14,5 +14,9 @@ test_suites:
       criteria: MERGE
       queue_name: small
       script_env:
-        BUILD_ENVIRONMENT: "BACON"        
+        BUILD_ENVIRONMENT: "BACON" 
+        
+task_triggers:
+  post_merge:
+    - XamarinNugetArtifactoryUpload
       
