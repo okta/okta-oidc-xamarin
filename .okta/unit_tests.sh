@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./.okta/functions.sh
+source ./functions.sh
 
 configureEnvironment
 
