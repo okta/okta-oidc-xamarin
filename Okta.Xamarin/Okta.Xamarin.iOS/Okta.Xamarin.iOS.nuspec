@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Okta.Xamarin.iOS</id>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <authors>Okta, Inc.</authors>
     <owners>Okta, Inc.</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -15,7 +15,7 @@
     <tags>okta token authentication authorization oauth sso oidc</tags>
     <repository type="Git" url="https://github.com/okta/okta-oidc-xamarin.git" />
     <dependencies>
-      <dependency id="Okta.Xamarin" version="3.0.0" />
+      <dependency id="Okta.Xamarin" version="3.0.1" />
       <dependency id="System.Net.Http" version="4.3.4" />
       <dependency id="Xamarin.Essentials" version="1.6.1" />
       <dependency id="Xamarin.Forms" version="5.0.0.2012" />
