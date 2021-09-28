@@ -1,14 +1,14 @@
 test_suites:
     - name: Run Unit Tests
-      script_name: ./.okta/unit_tests
-      script_path: /root/okta/okta-oidc-xamarin
+      script_name: unit_tests
+      script_path: /root/okta/okta-oidc-xamarin/.okta
       sort_order: '1'
       timeout: '15'
       criteria: MERGE
       queue_name: small
     - name: Push Nuget Packages to Artifactory
-      script_name: ./.okta/nuget_push
-      script_path: /root/okta/okta-oidc-xamarin
+      script_name: nuget_push
+      script_path: /root/okta/okta-oidc-xamarin/.okta
       sort_order: '2'
       timeout: '15'
       criteria: MERGE
