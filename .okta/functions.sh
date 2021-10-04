@@ -69,3 +69,21 @@ function configureEnvironment(){
 
     echo '</ nuget_push.sh.configuringEnvironment>'
 }
+
+function pushNugetsToArtifactory() {
+    if [ -d "./nuget/packages" ]; then
+    for NUGETPACKAGE in $(ls ./nuget/packages/*.nupkg)
+        do
+        if [ "$DRY_RUN" = true ] ; then
+            echo "export DRY_RUN=true"
+            echo "echo: dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}"
+        else
+            echo "PUSHING nuget package ${NUGETPACKAGE} to ${NUGET_SOURCE}"
+            echo "executing: dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}"
+            dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}
+        fi
+    done
+    else
+        echo "./nuget/packages: No nuget packages found";
+    fi
+}
