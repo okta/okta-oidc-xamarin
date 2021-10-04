@@ -80,7 +80,7 @@ function pushNugetsToArtifactory() {
         else
             echo "PUSHING nuget package ${NUGETPACKAGE} to ${NUGET_SOURCE}"
             echo "executing: dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}"
-            dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}
+            # dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}
         fi
     done
     else
