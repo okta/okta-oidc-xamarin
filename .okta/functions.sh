@@ -70,6 +70,12 @@ function configureEnvironment(){
     echo '</ nuget_push.sh.configuringEnvironment>'
 }
 
+function downloadNugetArtifacts() {
+    pushd ../tools
+    ./download-nugets.sh
+    popd
+}
+
 function pushNugetsToArtifactory() {
     if [ -d "./nuget/packages" ]; then
     for NUGETPACKAGE in $(ls ./nuget/packages/*.nupkg)
@@ -80,7 +86,7 @@ function pushNugetsToArtifactory() {
         else
             echo "PUSHING nuget package ${NUGETPACKAGE} to ${NUGET_SOURCE}"
             echo "executing: dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}"
-            # dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}
+            dotnet nuget push ${NUGETPACKAGE} -k ${NUGET_API_KEY} -s ${NUGET_SOURCE}
         fi
     done
     else

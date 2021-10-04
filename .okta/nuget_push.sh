@@ -8,4 +8,6 @@ NUGET_API_KEY=${ARTIFACTORY_NUGET_APIKEY}
 
 configureEnvironment
 
+downloadNugetArtifacts
+
 pushNugetsToArtifactory
