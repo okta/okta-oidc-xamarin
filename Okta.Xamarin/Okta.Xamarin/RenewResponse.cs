@@ -5,14 +5,26 @@
 
 using Newtonsoft.Json;
 using Okta.Xamarin.Models;
+using System;
 
 namespace Okta.Xamarin
 {
     /// <summary>
     /// Represents data returned in response to a renew request.
     /// </summary>
-    public class RenewResponse : Serializable
+    public class RenewResponse : Response
     {
+        public RenewResponse() { }
+
+        public RenewResponse(Exception ex)
+        {
+            if (ex != null)
+            {
+                Error = ex.GetType().Name;
+                ErrorDescription = ex.Message;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the token type.
         /// </summary>

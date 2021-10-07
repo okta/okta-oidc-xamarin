@@ -24,7 +24,8 @@ namespace Okta.Xamarin
         /// <param name="headers">The headers.</param>
         /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <param name="formUrlEncodedContent">The content.</param>
-        public RequestExceptionEventArgs(Exception ex, HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId, KeyValuePair<string, string>[] formUrlEncodedContent)
+        /// <param name="responseBody">The body of the response if any.</param>
+        public RequestExceptionEventArgs(Exception ex, HttpMethod httpMethod, string path, Dictionary<string, string> headers, string authorizationServerId, KeyValuePair<string, string>[] formUrlEncodedContent, string responseBody = null)
         {
             this.Exception = ex;
             this.HttpMethod = httpMethod;
@@ -32,6 +33,7 @@ namespace Okta.Xamarin
             this.Headers = headers;
             this.AuthorizationServerId = authorizationServerId;
             this.FormUrlEncodedContent = formUrlEncodedContent;
+            this.ResponseBody = responseBody;
         }
 
         /// <summary>
@@ -63,5 +65,10 @@ namespace Okta.Xamarin
         /// Gets the form url encoded content.
         /// </summary>
         public KeyValuePair<string, string>[] FormUrlEncodedContent { get; }
+
+        /// <summary>
+        /// Gets the body of the response if any.
+        /// </summary>
+        public string ResponseBody { get; }
     }
 }

@@ -72,7 +72,7 @@ namespace Okta.Xamarin.Test
             });
 
             await OktaContext.LoadStateAsync();
-            Thread.Sleep(100);
+            Thread.Sleep(300);
 
             completedEventWasRaised.Should().BeTrue();
             OktaContext.AccessToken.Should().BeEquivalentTo(testAccessToken); // Loading state should not overwrite existing access token with empty string
@@ -163,6 +163,7 @@ namespace Okta.Xamarin.Test
             OktaContext.AddSecureStorageReadCompletedListener((sender, args) => completedEventWasRaised = true);
 
             bool loaded = await OktaContext.LoadStateAsync();
+            Thread.Sleep(300);
 
             loaded.Should().BeTrue();
             startedEventWasRaised.Should().BeTrue();
@@ -284,7 +285,7 @@ namespace Okta.Xamarin.Test
 
             await OktaContext.Current.SignInAsync();
             await OktaContext.Current.SignOutAsync();
-            Thread.Sleep(100);
+            Thread.Sleep(300);
 
             Assert.True(signOutStartedEventRaised);
             Assert.True(signOutCompletedEventRaised);
@@ -353,7 +354,7 @@ namespace Okta.Xamarin.Test
             IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
             testStateManager.RefreshToken.Returns("test refresh token");
             Task<RenewResponse> testRenewResponse = Task.FromResult(new RenewResponse());
-            testStateManager.RenewAsync().Returns(testRenewResponse);
+            testStateManager.RenewAsync(Arg.Any<string>(), Arg.Any<bool>()).Returns(testRenewResponse);
             OktaContext.Current.StateManager = testStateManager;
 
             bool? renewStartedRaised = false;
@@ -425,9 +426,7 @@ namespace Okta.Xamarin.Test
             Exception testException = new Exception("This is a test exception");
             IOktaStateManager mockStateManager = Substitute.For<IOktaStateManager>();
             mockStateManager.RefreshToken.Returns("test refresh token");
-            IOidcClient mockClient = Substitute.For<IOidcClient>();
-            mockClient.RenewAsync<RenewResponse>(Arg.Any<string>()).Returns(new RenewResponse());
-            mockStateManager.Client.Returns(mockClient);
+            mockStateManager.RenewAsync(Arg.Any<string>(), Arg.Any<bool>()).Returns(new RenewResponse());
             OktaContext.Current.StateManager = mockStateManager;
             OktaContext.AddRenewExceptionListener((sender, renewExceptionEventArgs) =>
             {

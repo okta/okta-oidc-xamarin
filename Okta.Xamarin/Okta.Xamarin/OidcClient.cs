@@ -288,37 +288,6 @@ namespace Okta.Xamarin
             });
         }
 
-        protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers)
-        {
-            return await PerformRequestAsync(httpMethod, path, headers, new Dictionary<string, string>());
-        }
-
-        protected async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)
-        {
-            return await PerformRequestAsync(httpMethod, path, headers, formUrlEncodedContent.Select(kvp => kvp).ToArray());
-        }
-
-        protected virtual async Task<string> PerformRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, params KeyValuePair<string, string>[] formUrlEncodedContent)
-        {
-            FormUrlEncodedContent content = null;
-            if ((bool)formUrlEncodedContent?.Any())
-            {
-                content = new FormUrlEncodedContent(formUrlEncodedContent.ToList());
-            }
-
-            if (!path.StartsWith("/"))
-            {
-                path = $"/{path}";
-            }
-
-            var request = GetHttpRequestMessage(httpMethod, $"{GetBasePath()}{path}", headers);
-            request.Content = content;
-
-            HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-            LastApiResponse = response;
-            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        }
-
         protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, Dictionary<string, string> formUrlEncodedContent)
         {
             return await PerformAuthorizationServerRequestAsync(httpMethod, path, headers, formUrlEncodedContent.ToArray());
@@ -326,6 +295,7 @@ namespace Okta.Xamarin
 
         protected virtual async Task<string> PerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, params KeyValuePair<string, string>[] formUrlEncodedContent)
         {
+            string responseBody = string.Empty;
             try
             {
                 FormUrlEncodedContent content = null;
@@ -342,16 +312,17 @@ namespace Okta.Xamarin
                 var request = GetHttpRequestMessage(httpMethod, $"{GetAuthorizationServerBasePath()}{path}", headers);
                 request.Content = content;
 
-                HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                HttpResponseMessage response = await this.client.SendAsync(request).ConfigureAwait(false);
                 this.LastApiResponse = response;
+                responseBody = await response.Content.ReadAsStringAsync();
                 response.EnsureSuccessStatusCode();
 
-                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return responseBody;
             }
             catch (Exception ex)
             {
-                this.OnRequestException(new RequestExceptionEventArgs(ex, httpMethod, path, headers, AuthorizationServerId, formUrlEncodedContent));
-                return string.Empty;
+                this.OnRequestException(new RequestExceptionEventArgs(ex, httpMethod, path, headers, AuthorizationServerId, formUrlEncodedContent, responseBody));
+                return responseBody;
             }
         }
 

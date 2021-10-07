@@ -991,14 +991,15 @@ namespace Okta.Xamarin
 
                 this.OnRenewStarted(refreshToken, refreshIdToken, authorizationServerId);
                 RenewResponse result = await this.StateManager.RenewAsync(refreshToken, refreshIdToken);
+                result.EnsureSuccess();
                 this.OnRenewCompleted(refreshToken, refreshIdToken, authorizationServerId, result);
 
                 return result;
             }
             catch (Exception ex)
             {
-                OnRenewException(ex);
-                return null;
+                this.OnRenewException(ex);
+                return new RenewResponse(ex);
             }
         }
 
