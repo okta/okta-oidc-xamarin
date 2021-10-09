@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Okta.Xamarin</id>
-    <version>3.0.1</version>
+    <version>3.0.0</version>
     <authors>Okta, Inc.</authors>
     <owners>Okta, Inc.</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -11,7 +11,7 @@
     <iconUrl>https://raw.githubusercontent.com/okta/okta-sdk-dotnet/master/icon.png</iconUrl>
     <description>Official Okta OIDC SDK for Xamarin applications.</description>
     <releaseNotes></releaseNotes>
-    <copyright>(c) 2020 Okta, Inc.</copyright>
+    <copyright>(c) 2021 Okta, Inc.</copyright>
     <tags>okta token authentication authorization oauth sso oidc</tags>
     <repository type="Git" url="https://github.com/okta/okta-oidc-xamarin.git" />
     <dependencies>
