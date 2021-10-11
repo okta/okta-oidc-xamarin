@@ -1,11 +1,20 @@
 test_suites:
-    - name: PushNugetToArtifactory
-      script_name: nuget_push
-      script_path: /root/okta/okta-oidc-xamarin
+    - name: Run Unit Tests
+      script_name: unit_tests
+      script_path: /root/okta/okta-oidc-xamarin/.okta
       sort_order: '1'
       timeout: '15'
       criteria: MERGE
       queue_name: small
-      script_env:
-        BUILD_ENVIRONMENT: "BACON"        
+    - name: Push Nugets to Artifactory
+      script_name: nuget_push
+      script_path: /root/okta/okta-oidc-xamarin/.okta
+      sort_order: '2'
+      timeout: '15'
+      criteria: OPTIONAL
+      queue_name: small
+        
+task_triggers:
+  post_merge:
+    - XamarinNugetArtifactoryUpload
       

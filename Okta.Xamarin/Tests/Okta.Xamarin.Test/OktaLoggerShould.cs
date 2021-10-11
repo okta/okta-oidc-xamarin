@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using Okta.Xamarin.Services;
@@ -78,7 +79,7 @@ namespace Okta.Xamarin.Test
             testLogger.LogSecureStorageWriteStartedEvents((sender, args) => wasCalled = true);
             testLogger.LogSecureStorageWriteStartedEvents(); // use default event handler
             testOktaContext.RaiseSecureStorageWriteStartedEvent();
-
+            Thread.Sleep(300);
             wasCalled.Should().BeTrue();
             mockLogger.Received().Info(Arg.Any<string>(), Arg.Any<object[]>());
         }
@@ -358,6 +359,7 @@ namespace Okta.Xamarin.Test
             testLogger.LogGetUserStartedEvents((sender, args) => wasCalled = true);
             testLogger.LogGetUserStartedEvents(); // use default event handler
             testOktaContext.RaiseGetUserStartedEvent();
+            Thread.Sleep(100);
 
             wasCalled.Should().BeTrue();
             mockLogger.Received().Info(Arg.Any<string>(), Arg.Any<object[]>());

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -19,7 +20,7 @@ namespace Okta.Xamarin.Test
     public class OktaContextShould
     {
         [Fact]
-        public void LoadState()
+        public async void LoadState()
         {
             string testAccessToken = "load state test:  access token";
             OktaContext oktaContext = new OktaContext() { StateManager = new OktaStateManager { AccessToken = null } };
@@ -42,14 +43,14 @@ namespace Okta.Xamarin.Test
 
             OktaContext.AccessToken.Should().BeNull();
 
-            OktaContext.LoadStateAsync().Wait();
+            await OktaContext.LoadStateAsync();
 
             completedEventWasRaised.Should().BeTrue();
             OktaContext.AccessToken.Should().BeEquivalentTo(testAccessToken);
         }
 
         [Fact]
-        public void NotLoadEmptyStateOverAuthenticatedState()
+        public async void NotLoadEmptyStateOverAuthenticatedState()
         {
             string testAccessToken = "test access token";
             OktaContext oktaContext = new OktaContext() { StateManager = new OktaStateManager { AccessToken = testAccessToken } };
@@ -70,16 +71,15 @@ namespace Okta.Xamarin.Test
                 completedEventWasRaised = true;
             });
 
-            OktaContext.AccessToken.Should().BeEquivalentTo(testAccessToken);
-
-            OktaContext.LoadStateAsync().Wait();
+            await OktaContext.LoadStateAsync();
+            Thread.Sleep(100);
 
             completedEventWasRaised.Should().BeTrue();
             OktaContext.AccessToken.Should().BeEquivalentTo(testAccessToken); // Loading state should not overwrite existing access token with empty string
         }
 
         [Fact]
-        public void RaiseLoadStateExceptionEvent()
+        public async void RaiseLoadStateExceptionEvent()
         {
             IOktaStateManager stateManager = Substitute.For<IOktaStateManager>();
             stateManager.ReadFromSecureStorageAsync().Returns(new OktaStateManager());
@@ -90,13 +90,14 @@ namespace Okta.Xamarin.Test
             OktaContext.AddLoadStateStartedListener((sender, args) => throw new Exception("This is a test exception to test that the exception event is raised"));
             OktaContext.AddLoadStateExceptionListener((sender, args) => exceptionEventWasRaised = true);
 
-            OktaContext.LoadStateAsync().Wait();
+            await OktaContext.LoadStateAsync();
+            Thread.Sleep(100);
 
             exceptionEventWasRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RaiseLoadStateEvents()
+        public async void RaiseLoadStateEvents()
         {
             IOktaStateManager stateManager = Substitute.For<IOktaStateManager>();
             stateManager.ReadFromSecureStorageAsync().Returns(new OktaStateManager());
@@ -108,14 +109,15 @@ namespace Okta.Xamarin.Test
             OktaContext.AddLoadStateStartedListener((sender, args) => startedEventWasRaised = true);
             OktaContext.AddLoadStateCompletedListener((sender, args) => completedEventWasRaised = true);
 
-            OktaContext.LoadStateAsync().Wait();
+            await OktaContext.LoadStateAsync();
+            Thread.Sleep(100);
 
             startedEventWasRaised.Should().BeTrue();
             completedEventWasRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RaiseSecureStorageWriteEventsOnSaveStateAsync()
+        public async void RaiseSecureStorageWriteEventsOnSaveStateAsync()
         {
             TestOktaStateManager testOktaStateManager = new TestOktaStateManager();
             OktaContext oktaContext = new OktaContext() { StateManager = testOktaStateManager };
@@ -134,14 +136,14 @@ namespace Okta.Xamarin.Test
             OktaContext.AddSecureStorageWriteStartedListener((sender, args) => startedEventWasRaised = true);
             OktaContext.AddSecureStorageWriteCompletedListener((sender, args) => completedEventWasRaised = true);
 
-            OktaContext.SaveStateAsync().Wait();
+            await OktaContext.SaveStateAsync();
 
             startedEventWasRaised.Should().BeTrue();
             completedEventWasRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RaiseSecureStorageReadEventsOnLoadStateAsync()
+        public async void RaiseSecureStorageReadEventsOnLoadStateAsync()
         {
             TestOktaStateManager testOktaStateManager = new TestOktaStateManager();
             OktaContext oktaContext = new OktaContext() { StateManager = testOktaStateManager };
@@ -160,7 +162,7 @@ namespace Okta.Xamarin.Test
             OktaContext.AddSecureStorageReadStartedListener((sender, args) => startedEventWasRaised = true);
             OktaContext.AddSecureStorageReadCompletedListener((sender, args) => completedEventWasRaised = true);
 
-            bool loaded = OktaContext.LoadStateAsync().Result;
+            bool loaded = await OktaContext.LoadStateAsync();
 
             loaded.Should().BeTrue();
             startedEventWasRaised.Should().BeTrue();
@@ -204,7 +206,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public void NotRaiseSignInCompleteOnOAuthException()
+        public async void NotRaiseSignInCompleteOnOAuthException()
         {
             IOidcClient mockOidcClient = Substitute.For<IOidcClient>();
             mockOidcClient.When(oidcClient => oidcClient.SignInWithBrowserAsync()).Do(mockOidcClient => throw new OAuthException());
@@ -215,7 +217,7 @@ namespace Okta.Xamarin.Test
             oktaContext.AuthenticationFailed += (sender, args) => authenticationFailedEventRaised = true;
             oktaContext.SignInCompleted += (sender, args) => signInCompletedEventRaised = true;
 
-            oktaContext.SignInAsync(mockOidcClient);
+            await oktaContext.SignInAsync(mockOidcClient);
 
             Assert.True(authenticationFailedEventRaised);
             Assert.False(signInCompletedEventRaised);
@@ -249,7 +251,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public void RaiseSignInEventsOnSignIn()
+        public async void RaiseSignInEventsOnSignIn()
         {
             IOidcClient client = Substitute.For<IOidcClient>();
             client.SignInWithBrowserAsync().Returns(new OktaStateManager("testAccessToken", "testTokenType", "testIdToken", "testRefreshToken"));
@@ -261,14 +263,14 @@ namespace Okta.Xamarin.Test
             OktaContext.AddSignInStartedListener((sender, eventArgs) => signInStartedEventRaised = true);
             OktaContext.AddSignInCompletedListener((sender, eventArgs) => signInCompletedEventRaised = true);
 
-            OktaContext.Current.SignInAsync().Wait();
+            await OktaContext.Current.SignInAsync();
 
             Assert.True(signInStartedEventRaised);
             Assert.True(signInCompletedEventRaised);
         }
 
         [Fact]
-        public void RaiseSignOutEventsOnSignOut()
+        public async void RaiseSignOutEventsOnSignOut()
         {
             IOidcClient client = Substitute.For<IOidcClient>();
             client.SignInWithBrowserAsync().Returns(new OktaStateManager("testAccessToken", "testTokenType", "testIdToken", "testRefreshToken"));
@@ -280,15 +282,16 @@ namespace Okta.Xamarin.Test
             OktaContext.AddSignOutStartedListener((sender, eventArgs) => signOutStartedEventRaised = true);
             OktaContext.AddSignOutCompletedListener((sender, eventArgs) => signOutCompletedEventRaised = true);
 
-            OktaContext.Current.SignInAsync().Wait();
-            OktaContext.Current.SignOutAsync().Wait();
+            await OktaContext.Current.SignInAsync();
+            await OktaContext.Current.SignOutAsync();
+            Thread.Sleep(100);
 
             Assert.True(signOutStartedEventRaised);
             Assert.True(signOutCompletedEventRaised);
         }
 
         [Fact]
-        public void RaiseRevokeTokenEvents()
+        public async void RaiseRevokeTokenEvents()
         {
             string testAccessToken = "test access token";
             string testRefreshToken = "test refresh token";
@@ -298,14 +301,15 @@ namespace Okta.Xamarin.Test
             OktaContext.Current.RevokeStarted += (sender, args) => revokingTokenRaised = true;
             OktaContext.Current.RevokeCompleted += (sender, args) => revokedTokenRaised = true;
 
-            OktaContext.Current.RevokeAsync(TokenKind.AccessToken).Wait();
+            await OktaContext.Current.RevokeAsync(TokenKind.AccessToken);
+            Thread.Sleep(100);
 
             revokedTokenRaised.Should().BeTrue();
             revokingTokenRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RaiseGetUserEvents()
+        public async void RaiseGetUserEvents()
         {
             IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
             Task<ClaimsPrincipal> testClaimsPrincipal = Task.FromResult(new ClaimsPrincipal());
@@ -316,14 +320,15 @@ namespace Okta.Xamarin.Test
             OktaContext.Current.GetUserStarted += (sender, args) => getUserStartedRaised = true;
             OktaContext.Current.GetUserCompleted += (sender, args) => getUserCompletedRaised = true;
 
-            OktaContext.Current.GetClaimsPrincipalAsync().Wait();
+            await OktaContext.Current.GetClaimsPrincipalAsync();
+            Thread.Sleep(100);
 
             getUserStartedRaised.Should().BeTrue();
             getUserCompletedRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RaiseIntrospectionEvents()
+        public async void RaiseIntrospectionEvents()
         {
             IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
             Task<Dictionary<string, object>> testIntrospectResponse = Task.FromResult(new Dictionary<string, object>());
@@ -335,14 +340,15 @@ namespace Okta.Xamarin.Test
             OktaContext.Current.IntrospectStarted += (sender, args) => introspectStartedRaised = true;
             OktaContext.Current.IntrospectCompleted += (sender, args) => introspectCompletedRaised = true;
 
-            OktaContext.Current.IntrospectAsync(TokenKind.AccessToken).Wait();
+            await OktaContext.Current.IntrospectAsync(TokenKind.AccessToken);
+            Thread.Sleep(100);
 
             introspectStartedRaised.Should().BeTrue();
             introspectCompletedRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RaiseRenewEvents()
+        public async void RaiseRenewEvents()
         {
             IOktaStateManager testStateManager = Substitute.For<IOktaStateManager>();
             testStateManager.RefreshToken.Returns("test refresh token");
@@ -355,7 +361,8 @@ namespace Okta.Xamarin.Test
             OktaContext.Current.RenewStarted += (sender, args) => renewStartedRaised = true;
             OktaContext.Current.RenewCompleted += (sender, args) => renewCompletedRaised = true;
 
-            OktaContext.Current.RenewAsync().Wait();
+            await OktaContext.Current.RenewAsync();
+            Thread.Sleep(100);
 
             renewStartedRaised.Should().BeTrue();
             renewCompletedRaised.Should().BeTrue();
@@ -374,7 +381,7 @@ namespace Okta.Xamarin.Test
             container.Register(Substitute.For<IOidcClient>());
             container.Register(Substitute.For<SecureKeyValueStore>());
             OktaContext.Current.InitServices(container);
-
+            Thread.Sleep(100);
             initServicesStartedRaised.Should().BeTrue();
             initServicesCompletedRaised.Should().BeTrue();
             initServicesExceptionRaised.Should().BeFalse();
@@ -412,7 +419,7 @@ namespace Okta.Xamarin.Test
         }
 
         [Fact]
-        public void RaiseRenewExceptionEvent()
+        public async void RaiseRenewExceptionEvent()
         {
             bool? renewExceptionEventRaised = false;
             Exception testException = new Exception("This is a test exception");
@@ -430,13 +437,13 @@ namespace Okta.Xamarin.Test
 
             OktaContext.AddRenewCompletedListener((sender, renewEventArgs) => throw testException);
 
-            OktaContext.Current.RenewAsync().Wait();
+            await OktaContext.Current.RenewAsync();
 
             renewExceptionEventRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RaiseRevokeExceptionEvent()
+        public async void RaiseRevokeExceptionEvent()
         {
             bool? revokeExceptionEventRaised = false;
             Exception testException = new Exception("This is a test exception");
@@ -451,13 +458,13 @@ namespace Okta.Xamarin.Test
             OktaContext.AddRevokeCompletedListener((sender, renewEventArgs) => throw testException);
 
             OktaContext.Current.StateManager = mockStateManager;
-            OktaContext.Current.RevokeAsync().Wait();
+            await OktaContext.Current.RevokeAsync();
 
             revokeExceptionEventRaised.Should().BeTrue();
         }
 
         [Fact]
-        public void RevokeSpecifiedAccessToken()
+        public async void RevokeSpecifiedAccessToken()
         {
             string goodAccessToken = "this is the one";
             string badAccessToken = "this is the wrong one";
@@ -466,7 +473,8 @@ namespace Okta.Xamarin.Test
 
             OktaContext oktaContext = new OktaContext() { StateManager = mockOktaStateManager };
             OktaContext.Current = oktaContext;
-            OktaContext.RevokeAccessTokenAsync(goodAccessToken).Wait();
+            await OktaContext.RevokeAccessTokenAsync(goodAccessToken);
+            Thread.Sleep(100);
 
             mockOktaStateManager.Received().RevokeAccessTokenAsync(goodAccessToken);
         }
