@@ -148,7 +148,7 @@ namespace Okta.Xamarin
         /// </summary>
         /// <param name="sessionToken">A valid session  token obtained via the <see cref="https://github.com/okta/okta-auth-dotnet">AuthN SDK</see></param>
         /// <returns>In case of successful authorization, this Task will return a valid <see cref="OktaStateManager"/>.  Clients are responsible for further storage and maintenance of the manager.</returns>
-        public async Task<IOktaStateManager> AuthenticateAsync(string sessionToken)
+        public Task<IOktaStateManager> AuthenticateAsync(string sessionToken)
         {
             throw new NotImplementedException("AuthN SDK is deprecated");
         }
@@ -438,9 +438,12 @@ namespace Okta.Xamarin
 
         private async Task ClearStateAsync()
         {
-            this.CloseBrowser();
-            loggingOutClientsByState.Remove(State);
-            currentTask.SetResult(new OktaStateManager());
+            await Task.Run(() =>
+            {
+                this.CloseBrowser();
+                loggingOutClientsByState.Remove(State);
+                currentTask.SetResult(new OktaStateManager());
+            });
         }
 
         /// <summary>
