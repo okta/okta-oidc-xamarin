@@ -70,12 +70,6 @@ function configureEnvironment(){
     echo '</ nuget_push.sh.configuringEnvironment>'
 }
 
-function downloadNugetArtifacts() {
-    pushd ../tools
-    ./download-nugets.sh
-    popd
-}
-
 function pushNugetsToArtifactory() {
     # nuget source OKTA_NUGET_TOPIC_REPO and api key ${ARTIFACTORY_NUGET_APIKEY} are set by eng-productivity scripts run in bacon
     echo "setting nuget source to artifactory"

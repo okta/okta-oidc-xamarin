@@ -1,9 +1,8 @@
 #!/bin/bash
 
-source ./.okta/functions.sh
+source ./functions.sh
 
 configureEnvironment
 
-downloadNugetArtifacts
-
+cd ..
 pushNugetsToArtifactory
