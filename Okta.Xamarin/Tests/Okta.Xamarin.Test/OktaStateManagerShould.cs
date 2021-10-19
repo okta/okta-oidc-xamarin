@@ -125,7 +125,7 @@ namespace Okta.Xamarin.Test
         {
             string testAccessToken = "test access token";
             IOidcClient mockClient = Substitute.For<IOidcClient>();
-            OktaStateManager oktaStateManager = new OktaStateManager { Client = mockClient, AccessToken = testAccessToken };
+			OktaStateManager oktaStateManager = new OktaStateManager(testAccessToken, "test token type") { Client = mockClient };
 
             oktaStateManager.RevokeAsync(TokenKind.AccessToken).Wait();
 
@@ -137,7 +137,8 @@ namespace Okta.Xamarin.Test
         {
             string testRefreshToken = "test refresh token";
             IOidcClient mockClient = Substitute.For<IOidcClient>();
-            OktaStateManager oktaStateManager = new OktaStateManager { Client = mockClient, RefreshToken = testRefreshToken };
+			OktaStateManager oktaStateManager = new OktaStateManager("test access token", "test token type", "test id token", testRefreshToken) { Client = mockClient };
+			//OktaStateManager oktaStateManager = new OktaStateManager { Client = mockClient, RefreshToken = testRefreshToken };
 
             oktaStateManager.RevokeAsync(TokenKind.RefreshToken).Wait();
 

@@ -71,6 +71,9 @@ namespace Okta.Xamarin
         [JsonProperty("AuthorizationServerId", DefaultValueHandling = DefaultValueHandling.Populate)]
         public string AuthorizationServerId { get; set; } = "default";
 
+		[JsonProperty("IssuerUri")]
+		public string IssuerUri { get; set; }
+
         /// <summary>
         /// The clock skew allowed when validating tokens.  Optional, the default value is 2 minutes.  When parsed from a config file, an integer is interpreted as a number of seconds.
         /// </summary>

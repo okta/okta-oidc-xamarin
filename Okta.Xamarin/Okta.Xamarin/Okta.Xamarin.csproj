@@ -32,4 +32,8 @@
       <DependentUpon>OktaApp.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Identity\" />
+  </ItemGroup>
 </Project>

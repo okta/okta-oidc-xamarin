@@ -1,3 +1,18 @@
 [submodule "Okta.Xamarin/Samples/xamarin"]
 	path = Okta.Xamarin/Samples/xamarin
 	url = https://github.com/okta/samples-xamarin.git
+[submodule "Okta.Xamarin/submodules/bam.ion"]
+	path = Okta.Xamarin/submodules/bam.ion
+	url = git@github.com:BryanApellanes/Bam.Ion.git
+[submodule "Okta.Xamarin/submodules/bam.net.core"]
+	path = Okta.Xamarin/submodules/bam.net.core
+	url = git@github.com:BryanApellanes/Bam.Net.Core.git
+[submodule "Okta.Xamarin/submodules/bam.xamarin"]
+	path = Okta.Xamarin/submodules/bam.xamarin
+	url = git@github.com:BryanApellanes/Bam.Xamarin.git
+[submodule "Okta.Xamarin/submodules/bam.github"]
+	path = Okta.Xamarin/submodules/bam.github
+	url = git@github.com:BryanApellanes/Bam.GitHub.git
+[submodule "Okta.Xamarin/submodules/bam.control"]
+	path = Okta.Xamarin/submodules/bam.control
+	url = git@github.com:BryanApellanes/Bam.Control.git
