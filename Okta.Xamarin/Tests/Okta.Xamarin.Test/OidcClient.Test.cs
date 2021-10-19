@@ -4,6 +4,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -83,10 +84,10 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Allows setting a custom <see cref="HttpMessageHandler"/> for use by this client's <see cref="HttpClient"/>, in order to mock of HTTP requests
+        /// Allows setting a custom <see cref="HttpMessageHandler"/> for use by this client's <see cref="HttpClient"/>, in order to mock of HTTP requests.
         /// </summary>
-        /// <param name="handler"></param>
-        public void SetHttpMock(HttpMessageHandler handler)
+        /// <param name="handler">The message handler.</param>
+        public void SetMockHttpMessageHandler(HttpMessageHandler handler)
         {
             if (handler == null)
                 client = new HttpClient();
@@ -97,15 +98,36 @@ namespace Okta.Xamarin
         /// <summary>
         /// Provides internal access to the function which determines the AuthorizeUrl including login query parameters based on the <see cref="Config"/>
         /// </summary>
-        /// <returns>The url ready to be used for login</returns>
+        /// <returns>The url ready to be used for login.</returns>
         public string GenerateAuthorizeUrlTest()
         {
             return GenerateAuthorizeUrl();
         }
 
-		public void RaiseRequestExceptionEvent(RequestExceptionEventArgs requestExceptionEventArgs)
-		{
-			this.OnRequestException(requestExceptionEventArgs);
-		}
-	}
+        /// <summary>
+        /// Provided internal access to raise the RequestException event.
+        /// </summary>
+        /// <param name="requestExceptionEventArgs">The event arguments.</param>
+        public void RaiseRequestExceptionEvent(RequestExceptionEventArgs requestExceptionEventArgs)
+        {
+            this.OnRequestException(requestExceptionEventArgs);
+        }
+
+        /// <summary>
+        /// Provides internal access to the call the PerformAuthorizationServerRequestAsync method.
+        /// </summary>
+        /// <param name="httpMethod">The http method.</param>
+        /// <param name="path">The path.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="formUrlEncodedContent">The content.</param>
+        public void CallPerformAuthorizationServerRequestAsync(HttpMethod httpMethod, string path, Dictionary<string, string> headers, params KeyValuePair<string, string>[] formUrlEncodedContent)
+        {
+            base.PerformAuthorizationServerRequestAsync(httpMethod, path, headers, formUrlEncodedContent);
+        }
+
+        public async Task CallExchangeCodeForTokenAsync(string code)
+        {
+            await ExchangeAuthCodeForTokenAsync(code);
+        }
+    }
 }

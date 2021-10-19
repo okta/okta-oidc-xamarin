@@ -12,18 +12,45 @@ using Okta.Xamarin;
 
 namespace Okta.Xamarin.Test
 {
+    // TODO: refactor this to eliminate Responder in favor of GetTestResponse for simplicity.
+
+    /// <summary>
+    /// Mock message handler for testing.
+    /// </summary>
     public class HttpMessageHandlerMock : HttpMessageHandler
     {
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var content = await request.Content.ReadAsStringAsync();
-            System.Collections.Specialized.NameValueCollection data = System.Web.HttpUtility.ParseQueryString(content);
-            var response = Responder(
-                new Tuple<string, Dictionary<string, string>>(request.RequestUri.ToString(), data.ToDictionary()));
+            System.Collections.Specialized.NameValueCollection data = new System.Collections.Specialized.NameValueCollection();
+            if (request.Content != null)
+            {
+                string content = await request.Content.ReadAsStringAsync();
+                data = System.Web.HttpUtility.ParseQueryString(content);
+            }
 
-            return new HttpResponseMessage() { StatusCode = response.Item1, Content = new StringContent(response.Item2) };
+            if (this.Responder != null)
+            {
+                var response = this.Responder(
+                    new Tuple<string, Dictionary<string, string>>(request.RequestUri.ToString(), data.ToDictionary()));
+
+                return new HttpResponseMessage() { StatusCode = response.Item1, Content = new StringContent(response.Item2) };
+            }
+            else if (this.GetTestResponse != null)
+            {
+                return this.GetTestResponse(request, cancellationToken);
+            }
+
+            return new HttpResponseMessage { StatusCode = System.Net.HttpStatusCode.OK };
         }
 
+        /// <summary>
+        /// Gets or sets the responder.
+        /// </summary>
         public Func<Tuple<string, Dictionary<string, string>>, Tuple<System.Net.HttpStatusCode, string>> Responder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the GetTestResponse function.
+        /// </summary>
+        public Func<HttpRequestMessage, CancellationToken, HttpResponseMessage> GetTestResponse { get; set; }
     }
 }

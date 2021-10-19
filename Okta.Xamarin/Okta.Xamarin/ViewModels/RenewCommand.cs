@@ -31,12 +31,12 @@ namespace Okta.Xamarin.ViewModels
         /// </summary>
         /// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
         /// <param name="authorizationServerId">The authorization server ID, the default is "default".</param>
-        public RenewCommand(bool refreshIdToken, string authorizationServerId = "default")
+        public RenewCommand(bool refreshIdToken)
             : base(async () =>
             {
                 if (!string.IsNullOrEmpty(OktaContext.RefreshToken))
                 {
-                    await OktaContext.Current.RenewAsync(refreshIdToken, authorizationServerId);
+                    _ = await OktaContext.RenewAsync(refreshIdToken);
                 }
             })
         {

@@ -39,11 +39,14 @@
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidKeyStore>true</AndroidKeyStore>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
     <AndroidSigningKeyStore>.\Keystore\okta.xamarin.android-test\okta.xamarin.android-test.keystore</AndroidSigningKeyStore>
     <AndroidSigningKeyAlias>okta.xamarin.android-test</AndroidSigningKeyAlias>
     <AndroidSigningKeyPass>okta.xamarin.android-test</AndroidSigningKeyPass>
     <AndroidSigningStorePass>okta.xamarin.android-test</AndroidSigningStorePass>
+    <AndroidSupportedAbis>
+    </AndroidSupportedAbis>
+    <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

@@ -23,7 +23,7 @@ namespace Okta.Xamarin
         public string RefreshToken { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indication whether the id token is refreshed.
+        /// Gets or sets a value indicating whether the id token is refreshed.
         /// </summary>
         public bool RefreshIdToken { get; set; }
 

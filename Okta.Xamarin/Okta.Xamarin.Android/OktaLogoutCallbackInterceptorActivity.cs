@@ -14,7 +14,7 @@ namespace Okta.Xamarin.Android
 	[Activity(Label = "OktaLogoutCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleInstance)]
 	public class OktaLogoutCallbackInterceptorActivity<TMain> : Activity
 	{
-		protected override async void OnCreate(Bundle savedInstanceState)
+		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
 			global::Android.Net.Uri uri_android = Intent.Data;

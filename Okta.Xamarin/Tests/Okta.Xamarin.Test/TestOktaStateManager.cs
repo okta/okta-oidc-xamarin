@@ -4,15 +4,18 @@
 // </copyright>
 
 using System.Threading.Tasks;
+using NSubstitute;
 
 namespace Okta.Xamarin.Test
 {
     public class TestOktaStateManager: OktaStateManager
     {
         public TestOktaStateManager() : base() { }
+
         public TestOktaStateManager(string accessToken, string idToken = null, string refreshToken = null, int? expiresIn = null, string scope = null)
         : base(accessToken, null, idToken, refreshToken, expiresIn, scope) 
         {
+            this.Client = Substitute.For<IOidcClient>();
         }
 
         public TestOktaStateManager(string accessToken, string refreshToken) : this(accessToken, null, refreshToken) { }
@@ -22,6 +25,16 @@ namespace Okta.Xamarin.Test
         public override Task RevokeAsync(TokenKind tokenType)
         {
             return Task.Run(() => ++RevokeAsyncCallCount);
+        }
+
+        public void RaiseSecureStorageReadException(SecureStorageExceptionEventArgs eventArgs)
+        {
+            this.OnSecureStorageReadException(eventArgs);
+        }
+
+        public void RaiseSecureStorageWriteException(SecureStorageExceptionEventArgs eventArgs)
+        {
+            this.OnSecureStorageWriteException(eventArgs);
         }
     }
 }

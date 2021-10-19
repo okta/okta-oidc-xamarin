@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿#pragma warning disable SA1633 // File should have header
+//------------------------------------------------------------------------------
 //
 // Copyright (c) Microsoft Corporation.
 // All rights reserved.
@@ -24,6 +25,7 @@
 // THE SOFTWARE.
 //
 //------------------------------------------------------------------------------
+#pragma warning restore SA1633 // File should have header
 
 using System;
 using System.Text;

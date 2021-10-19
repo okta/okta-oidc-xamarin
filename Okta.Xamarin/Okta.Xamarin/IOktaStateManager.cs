@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Okta.Xamarin
 {
@@ -16,6 +17,36 @@ namespace Okta.Xamarin
     /// </summary>
     public interface IOktaStateManager
     {
+        /// <summary>
+        /// The event that is raised before writing to secure storage.
+        /// </summary>
+        event EventHandler<SecureStorageEventArgs> SecureStorageWriteStarted;
+
+        /// <summary>
+        /// The event that is raised when writing to secure storage completes.
+        /// </summary>
+        event EventHandler<SecureStorageEventArgs> SecureStorageWriteCompleted;
+
+        /// <summary>
+        /// The event that is raised when an exception occurs writing to secure storage.
+        /// </summary>
+        event EventHandler<SecureStorageExceptionEventArgs> SecureStorageWriteException;
+
+        /// <summary>
+        /// The event that is raised before reading from secure storage.
+        /// </summary>
+        event EventHandler<SecureStorageEventArgs> SecureStorageReadStarted;
+
+        /// <summary>
+        /// The event that is raised when reading from secure storage completes.
+        /// </summary>
+        event EventHandler<SecureStorageEventArgs> SecureStorageReadCompleted;
+
+        /// <summary>
+        /// The event that is raised when an exception occurs reading from secure storage.
+        /// </summary>
+        event EventHandler<SecureStorageExceptionEventArgs> SecureStorageReadException;
+
         /// <summary>
         /// The event that is raised when an API exception occurs.
         /// </summary>
@@ -89,46 +120,43 @@ namespace Okta.Xamarin
         /// <typeparam name="T">The type to deserialize the response as.</typeparam>
         /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>T.</returns>
-        Task<T> GetUserAsync<T>(string authorizationServerId = "default");
+        Task<T> GetUserAsync<T>();
 
         /// <summary>
         /// Gets information about the current user.
         /// </summary>
         /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>Dictionary{string, object}.</returns>
-        Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default");
+        Task<Dictionary<string, object>> GetUserAsync();
 
         /// <summary>
         /// Gets information about the current user as a ClaimsPrincipal.
         /// </summary>
         /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>ClaimsPrincipal.</returns>
-        Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default");
+        Task<ClaimsPrincipal> GetClaimsPrincipalAsync();
 
         /// <summary>
         /// Gets information about the state of the specified token.
         /// </summary>
         /// <param name="tokenKind">The kind of token.</param>
-        /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>Dictoinary{string, object}.</returns>
-        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string authorizationServerId = "default");
+        Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind);
 
         /// <summary>
         /// Renews tokens.
         /// </summary>
         /// <param name="refreshIdToken">A value indicating whether to also renew the ID token.</param>
-        /// <param name="authorizationServerId">The authorization server ID.</param>
         /// <returns>Task{RenewResponse}.</returns>
-        Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default");
+        Task<RenewResponse> RenewAsync(bool refreshIdToken = false);
 
         /// <summary>
         /// Renews tokens.
         /// </summary>
         /// <param name="refreshToken">The refresh token.</param>
         /// <param name="refreshIdToken">A value indicating whether to refresh the ID token.</param>
-        /// <param name="authorizationServerId">The authorization server.</param>
         /// <returns>Task{RenewResponse}.</returns>
-        Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default");
+        Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false);
 
         /// <summary>
         /// Revokes tokens associated with this OktaState.
@@ -138,17 +166,97 @@ namespace Okta.Xamarin
         Task RevokeAsync(TokenKind tokenKind);
 
         /// <summary>
-        /// Stores the tokens securely in platform-specific secure storage.  This is an async method and should be awaited.
+        /// Revoke the specified token.
+        /// </summary>
+        /// <param name="tokenKind">The kind of the token.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        Task RevokeAsync(TokenKind tokenKind, string token);
+
+        /// <summary>
+        /// Revoke the specified access token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        Task RevokeAccessTokenAsync(string token);
+
+        /// <summary>
+        /// Revoke the specified refresh token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        Task RevokeRefreshTokenAsync(string token);
+
+        /// <summary>
+        /// Stores the tokens securely in platform-specific secure storage.
+        /// Subscribe to SecureStorageWriteException event for exception details
+        /// if an exception occurs, see event <see cref="SecureStorageWriteException"/>.
         /// </summary>
         /// <returns>Task which tracks the progress of the save.</returns>
         Task WriteToSecureStorageAsync();
 
         /// <summary>
-        /// Retrieves a stored state manager for a given config.  This is an async method and should be awaited.
+        /// Retrieves a stored state manager from secure storage if it exists.
+        /// Returns null if a state manager is not found in secure storage or
+        /// if an exception occurs.  In case of exception, subscribe to the
+        /// SecureStorageReadException event for exception details,
+        /// see event <see cref="SecureStorageReadException"/>.
         /// </summary>
-        /// <param name="config">the Okta configuration that corresponds to a manager you are interested in</param>
-        /// <returns>If a state manager is found for the provided config, this Task will return the <see cref="OktaStateManager"/>.</returns>
+        /// <returns><see cref="OktaStateManager"/>.</returns>
+        Task<OktaStateManager> ReadFromSecureStorageAsync();
+
+        /// <summary>
+        /// Retrieves a stored state manager from secure storage if it exists.
+        /// Returns null if a state manager is not found in secure storage or
+        /// if an exception occurs.  In case of exception, subscribe to the
+        /// SecureStorageReadException event for exception details,
+        /// see event <see cref="SecureStorageReadException"/>.
+        /// </summary>
+        /// <param name="config">The IOktaConfig implementation to apply to the resulting state manager.</param>
+        /// <returns><see cref="OktaStateManager"/>.</returns>
         Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config);
 
+        /// <summary>
+        /// Retrieves a stored state manager from secure storage if it exists.
+        /// Returns null if a state manager is not found in secure storage or
+        /// if an exception occurs.  In case of exception, subscribe to the
+        /// SecureStorageReadException event for exception details,
+        /// see event <see cref="SecureStorageReadException"/>.
+        /// </summary>
+        /// <param name="config">The IOktaConfig implementation to apply to the resulting state manager.</param>
+        /// <param name="client">The IOidcClient implementation to apply to the resulting state manager.</param>
+        /// <returns><see cref="OktaStateManager"/>.</returns>
+        Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config, IOidcClient client);
+
+        /// <summary>
+        /// Calls Clear() then WriteToSecureStorageAsync, effectively writing a stateless state manager to secure storage.
+        /// </summary>
+        /// <returns>The current instance.</returns>
+        Task<OktaStateManager> ClearSecureStorageStateAsync();
+
+        /// <summary>
+        /// Gets the access token.
+        /// </summary>
+        /// <returns>The access token.</returns>
+        string GetAccessToken();
+
+        /// <summary>
+        /// Gets the refresh token.
+        /// </summary>
+        /// <returns>The refresh token.</returns>
+        string GetRefreshToken();
+
+        /// <summary>
+        /// Gets the id token.
+        /// </summary>
+        /// <returns>The id token.</returns>
+        string GetIdToken();
+
+        /// <summary>
+        /// Convert the current state manager instance to the json equivalent.
+        /// </summary>
+        /// <param name="formatting">The formatting.</param>
+        /// <returns>json string.</returns>
+        string ToJson(Formatting formatting = Formatting.Indented);
     }
 }

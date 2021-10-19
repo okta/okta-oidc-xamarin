@@ -1,4 +1,4 @@
-﻿// <copyright file="OktaState.cs" company="Okta, Inc">
+﻿// <copyright file="OktaStateManager.cs" company="Okta, Inc">
 // Copyright (c) 2019-present Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Okta.Xamarin.Services;
 
 namespace Okta.Xamarin
 {
@@ -16,6 +18,11 @@ namespace Okta.Xamarin
     /// </summary>
     public class OktaStateManager : IOktaStateManager
     {
+        /// <summary>
+        /// The key used to store and retrieve a representation of the state manager in secure storage. 
+        /// </summary>
+        public const string StoreKey = "OktaState";
+
         private IOidcClient client;
 
         /// <summary>
@@ -48,32 +55,53 @@ namespace Okta.Xamarin
         public event EventHandler<RequestExceptionEventArgs> RequestException;
 
         /// <inheritdoc/>
-        public string TokenType { get; private set; }
+        public event EventHandler<SecureStorageExceptionEventArgs> SecureStorageWriteException;
 
         /// <inheritdoc/>
-        public string AccessToken { get; private set; }
+        public event EventHandler<SecureStorageExceptionEventArgs> SecureStorageReadException;
 
         /// <inheritdoc/>
-        public string IdToken { get; private set; }
+        public event EventHandler<SecureStorageEventArgs> SecureStorageWriteStarted;
 
         /// <inheritdoc/>
-        public string RefreshToken { get; private set; }
+        public event EventHandler<SecureStorageEventArgs> SecureStorageWriteCompleted;
 
         /// <inheritdoc/>
-        public string Scope { get; private set; }
+        public event EventHandler<SecureStorageEventArgs> SecureStorageReadStarted;
 
         /// <inheritdoc/>
-        public DateTimeOffset? Expires { get; private set; }
+        public event EventHandler<SecureStorageEventArgs> SecureStorageReadCompleted;
+
+        /// <inheritdoc/>
+        public string TokenType { get; set; }
+
+        /// <inheritdoc/>
+        public string AccessToken { get; set; }
+
+        /// <inheritdoc/>
+        public string IdToken { get; set; }
+
+        /// <inheritdoc/>
+        public string RefreshToken { get; set; }
+
+        /// <inheritdoc/>
+        public string Scope { get; set; }
+
+        /// <inheritdoc/>
+        public DateTimeOffset? Expires { get; set; }
 
         /// <summary>
         /// Gets the most recent renew response or null.
         /// </summary>
+        [JsonIgnore]
         public RenewResponse RenewResponse { get; private set; }
 
         /// <inheritdoc/>
+        [JsonIgnore]
         public IOktaConfig Config { get; set; }
 
         /// <inheritdoc/>
+        [JsonIgnore]
         public IOidcClient Client
         {
             get => this.client;
@@ -85,6 +113,7 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
+        [JsonIgnore]
         public bool IsAuthenticated
         {
             get
@@ -95,6 +124,7 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
+        [JsonIgnore]
         public HttpResponseMessage LastApiResponse { get => this.Client?.LastApiResponse; }
 
         /// <inheritdoc/>
@@ -113,16 +143,139 @@ namespace Okta.Xamarin
             }
         }
 
-        /// <inheritdoc/>
-        public async Task WriteToSecureStorageAsync() // to be implemented on OKTA-363613 v2.1
+        /// <summary>
+        /// Copies the state of the specified state manager to the current instance.
+        /// </summary>
+        /// <param name="oktaStateManager">The state manager to copy.</param>
+        protected void Copy(OktaStateManager oktaStateManager)
         {
-            throw new NotImplementedException();
+            if (oktaStateManager == null)
+            {
+                return;
+            }
+
+            this.Config = oktaStateManager.Config;
+            this.Client = oktaStateManager.Client;
+            this.TokenType = oktaStateManager.TokenType;
+            this.AccessToken = oktaStateManager.AccessToken;
+            this.IdToken = oktaStateManager.IdToken;
+            this.RefreshToken = oktaStateManager.RefreshToken;
+            this.Scope = oktaStateManager.Scope;
+            this.Expires = oktaStateManager.Expires;
         }
 
         /// <inheritdoc/>
-        public async Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config) // to be implemented on OKTA-363613 v2.1
+        public async Task WriteToSecureStorageAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                this.OnSecureStorageWriteStarted(new SecureStorageEventArgs { OktaStateManager = this });
+                SecureKeyValueStore secureKeyValueStore = OktaContext.GetService<SecureKeyValueStore>();
+                await secureKeyValueStore.SetAsync(StoreKey, this.ToJson());
+                this.OnSecureStorageWriteCompleted(new SecureStorageEventArgs { OktaStateManager = this });
+            }
+            catch (Exception ex)
+            {
+                this.OnSecureStorageWriteException(new SecureStorageExceptionEventArgs { Exception = ex });
+            }
+        }
+
+        /// <summary>
+        /// Raises the SecureStorageWriteStarted event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
+        protected void OnSecureStorageWriteStarted(SecureStorageEventArgs eventArgs)
+        {
+            this.SecureStorageWriteStarted?.Invoke(this, eventArgs);
+        }
+
+        /// <summary>
+        /// Raises the SecureStorageWriteCompleted event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
+        protected void OnSecureStorageWriteCompleted(SecureStorageEventArgs eventArgs)
+        {
+            this.SecureStorageWriteCompleted?.Invoke(this, eventArgs);
+        }
+
+        /// <summary>
+        /// Raises the SecureStorageWriteException event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
+        protected void OnSecureStorageWriteException(SecureStorageExceptionEventArgs eventArgs)
+        {
+            this.SecureStorageWriteException?.Invoke(this, eventArgs);
+        }
+
+        /// <inheritdoc/>
+        public async Task<OktaStateManager> ReadFromSecureStorageAsync()
+        {
+            return await this.ReadFromSecureStorageAsync(OktaContext.GetService<IOktaConfig>());
+        }
+
+        /// <inheritdoc/>
+        public async Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config)
+        {
+            return await this.ReadFromSecureStorageAsync(config, OktaContext.GetService<IOidcClient>());
+        }
+
+        /// <inheritdoc/>
+        public async Task<OktaStateManager> ReadFromSecureStorageAsync(IOktaConfig config, IOidcClient client)
+        {
+            try
+            {
+                this.OnSecureStorageReadStarted(new SecureStorageEventArgs { OktaStateManager = this });
+                SecureKeyValueStore secureKeyValueStore = OktaContext.GetService<SecureKeyValueStore>();
+                OktaStateManager oktaStateManager = await secureKeyValueStore.GetAsync<OktaStateManager>(StoreKey);
+                if (oktaStateManager != null)
+                {
+                    oktaStateManager.Config = config;
+                    oktaStateManager.Client = client;
+                }
+
+                this.OnSecureStorageReadCompleted(new SecureStorageEventArgs { OktaStateManager = oktaStateManager });
+                return oktaStateManager;
+            }
+            catch (Exception ex)
+            {
+                this.OnSecureStorageReadException(new SecureStorageExceptionEventArgs { Exception = ex });
+                return null;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<OktaStateManager> ClearSecureStorageStateAsync()
+        {
+            this.Clear();
+            await this.WriteToSecureStorageAsync();
+            return this;
+        }
+
+        /// <summary>
+        /// Raises the SecureStorageReadStarted event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
+        protected void OnSecureStorageReadStarted(SecureStorageEventArgs eventArgs)
+        {
+            this.SecureStorageReadStarted?.Invoke(this, eventArgs);
+        }
+
+        /// <summary>
+        /// Raises the SecureStorageReadCompleted event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
+        protected void OnSecureStorageReadCompleted(SecureStorageEventArgs eventArgs)
+        {
+            this.SecureStorageReadCompleted?.Invoke(this, eventArgs);
+        }
+
+        /// <summary>
+        /// Raises the SecureStorageReadException event.
+        /// </summary>
+        /// <param name="eventArgs">The event arguments.</param>
+        protected void OnSecureStorageReadException(SecureStorageExceptionEventArgs eventArgs)
+        {
+            this.SecureStorageReadException?.Invoke(this, eventArgs);
         }
 
         /// <inheritdoc/>
@@ -141,44 +294,70 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
-        public async Task<T> GetUserAsync<T>(string authorizationServerId = "default")
+        public virtual async Task RevokeAsync(TokenKind tokenKind, string token)
         {
-            return await this.Client.GetUserAsync<T>(this.AccessToken, authorizationServerId);
+            switch (tokenKind)
+            {
+                case Xamarin.TokenKind.AccessToken:
+                    await this.Client.RevokeAccessTokenAsync(token);
+                    break;
+                case Xamarin.TokenKind.RefreshToken:
+                default:
+                    await this.Client.RevokeRefreshTokenAsync(token);
+                    break;
+            }
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, object>> GetUserAsync(string authorizationServerId = "default")
+        public async Task RevokeAccessTokenAsync(string token)
         {
-            return await this.Client.GetUserAsync(this.AccessToken, authorizationServerId);
+            await this.Client.RevokeAccessTokenAsync(token);
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind, string authorizationServerId = "default")
+        public async Task RevokeRefreshTokenAsync(string token)
+        {
+            await this.Client.RevokeRefreshTokenAsync(token);
+        }
+
+        /// <inheritdoc/>
+        public async Task<T> GetUserAsync<T>()
+        {
+            return await this.Client.GetUserAsync<T>(this.AccessToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Dictionary<string, object>> GetUserAsync()
+        {
+            return await this.Client.GetUserAsync(this.AccessToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Dictionary<string, object>> IntrospectAsync(TokenKind tokenKind)
         {
             return await this.Client.IntrospectAsync(new IntrospectOptions
             {
                 Token = this.GetToken(tokenKind),
                 TokenKind = tokenKind,
-                AuthorizationServerId = authorizationServerId,
             });
         }
 
         /// <inheritdoc/>
-        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(string authorizationServerId = "default")
+        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync()
         {
-            return await this.Client.GetClaimsPincipalAsync(this.AccessToken, authorizationServerId);
+            return await this.Client.GetClaimsPincipalAsync(this.AccessToken);
         }
 
         /// <inheritdoc/>
-        public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false, string authorizationServerId = "default")
+        public async Task<RenewResponse> RenewAsync(bool refreshIdToken = false)
         {
-            return await this.RenewAsync(this.RefreshToken, refreshIdToken, authorizationServerId);
+            return await this.RenewAsync(this.RefreshToken, refreshIdToken);
         }
 
         /// <inheritdoc/>
-        public async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false, string authorizationServerId = "default")
+        public async Task<RenewResponse> RenewAsync(string refreshToken, bool refreshIdToken = false)
         {
-            RenewResponse renewResponse = await this.Client.RenewAsync<RenewResponse>(refreshToken, refreshIdToken, authorizationServerId);
+            RenewResponse renewResponse = await this.Client.RenewAsync<RenewResponse>(refreshToken, refreshIdToken);
             this.RenewResponse = renewResponse;
             this.TokenType = renewResponse.TokenType;
             this.AccessToken = renewResponse.AccessToken;
@@ -193,6 +372,24 @@ namespace Okta.Xamarin
         }
 
         /// <inheritdoc/>
+        public virtual string GetAccessToken()
+        {
+            return this.AccessToken;
+        }
+
+        /// <inheritdoc/>
+        public virtual string GetRefreshToken()
+        {
+            return this.RefreshToken;
+        }
+
+        /// <inheritdoc/>
+        public virtual string GetIdToken()
+        {
+            return this.IdToken;
+        }
+
+        /// <inheritdoc/>
         public void Clear()
         {
             this.AccessToken = string.Empty;
@@ -200,6 +397,12 @@ namespace Okta.Xamarin
             this.Scope = string.Empty;
             this.Expires = null;
             this.RefreshToken = string.Empty;
+        }
+
+        /// <inheritdoc/>
+        public string ToJson(Formatting formatting = Formatting.Indented)
+        {
+            return JsonConvert.SerializeObject(this, formatting);
         }
     }
 }

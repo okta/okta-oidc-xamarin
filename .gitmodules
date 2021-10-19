@@ -1,0 +1,3 @@
+[submodule "Okta.Xamarin/Samples/xamarin"]
+	path = Okta.Xamarin/Samples/xamarin
+	url = https://github.com/okta/samples-xamarin.git
