@@ -7,6 +7,7 @@ using Foundation;
 using SafariServices;
 using System;
 using UIKit;
+using Xamarin.Forms;
 
 namespace Okta.Xamarin.iOS
 {
