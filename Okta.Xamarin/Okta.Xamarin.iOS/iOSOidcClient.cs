@@ -57,9 +57,8 @@ namespace Okta.Xamarin.iOS
 		{
 			if (SafariViewController != null)
 			{
-				SafariViewController.DismissViewControllerAsync(false);
+				Device.BeginInvokeOnMainThread(() => SafariViewController.DismissViewControllerAsync(false));
 			}
-
 		}
 
 
