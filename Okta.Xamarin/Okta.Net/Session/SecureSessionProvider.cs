@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Okta.Net.Data;
+using Okta.Net.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace Okta.Net.Session
 {
 	/// <summary>
-	/// An secure session provider.  Keys are hashed and values encrypted for storage.
+	/// A secure session provider.  Keys are hashed and values encrypted for storage.
 	/// </summary>
 	public sealed class SecureSessionProvider : ISessionProvider
 	{
@@ -19,12 +20,14 @@ namespace Okta.Net.Session
 
 		private AesManaged _aes;
 
-		public SecureSessionProvider(IStorageProvider storageProvider = null)
+		public SecureSessionProvider(IStorageProvider storageProvider = null, ILoggingProvider loggingProvider = null)
 		{
-			this.StorageProvider = storageProvider ?? new InMemoryStorageProvider();
+			this.LoggingProvider = loggingProvider ?? new LoggingProvider();
+			this.StorageProvider = storageProvider ?? new InMemoryStorageProvider(this.LoggingProvider);
 			_ = this.InitializeAsync();
 		}
 
+		public ILoggingProvider LoggingProvider { get; set; }
 		public IStorageProvider StorageProvider { get; set; }
 
 		public T Get<T>(string key)

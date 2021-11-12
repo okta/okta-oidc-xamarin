@@ -10,7 +10,7 @@ namespace Okta.Net.Identity
 	public class IdentityClientConfiguration
 	{
 		public const string DefaultOktaDomain = "dotnet-idx-sdk.okta.com";
-		public const string DefaultClientId = "0oatzfskmLm4faAaQ5d6"; 
+		public const string DefaultClientId = "0oa274gcu4jnZedvP5d7"; 
 		public const string DefaultScopes = "openid profile offline_access";
 		public const string DefaultIssuerUri = "https://dotnet-idx-sdk.okta.com/oauth2/default";
 		public const string DefaultRedirectUri = "https://localhost:44314/interactioncode/callback";

@@ -15,6 +15,6 @@ namespace Okta.Net.Identity
 		internal IdentityIntrospection(HttpResponseMessage responseMessage) : base(responseMessage)
 		{ }
 
-		public IonObject Ion => IonObject.ReadObject(Raw);
+		public IonObject IonObject => IonObject.ReadObject(Raw);
 	}
 }

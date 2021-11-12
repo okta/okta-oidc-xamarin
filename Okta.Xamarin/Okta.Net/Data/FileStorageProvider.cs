@@ -11,12 +11,12 @@ namespace Okta.Net.Data
 {
 	public class FileStorageProvider : StorageProvider
 	{
-		public FileStorageProvider()
+		public FileStorageProvider(ILoggingProvider loggingProvider): base(loggingProvider)
 		{
 			this.Name = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
 		}
 
-		public FileStorageProvider(string name)
+		public FileStorageProvider(string name, ILoggingProvider loggingProvider) : this(loggingProvider)
 		{
 			this.Name = name;
 		}
@@ -29,7 +29,7 @@ namespace Okta.Net.Data
 		protected override bool Delete(string key)
 		{
 			FileInfo fileToDelete = new FileInfo(GetFilePath(key));
-			if(fileToDelete.Exists)
+			if (fileToDelete.Exists)
 			{
 				fileToDelete.Delete();
 				return true;
@@ -50,7 +50,7 @@ namespace Okta.Net.Data
 		protected override void Save(string key, object value)
 		{
 			object toSave = this.OnBeforeSave(value);
-			if(toSave is string json)
+			if (toSave is string json)
 			{
 				FileInfo fileToWrite = new FileInfo(GetFilePath(key));
 				File.WriteAllText(fileToWrite.FullName, json);

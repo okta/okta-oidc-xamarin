@@ -4,7 +4,7 @@
 // </copyright>
 
 using System;
-using Okta.Xamarin.TinyIoC;
+using Okta.Xamarin.Ioc;
 
 namespace Okta.Xamarin
 {

@@ -7,7 +7,7 @@ namespace Okta.Net.Data
 	public class InMemoryStorageProvider : StorageProvider
 	{
 		private Dictionary<string, object> _storage;
-		public InMemoryStorageProvider()
+		public InMemoryStorageProvider(ILoggingProvider loggingProvider): base(loggingProvider)
 		{
 			_storage = new Dictionary<string, object>();
 		}

@@ -18,6 +18,13 @@ namespace Okta.Net.Data
 		public event EventHandler<StorageEventArgs> DeleteCompleted;
 		public event EventHandler<StorageEventArgs> DeleteExceptionThrown;
 
+		public StorageProvider(ILoggingProvider loggingProvider)
+		{
+			this.LoggingProvider = loggingProvider;
+		}
+
+		public ILoggingProvider LoggingProvider { get; }
+
 		protected virtual object OnBeforeSave(object value)
 		{
 			return JsonConvert.SerializeObject(value);

@@ -6,7 +6,7 @@
     <authors>Okta, Inc.</authors>
     <owners>Okta, Inc.</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://github.com/okta/okta-oidc-dotnet/blob/master/LICENSE.md</licenseUrl>
+    <licenseUrl>https://github.com/okta/okta-oidc-xamarin/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/okta/okta-oidc-xamarin</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/okta/okta-sdk-dotnet/master/icon.png</iconUrl>
     <description>Official Okta OIDC SDK for Xamarin applications.</description>

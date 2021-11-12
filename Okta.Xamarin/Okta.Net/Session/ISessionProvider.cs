@@ -9,6 +9,7 @@ namespace Okta.Net.Session
 {
 	public interface ISessionProvider
 	{
+		ILoggingProvider LoggingProvider { get; set; }
 		IStorageProvider StorageProvider { get; set; }
 		T Get<T>(string key);
 		string Get(string key);

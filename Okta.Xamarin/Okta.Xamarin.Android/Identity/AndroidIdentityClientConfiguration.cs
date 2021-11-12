@@ -4,7 +4,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Okta.Net.Identity;
+using Okta.Xamarin.Widget.Pipeline.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

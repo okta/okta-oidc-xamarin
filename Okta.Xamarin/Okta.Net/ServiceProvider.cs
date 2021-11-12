@@ -50,8 +50,8 @@ namespace Okta.Net
 							temp.RegisterService<IIdentityDataProvider, IdentityDataProvider>();
 							temp.RegisterService<IPolicyProvider>(new PolicyProvider());
 							temp.RegisterService<ISessionProvider>(new SecureSessionProvider());
-							temp.RegisterService<IStorageProvider>(new FileStorageProvider());
 							temp.RegisterService<ILoggingProvider>(new LoggingProvider());
+							temp.RegisterService<IStorageProvider, FileStorageProvider>();							
 							temp.RegisterService<IViewProvider>(new ViewProvider());
 							_defaultServiceProvider = temp;
 						}

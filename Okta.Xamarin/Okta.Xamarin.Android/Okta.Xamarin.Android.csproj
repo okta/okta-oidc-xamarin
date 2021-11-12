@@ -117,10 +117,6 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Okta.Net\Okta.Net.csproj">
-      <Project>{a47ab2fb-2bac-4459-baed-4d230c4232fa}</Project>
-      <Name>Okta.Net</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Okta.Xamarin\Okta.Xamarin.csproj">
       <Project>{f4056b13-ce8c-4fd7-b079-a030a1053d33}</Project>
       <Name>Okta.Xamarin</Name>
