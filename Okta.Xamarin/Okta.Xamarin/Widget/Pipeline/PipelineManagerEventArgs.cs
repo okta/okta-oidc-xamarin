@@ -8,9 +8,9 @@ using Okta.Xamarin.Widget.Pipeline.Identity;
 
 namespace Okta.Xamarin.Widget.Pipeline
 {
-    public class FlowManagerEventArgs : EventArgs
+    public class PipelineManagerEventArgs : EventArgs
     {
-        public IFlowManager FlowManager { get; set; }
+        public IPipelineManager FlowManager { get; set; }
 
         public IIdentityInteraction Session { get; set; }
 

@@ -15,19 +15,19 @@ using Okta.Xamarin.Widget.Pipeline.View;
 
 namespace Okta.Xamarin.Widget.Pipeline
 {
-    public class FlowManager : IFlowManager
+    public class PipelineManager : IPipelineManager
     {
-        public FlowManager()
+        public PipelineManager()
             : this(Pipeline.ServiceProvider.Default)
         {
         }
 
-        public FlowManager(IServiceProvider serviceProvider)
+        public PipelineManager(IServiceProvider serviceProvider)
             : this(serviceProvider, serviceProvider.GetService<IIdentityClient>(), serviceProvider.GetService<IIdentityDataProvider>(), serviceProvider.GetService<IPolicyProvider>(), serviceProvider.GetService<ISessionProvider>(), serviceProvider.GetService<IStorageProvider>(), serviceProvider.GetService<ILoggingProvider>(), serviceProvider.GetService<IViewProvider>())
         {
         }
 
-        public FlowManager(IServiceProvider serviceProvider, IIdentityClient idxClient, IIdentityDataProvider dataProvider, IPolicyProvider policyProvider, ISessionProvider sessionProvider, IStorageProvider storageProvider, ILoggingProvider loggingProvider, IViewProvider viewProvider)
+        public PipelineManager(IServiceProvider serviceProvider, IIdentityClient idxClient, IIdentityDataProvider dataProvider, IPolicyProvider policyProvider, ISessionProvider sessionProvider, IStorageProvider storageProvider, ILoggingProvider loggingProvider, IViewProvider viewProvider)
         {
             this.ServiceProvider = serviceProvider;
             this.IdentityClient = idxClient;
@@ -39,23 +39,23 @@ namespace Okta.Xamarin.Widget.Pipeline
             this.ViewProvider = viewProvider;
         }
 
-        public event EventHandler<FlowManagerEventArgs> FlowStarting;
+        public event EventHandler<PipelineManagerEventArgs> FlowStarting;
 
-        public event EventHandler<FlowManagerEventArgs> FlowStartCompleted;
+        public event EventHandler<PipelineManagerEventArgs> FlowStartCompleted;
 
-        public event EventHandler<FlowManagerEventArgs> FlowStartExceptionThrown;
+        public event EventHandler<PipelineManagerEventArgs> FlowStartExceptionThrown;
 
-        public event EventHandler<FlowManagerEventArgs> FlowContinuing;
+        public event EventHandler<PipelineManagerEventArgs> FlowContinuing;
 
-        public event EventHandler<FlowManagerEventArgs> FlowContinueCompleted;
+        public event EventHandler<PipelineManagerEventArgs> FlowContinueCompleted;
 
-        public event EventHandler<FlowManagerEventArgs> FlowContinueExceptionThrown;
+        public event EventHandler<PipelineManagerEventArgs> FlowContinueExceptionThrown;
 
-        public event EventHandler<FlowManagerEventArgs> Validating;
+        public event EventHandler<PipelineManagerEventArgs> Validating;
 
-        public event EventHandler<FlowManagerEventArgs> ValidateCompleted;
+        public event EventHandler<PipelineManagerEventArgs> ValidateCompleted;
 
-        public event EventHandler<FlowManagerEventArgs> ValidateExceptionThrown;
+        public event EventHandler<PipelineManagerEventArgs> ValidateExceptionThrown;
 
         public IServiceProvider ServiceProvider { get; }
 
@@ -87,7 +87,7 @@ namespace Okta.Xamarin.Widget.Pipeline
         {
             try
             {
-                this.FlowStarting?.Invoke(this, new FlowManagerEventArgs
+                this.FlowStarting?.Invoke(this, new PipelineManagerEventArgs
                 {
                     FlowManager = this,
                 });
@@ -97,7 +97,7 @@ namespace Okta.Xamarin.Widget.Pipeline
 
                 IIdentityIntrospection form = await DataProvider.GetFormDataAsync(interaction.InteractionHandle);
 
-                this.FlowStartCompleted?.Invoke(this, new FlowManagerEventArgs
+                this.FlowStartCompleted?.Invoke(this, new PipelineManagerEventArgs
                 {
                     FlowManager = this,
                     Session = interaction,
@@ -108,7 +108,7 @@ namespace Okta.Xamarin.Widget.Pipeline
             }
             catch (Exception ex)
             {
-                this.FlowStartExceptionThrown?.Invoke(this, new FlowManagerEventArgs
+                this.FlowStartExceptionThrown?.Invoke(this, new PipelineManagerEventArgs
                 {
                     FlowManager = this,
                     Exception = ex,

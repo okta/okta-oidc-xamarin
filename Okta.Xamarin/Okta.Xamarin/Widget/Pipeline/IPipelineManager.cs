@@ -15,25 +15,25 @@ using Okta.Xamarin.Widget.Pipeline.View;
 
 namespace Okta.Xamarin.Widget.Pipeline
 {
-    public interface IFlowManager : IHasServiceProvider
+    public interface IPipelineManager : IHasServiceProvider
     {
-        event EventHandler<FlowManagerEventArgs> FlowStarting;
+        event EventHandler<PipelineManagerEventArgs> FlowStarting;
 
-        event EventHandler<FlowManagerEventArgs> FlowStartCompleted;
+        event EventHandler<PipelineManagerEventArgs> FlowStartCompleted;
 
-        event EventHandler<FlowManagerEventArgs> FlowStartExceptionThrown;
+        event EventHandler<PipelineManagerEventArgs> FlowStartExceptionThrown;
 
-        event EventHandler<FlowManagerEventArgs> FlowContinuing;
+        event EventHandler<PipelineManagerEventArgs> FlowContinuing;
 
-        event EventHandler<FlowManagerEventArgs> FlowContinueCompleted;
+        event EventHandler<PipelineManagerEventArgs> FlowContinueCompleted;
 
-        event EventHandler<FlowManagerEventArgs> FlowContinueExceptionThrown;
+        event EventHandler<PipelineManagerEventArgs> FlowContinueExceptionThrown;
 
-        event EventHandler<FlowManagerEventArgs> Validating;
+        event EventHandler<PipelineManagerEventArgs> Validating;
 
-        event EventHandler<FlowManagerEventArgs> ValidateCompleted;
+        event EventHandler<PipelineManagerEventArgs> ValidateCompleted;
 
-        event EventHandler<FlowManagerEventArgs> ValidateExceptionThrown;
+        event EventHandler<PipelineManagerEventArgs> ValidateExceptionThrown;
 
         IIdentityClient IdentityClient { get; }
 

@@ -16,7 +16,7 @@ namespace Okta.Xamarin.Widget.Test.Integration
         [Fact]
         public async Task GetFormOnStart()
         {
-            FlowManager flowManager = new FlowManager();
+            PipelineManager flowManager = new PipelineManager();
 
             IIdentityIntrospection form = await flowManager.StartAsync();
 

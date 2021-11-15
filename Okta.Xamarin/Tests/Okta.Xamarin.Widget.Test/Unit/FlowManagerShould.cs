@@ -37,7 +37,7 @@ namespace Okta.Xamarin.Widget.Test.Unit
             dataProvider.StartSessionAsync().Returns(testSession);
             serviceProvider.RegisterService(dataProvider);
 
-            FlowManager flowProvider = new FlowManager(serviceProvider);
+            PipelineManager flowProvider = new PipelineManager(serviceProvider);
             await flowProvider.StartAsync();
 
             await dataProvider.Received().StartSessionAsync();
@@ -62,7 +62,7 @@ namespace Okta.Xamarin.Widget.Test.Unit
             dataProvider.StartSessionAsync().Returns(testSession);
             serviceProvider.RegisterService(dataProvider);
 
-            FlowManager flowManager = new FlowManager(serviceProvider);
+            PipelineManager flowManager = new PipelineManager(serviceProvider);
             await flowManager.StartAsync();
 
             sessionProvider.Received().Set(testState, testSession.ToJson());
@@ -86,7 +86,7 @@ namespace Okta.Xamarin.Widget.Test.Unit
             serviceProvider.RegisterService(dataProvider);
 
             bool? eventFired = false;
-            FlowManager flowManager = new FlowManager(serviceProvider);
+            PipelineManager flowManager = new PipelineManager(serviceProvider);
             flowManager.FlowStarting += (sender, args) => eventFired = true;
             await flowManager.StartAsync();
 
@@ -111,7 +111,7 @@ namespace Okta.Xamarin.Widget.Test.Unit
             serviceProvider.RegisterService(dataProvider);
 
             bool? eventFired = false;
-            FlowManager flowManager = new FlowManager(serviceProvider);
+            PipelineManager flowManager = new PipelineManager(serviceProvider);
             flowManager.FlowStartCompleted += (sender, args) => eventFired = true;
             await flowManager.StartAsync();
 
@@ -136,8 +136,8 @@ namespace Okta.Xamarin.Widget.Test.Unit
             serviceProvider.RegisterService(dataProvider);
 
             bool? eventFired = false;
-            FlowManager flowManager = new FlowManager(serviceProvider);
-            flowManager.FlowStarting += (sender, args) => throw new Exception($"testing that the {nameof(FlowManager.FlowStartExceptionThrown)} event is fired");
+            PipelineManager flowManager = new PipelineManager(serviceProvider);
+            flowManager.FlowStarting += (sender, args) => throw new Exception($"testing that the {nameof(PipelineManager.FlowStartExceptionThrown)} event is fired");
             flowManager.FlowStartExceptionThrown += (sender, args) => eventFired = true;
             await flowManager.StartAsync();
 
