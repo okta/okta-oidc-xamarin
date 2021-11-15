@@ -14,6 +14,5 @@ namespace Okta.Xamarin.Droid.Identity
 {
 	public class AndroidIdentityClientConfiguration : IdentityClientConfiguration
 	{
-		public new const string DefaultRedirectUri = "com.okta.android.login:/callback";
 	}
 }
