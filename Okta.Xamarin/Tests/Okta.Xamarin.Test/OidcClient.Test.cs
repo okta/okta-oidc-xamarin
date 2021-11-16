@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 
 namespace Okta.Xamarin
 {
-    public class TestOidcClient  : OidcClient
+    public class TestOidcClient : OidcClient
     {
+        private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/{Assembly.GetExecutingAssembly().GetName().Version}");
+
         /// <summary>
         /// A hook that is called when launching the browser
         /// </summary>
@@ -128,6 +130,11 @@ namespace Okta.Xamarin
         public async Task CallExchangeCodeForTokenAsync(string code)
         {
             await ExchangeAuthCodeForTokenAsync(code);
+        }
+
+        protected override string GetUserAgent()
+        {
+            return userAgent.Value;
         }
     }
 }
