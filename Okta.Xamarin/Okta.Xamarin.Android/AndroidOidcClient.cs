@@ -5,11 +5,15 @@
 
 using Android.Content;
 using Android.Support.CustomTabs;
+using System;
+using System.Reflection;
 
 namespace Okta.Xamarin.Android
 {
 	public class AndroidOidcClient : OidcClient
 	{
+		private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/{Assembly.GetExecutingAssembly().GetName().Version}");
+
 		/// <summary>
 		/// Stores a reference to the current Android <see cref="Context"/>, for use in launching the browser for login
 		/// </summary>
@@ -44,6 +48,11 @@ namespace Okta.Xamarin.Android
 		protected override void CloseBrowser()
 		{
 			// not needed on Android
+		}
+
+		protected override string GetUserAgent()
+		{
+			return userAgent.Value;
 		}
 	}
 }
