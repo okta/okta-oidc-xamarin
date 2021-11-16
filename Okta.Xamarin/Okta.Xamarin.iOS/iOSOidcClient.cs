@@ -14,7 +14,7 @@ namespace Okta.Xamarin.iOS
 {
 	public class iOsOidcClient: OidcClient
 	{
-		private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/{Assembly.GetExecutingAssembly().GetName().Version}");
+		private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/iOS-{Assembly.GetExecutingAssembly().GetName().Version}");
 
 #pragma warning disable IDE1006 // Naming Styles
 		/// <summary>

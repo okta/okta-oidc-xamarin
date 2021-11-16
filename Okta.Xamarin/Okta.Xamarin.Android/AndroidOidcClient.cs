@@ -12,7 +12,7 @@ namespace Okta.Xamarin.Android
 {
 	public class AndroidOidcClient : OidcClient
 	{
-		private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/{Assembly.GetExecutingAssembly().GetName().Version}");
+		private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/Android-{Assembly.GetExecutingAssembly().GetName().Version}");
 
 		/// <summary>
 		/// Stores a reference to the current Android <see cref="Context"/>, for use in launching the browser for login

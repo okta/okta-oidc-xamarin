@@ -13,7 +13,7 @@ namespace Okta.Xamarin
 {
     public class TestOidcClient : OidcClient
     {
-        private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/{Assembly.GetExecutingAssembly().GetName().Version}");
+        private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/Test-{Assembly.GetExecutingAssembly().GetName().Version}");
 
         /// <summary>
         /// A hook that is called when launching the browser
