@@ -7,6 +7,7 @@ using Foundation;
 using SafariServices;
 using System;
 using UIKit;
+using Xamarin.Forms;
 
 namespace Okta.Xamarin.iOS
 {
@@ -57,9 +58,8 @@ namespace Okta.Xamarin.iOS
 		{
 			if (SafariViewController != null)
 			{
-				SafariViewController.DismissViewControllerAsync(false);
+				Device.BeginInvokeOnMainThread(() => SafariViewController.DismissViewControllerAsync(false));
 			}
-
 		}
 
 
