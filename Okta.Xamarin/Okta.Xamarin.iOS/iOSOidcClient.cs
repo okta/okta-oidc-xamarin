@@ -6,12 +6,16 @@
 using Foundation;
 using SafariServices;
 using System;
+using System.Reflection;
 using UIKit;
+using Xamarin.Forms;
 
 namespace Okta.Xamarin.iOS
 {
 	public class iOsOidcClient: OidcClient
 	{
+		private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/iOS-{Assembly.GetExecutingAssembly().GetName().Version}");
+
 #pragma warning disable IDE1006 // Naming Styles
 		/// <summary>
 		/// Stores a reference to the current iOS <see cref="UIKit.UIViewController"/>, for use in launching the browser for login
@@ -57,9 +61,8 @@ namespace Okta.Xamarin.iOS
 		{
 			if (SafariViewController != null)
 			{
-				SafariViewController.DismissViewControllerAsync(false);
+				Device.BeginInvokeOnMainThread(() => SafariViewController.DismissViewControllerAsync(false));
 			}
-
 		}
 
 
@@ -80,6 +83,11 @@ namespace Okta.Xamarin.iOS
 			}
 
 			return false;
+		}
+
+		protected override string GetUserAgent()
+		{
+			return userAgent.Value;
 		}
 	}
 }

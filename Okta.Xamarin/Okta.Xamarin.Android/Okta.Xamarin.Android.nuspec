@@ -2,13 +2,13 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Okta.Xamarin.Android</id>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <authors>Okta, Inc.</authors>
     <owners>Okta, Inc.</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://github.com/okta/okta-oidc-dotnet/blob/master/LICENSE.md</licenseUrl>
+    <license type="expression">Apache-2.0</license>
     <projectUrl>https://github.com/okta/okta-oidc-xamarin</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/okta/okta-sdk-dotnet/master/icon.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/okta/okta-oidc-xamarin/master/icon.png</iconUrl>
     <description>Official Okta OIDC SDK for Xamarin Android applications.</description>
     <releaseNotes></releaseNotes>
     <copyright>(c) 2021 Okta, Inc.</copyright>

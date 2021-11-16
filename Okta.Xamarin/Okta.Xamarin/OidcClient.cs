@@ -122,6 +122,8 @@ namespace Okta.Xamarin
 
         protected abstract void CloseBrowser();
 
+		protected abstract string GetUserAgent();
+
         /// <summary>
         /// This method will end the user's Okta session in the browser.
         /// </summary>
@@ -368,7 +370,7 @@ namespace Okta.Xamarin
         {
             HttpRequestMessage requestMessage = new HttpRequestMessage(method, path);
             requestMessage.Headers.Add("Accept", "application/json");
-            requestMessage.Headers.Add("User-Agent", OktaXamarinUserAgent.Value);
+            requestMessage.Headers.Add("User-Agent", this.GetUserAgent());
             foreach (string key in headers.Keys)
             {
                 requestMessage.Headers.Add(key, headers[key]);
