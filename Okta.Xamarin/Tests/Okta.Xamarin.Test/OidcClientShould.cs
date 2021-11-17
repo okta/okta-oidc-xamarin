@@ -141,14 +141,18 @@ namespace Okta.Xamarin.Test
             OktaStateManager stateWithNoToken = new OktaStateManager(null, "test");
             Assert.False(stateWithNoToken.IsAuthenticated);
 
-            OktaStateManager stateWithTokenAndExpInPast = new OktaStateManager("test", "test", null, null, -100);
-            Assert.False(stateWithTokenAndExpInPast.IsAuthenticated);
-
             OktaStateManager stateWithNoExp = new OktaStateManager("test", "test");
             Assert.True(stateWithNoExp.IsAuthenticated);
+        }
+
+        [Fact]
+        public void CorrectlySetIsAccessTokenExpired()
+        {
+            OktaStateManager stateWithTokenAndExpInPast = new OktaStateManager("test", "test", null, null, -100);
+            Assert.True(stateWithTokenAndExpInPast.IsAccessTokenExpired);
 
             OktaStateManager stateWithExpInFuture = new OktaStateManager("test", "test", null, null, 100);
-            Assert.True(stateWithExpInFuture.IsAuthenticated);
+            Assert.False(stateWithExpInFuture.IsAccessTokenExpired);
         }
 
         [Fact]

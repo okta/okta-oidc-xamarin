@@ -78,9 +78,14 @@ namespace Okta.Xamarin
         string IdToken { get; }
 
         /// <summary>
-        /// Gets a value indicating whether or not there is a current non-expired <see cref="AccessToken"/>, which means that the user is authenticated.
+        /// Gets a value indicating whether or not there is an <see cref="AccessToken"/>.
         /// </summary>
         bool IsAuthenticated { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the value of the <see cref="Expires"/> property is in the past.
+        /// </summary>
+        bool IsAccessTokenExpired { get; }
 
         /// <summary>
         /// Gets the last response received from the API. Primarily for debugging.
