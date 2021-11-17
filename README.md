@@ -347,6 +347,20 @@ To receive a refresh token along with id and access tokens do the following:
         - Type = `String`
         - Value = `openid profile offline_access`
 
+## Secure Storage
+
+Okta Xamarin Sdk provides convenience methods to store authentication state in platform specific secure storage.  To enable secure storage do the following:
+
+- Android:
+  - To use secure storage on Android no special setup is required.
+- iOS
+  - To use secure storage on iOS you must enable keychain:
+    - Using Visual Studio open the file `Entitlements.plist` file found in the root of your Xamarin iOS project.
+    - Select `Keychain` in the list of Entitlements
+    - Check the box labeled `Enable Keychain`
+
+See also, [SaveStateAsync](#savestateasync), [LoadStateAsync](#loadstateasync), [LoadStateStarted event](#loadstatestarted-event), [LoadStateCompleted event](#loadstatecompleted-event) and [LoadStateException event](#loadstateexception-event).
+
 ## API Reference
 
 ### OktaContext.Current
@@ -582,7 +596,7 @@ OktaContext.AddLoadStateStartedListener((sender, secureStorageEventArgs) =>
 })
 ```
 
-### LoadStateCompleted event
+#### LoadStateCompleted event
 The `OktaContext.Current.LoadStateCompleted` event is raised after state is loaded.  To execute code when the `LoadStateCompleted` event is raised, add an event handler to the `OktaContext.Current.LoadStateCompleted` event.
 
 ```csharp
@@ -603,7 +617,7 @@ OktaContext.AddLoadStateCompletedListener((sender, secureStorageEventArgs) =>
 })
 ```
 
-### LoadStateException event
+#### LoadStateException event
 The `OktaContext.Current.LoadStateException` event is raised when an exception occurs when loading state.  To execute code when the `LoadStateException` event is raised, add an event handler to the `OktaContext.Current.LoadStateException` event.
 
 ```csharp
@@ -646,7 +660,7 @@ OktaContext.AddSecureStorageWriteStartedListener((sender, secureStorageEventArgs
 })
 ```
 
-### SecureStorageWriteCompleted event
+#### SecureStorageWriteCompleted event
 The `OktaContext.Current.SecureStorageWriteCompleted` event is raised after data is written to secure storage.  To execute code when the `SecureStorageWriteCompleted` event is raised, add an event handler to the `OktaContext.Current.SecureStorageWriteCompleted` event.
 
 ```csharp
@@ -667,7 +681,7 @@ OktaContext.AddSecureStorageWriteCompletedListener((sender, secureStorageEventAr
 })
 ```
 
-### SecureStorageWriteException event
+#### SecureStorageWriteException event
 The `OktaContext.Current.SecureStorageWriteException` event is raised when an exception occurs writing to secure storage.  To execute code when the `SecureStorageWriteException` event is raised, add an event handler to the `OktaContext.Current.SecureStorageWriteException` event.
 
 ```csharp
@@ -710,7 +724,7 @@ OktaContext.AddSecureStorageReadStartedListener((sender, secureStorageEventArgs)
 })
 ```
 
-### SecureStorageReadCompleted event
+#### SecureStorageReadCompleted event
 The `OktaContext.Current.SecureStorageReadCompleted` event is raised after data is read from secure storage.  To execute code when the `SecureStorageReadCompleted` event is raised, add an event handler to the `OktaContext.Current.SecureStorageReadCompleted` event.
 
 ```csharp
@@ -731,7 +745,7 @@ OktaContext.AddSecureStorageReadCompletedListener((sender, secureStorageEventArg
 })
 ```
 
-### SecureStorageReadException event
+#### SecureStorageReadException event
 The `OktaContext.Current.SecureStorageReadException` event is raised when an exception occurs reading from secure storage.  To execute code when the `SecureStorageReadException` event is raised, add an event handler to the `OktaContext.Current.SecureStorageReadException` event.
 
 ```csharp
@@ -980,7 +994,7 @@ OktaContext.AddRenewExceptionListener((sender, renewExceptionEventArgs =>
 }))
 ```
 
-#### Accessing Tokens Using OktaStateManager class
+### Accessing Tokens Using OktaStateManager class
 
 After authentication completes, use `OktaContext.Current.StateManager` to access tokens for the current authenticated Okta session.
 
