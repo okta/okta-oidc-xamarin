@@ -118,8 +118,17 @@ namespace Okta.Xamarin
         {
             get
             {
-                return !string.IsNullOrEmpty(this.AccessToken) && // there is an access token
-                                (this.Expires == default(DateTimeOffset) || this.Expires > DateTime.UtcNow);    // and it's not yet expired
+                return !string.IsNullOrEmpty(this.AccessToken); // there is an access token
+            }
+        }
+
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public bool IsAccessTokenExpired
+        {
+            get
+            {
+                return this.Expires == default(DateTimeOffset) || this.Expires < DateTime.UtcNow;
             }
         }
 
