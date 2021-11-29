@@ -15,7 +15,7 @@
     <tags>okta token authentication authorization oauth sso oidc</tags>
     <repository type="Git" url="https://github.com/okta/okta-oidc-xamarin.git" />
     <dependencies>
-      <dependency id="Okta.Xamarin" version="3.0.0" />
+      <dependency id="Okta.Xamarin" version="3.0.1" />
       <dependency id="System.Net.Http" version="4.3.4" />
       <dependency id="Xamarin.Essentials" version="1.6.1" />
       <dependency id="Xamarin.Forms" version="5.0.0.2012" />
