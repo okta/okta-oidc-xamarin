@@ -7,7 +7,7 @@
 
 using Foundation;
 using Okta.Xamarin.Services;
-using Okta.Xamarin.TinyIoC;
+using Okta.Xamarin.Ioc;
 using UIKit;
 
 namespace Okta.Xamarin.iOS

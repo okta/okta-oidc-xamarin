@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Okta.Xamarin.Services;
-using Okta.Xamarin.TinyIoC;
+using Okta.Xamarin.Ioc;
 
 namespace Okta.Xamarin
 {

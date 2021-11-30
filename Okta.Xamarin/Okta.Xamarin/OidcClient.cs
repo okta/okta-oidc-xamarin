@@ -300,6 +300,7 @@ namespace Okta.Xamarin
             string responseBody = string.Empty;
             try
             {
+                authorizationServerId = authorizationServerId ?? this.Config.AuthorizationServerId ?? "default";
                 FormUrlEncodedContent content = null;
                 if ((bool)formUrlEncodedContent?.Any())
                 {

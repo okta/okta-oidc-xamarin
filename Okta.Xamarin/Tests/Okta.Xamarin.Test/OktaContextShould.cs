@@ -378,7 +378,7 @@ namespace Okta.Xamarin.Test
             OktaContext.Current.InitServicesStarted += (sender, args) => initServicesStartedRaised = true;
             OktaContext.Current.InitServicesCompleted += (sender, args) => initServicesCompletedRaised = true;
 
-            TinyIoC.TinyIoCContainer container = new TinyIoC.TinyIoCContainer();
+            Ioc.TinyIoCContainer container = new Ioc.TinyIoCContainer();
             container.Register(Substitute.For<IOidcClient>());
             container.Register(Substitute.For<SecureKeyValueStore>());
             OktaContext.Current.InitServices(container);
@@ -402,7 +402,7 @@ namespace Okta.Xamarin.Test
             };
             OktaContext.Current.InitServicesException += (sender, args) => initServicesExceptionRaised = true;
 
-            TinyIoC.TinyIoCContainer container = new TinyIoC.TinyIoCContainer();
+            Ioc.TinyIoCContainer container = new Ioc.TinyIoCContainer();
             container.Register(Substitute.For<IOidcClient>());
             container.Register(Substitute.For<SecureKeyValueStore>());
             OktaContext.Current.InitServices(container);

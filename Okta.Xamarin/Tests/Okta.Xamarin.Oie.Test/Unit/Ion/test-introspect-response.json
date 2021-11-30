@@ -1,0 +1,142 @@
+{
+    "version": "1.0.0",
+    "stateHandle": "02QLEpXHK6sv0dU1G5zDCdV27wcYQLmuHWCtdFxmgl",
+    "expiresAt": "2021-10-14T17:53:03.000Z",
+    "intent": "LOGIN",
+    "remediation": {
+        "type": "array",
+        "value": [
+            {
+                "rel": [
+                    "create-form"
+                ],
+                "name": "identify",
+                "href": "https://dotnet-idx-sdk.okta.com/idp/idx/identify",
+                "method": "POST",
+                "produces": "application/ion+json; okta-version=1.0.0",
+                "value": [
+                    {
+                        "name": "identifier",
+                        "label": "Username"
+                    },
+                    {
+                        "name": "credentials",
+                        "type": "object",
+                        "form": {
+                            "value": [
+                                {
+                                    "name": "passcode",
+                                    "label": "Password",
+                                    "secret": true
+                                }
+                            ]
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "rememberMe",
+                        "type": "boolean",
+                        "label": "Remember this device"
+                    },
+                    {
+                        "name": "stateHandle",
+                        "required": true,
+                        "value": "02QLEpXHK6sv0dU1G5zDCdV27wcYQLmuHWCtdFxmgl",
+                        "visible": false,
+                        "mutable": false
+                    }
+                ],
+                "accepts": "application/json; okta-version=1.0.0"
+            },
+            {
+                "rel": [
+                    "create-form"
+                ],
+                "name": "select-enroll-profile",
+                "href": "https://dotnet-idx-sdk.okta.com/idp/idx/enroll",
+                "method": "POST",
+                "produces": "application/ion+json; okta-version=1.0.0",
+                "value": [
+                    {
+                        "name": "stateHandle",
+                        "required": true,
+                        "value": "02QLEpXHK6sv0dU1G5zDCdV27wcYQLmuHWCtdFxmgl",
+                        "visible": false,
+                        "mutable": false
+                    }
+                ],
+                "accepts": "application/json; okta-version=1.0.0"
+            },
+            {
+                "name": "redirect-idp",
+                "type": "OIDC",
+                "idp": {
+                    "id": "0oa1dj4dgsD1Kcs3d5d7",
+                    "name": "Okta IdP"
+                },
+                "href": "https://dotnet-idx-sdk.okta.com/oauth2/austyqkbjaFoOxkl45d6/v1/authorize?client_id=0oatzfskmLm4faAaQ5d6&request_uri=urn:okta:bUw4N3MwMklBc2VoTGlUU0tiWlBBa2xoYW9rUU1Ubk9nMHFqRzdGT19qczowb2ExZGo0ZGdzRDFLY3MzZDVkNw",
+                "method": "GET"
+            }
+        ]
+    },
+    "currentAuthenticator": {
+        "type": "object",
+        "value": {
+            "recover": {
+                "rel": [
+                    "create-form"
+                ],
+                "name": "recover",
+                "href": "https://dotnet-idx-sdk.okta.com/idp/idx/recover",
+                "method": "POST",
+                "produces": "application/ion+json; okta-version=1.0.0",
+                "value": [
+                    {
+                        "name": "stateHandle",
+                        "required": true,
+                        "value": "02QLEpXHK6sv0dU1G5zDCdV27wcYQLmuHWCtdFxmgl",
+                        "visible": false,
+                        "mutable": false
+                    }
+                ],
+                "accepts": "application/json; okta-version=1.0.0"
+            },
+            "type": "password",
+            "key": "okta_password",
+            "id": "auttzfsi2fKQlZVl15d6",
+            "displayName": "Password",
+            "methods": [
+                {
+                    "type": "password"
+                }
+            ]
+        }
+    },
+    "cancel": {
+        "rel": [
+            "create-form"
+        ],
+        "name": "cancel",
+        "href": "https://dotnet-idx-sdk.okta.com/idp/idx/cancel",
+        "method": "POST",
+        "produces": "application/ion+json; okta-version=1.0.0",
+        "value": [
+            {
+                "name": "stateHandle",
+                "required": true,
+                "value": "02QLEpXHK6sv0dU1G5zDCdV27wcYQLmuHWCtdFxmgl",
+                "visible": false,
+                "mutable": false
+            }
+        ],
+        "accepts": "application/json; okta-version=1.0.0"
+    },
+    "app": {
+        "type": "object",
+        "value": {
+            "name": "oidc_client",
+            "label": "Dotnet IDX Web App",
+            "id": "0oatzfskmLm4faAaQ5d6"
+        }
+    }
+}

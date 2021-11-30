@@ -88,6 +88,8 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Identity\AndroidIdentityClientConfiguration.cs" />
+    <Compile Include="Identity\AndroidIdentityClientConfigurationProvider.cs" />
     <Compile Include="OktaLogoutCallbackInterceptorActivity.cs" />
     <Compile Include="OktaMainActivity.cs" />
     <Compile Include="AndroidOidcClient.cs" />

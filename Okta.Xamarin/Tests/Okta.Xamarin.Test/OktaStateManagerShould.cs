@@ -125,7 +125,7 @@ namespace Okta.Xamarin.Test
         {
             string testAccessToken = "test access token";
             IOidcClient mockClient = Substitute.For<IOidcClient>();
-            OktaStateManager oktaStateManager = new OktaStateManager { Client = mockClient, AccessToken = testAccessToken };
+            OktaStateManager oktaStateManager = new OktaStateManager(testAccessToken, "test token type") { Client = mockClient };
 
             oktaStateManager.RevokeAsync(TokenKind.AccessToken).Wait();
 
@@ -137,44 +137,44 @@ namespace Okta.Xamarin.Test
         {
             string testRefreshToken = "test refresh token";
             IOidcClient mockClient = Substitute.For<IOidcClient>();
-            OktaStateManager oktaStateManager = new OktaStateManager { Client = mockClient, RefreshToken = testRefreshToken };
+            OktaStateManager oktaStateManager = new OktaStateManager("test access token", "test token type", "test id token", testRefreshToken) { Client = mockClient };
 
             oktaStateManager.RevokeAsync(TokenKind.RefreshToken).Wait();
 
             mockClient.Received().RevokeRefreshTokenAsync(testRefreshToken);
         }
 
-		[Fact]
-		public void GetAccessToken()
-		{
-			string testAccessToken = "this is a test access token";
-			OktaStateManager oktaStateManager = new OktaStateManager { AccessToken = testAccessToken };
+        [Fact]
+        public void GetAccessToken()
+        {
+            string testAccessToken = "this is a test access token";
+            OktaStateManager oktaStateManager = new OktaStateManager { AccessToken = testAccessToken };
 
-			string retrieved = oktaStateManager.GetAccessToken();
+            string retrieved = oktaStateManager.GetAccessToken();
 
-			retrieved.Should().BeEquivalentTo(testAccessToken);
-		}
+            retrieved.Should().BeEquivalentTo(testAccessToken);
+        }
 
-		[Fact]
-		public void GetRefreshToken()
-		{
-			string testRefreshToken = "this is a test refresh token";
-			OktaStateManager oktaStateManager = new OktaStateManager { RefreshToken = testRefreshToken };
+        [Fact]
+        public void GetRefreshToken()
+        {
+            string testRefreshToken = "this is a test refresh token";
+            OktaStateManager oktaStateManager = new OktaStateManager { RefreshToken = testRefreshToken };
 
-			string retrieved = oktaStateManager.GetRefreshToken();
+            string retrieved = oktaStateManager.GetRefreshToken();
 
-			retrieved.Should().BeEquivalentTo(testRefreshToken);
-		}
+            retrieved.Should().BeEquivalentTo(testRefreshToken);
+        }
 
-		[Fact]
-		public void GetIdToken()
-		{
-			string testIdToken = "this is a test id token";
-			OktaStateManager oktaStateManager = new OktaStateManager { RefreshToken = testIdToken };
+        [Fact]
+        public void GetIdToken()
+        {
+            string testIdToken = "this is a test id token";
+            OktaStateManager oktaStateManager = new OktaStateManager { RefreshToken = testIdToken };
 
-			string retrieved = oktaStateManager.GetRefreshToken();
+            string retrieved = oktaStateManager.GetRefreshToken();
 
-			retrieved.Should().BeEquivalentTo(testIdToken);
-		}
-	}
+            retrieved.Should().BeEquivalentTo(testIdToken);
+        }
+    }
 }
