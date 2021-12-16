@@ -1,39 +1,84 @@
----
-name: Bug report
-about: Report a bug
+name: Bug Report
+description: Report a bug you encountered with the Okta Xamarin SDK
+labels: [ bug ]
+body:
+  - type: textarea
+    id: problemDescription
+    attributes:
+      label: Describe the bug?
+      description: |
+        Please be as detailed as possible. This will help us address the bug in a timely manner.
+    validations:
+      required: true
 
----
-<!-- 
-Before creating an issue or submitting a PR, please check that your issue is not already fixed in the latest stable version and that a similar issue or PR is not reported already (also check closed issues).
--->
+  - type: textarea
+    id: expectedBehavior
+    attributes:
+      label: What is expected to happen?
+    validations:
+      required: true
 
-<!--
-Please help us process GitHub Issues faster by providing the following information.
+  - type: textarea
+    id: actualBehavior
+    attributes:
+      label: What is the actual behavior?
+    validations:
+      required: true
 
-Note: If you have a question about your entire application or use case, please post it on the Okta Developer Forum (https://devforum.okta.com) instead. For urgent issues contact support@okta.com. Issues in this repository are reserved for bug reports and feature requests.
--->
+  - type: textarea
+    id: reproductionSteps
+    attributes:
+      label: Reproduction Steps?
+      description: |
+        Please provide as much detail as possible to help us reproduce the behavior.
+        If possible please provide a link to a public repository containing a project or solution that reproduces the behavior.
+    validations:
+      required: true
 
-## Current behavior
-<!-- Describe how the issue manifests. -->
+  - type: textarea
+    id: additionalInformation
+    attributes:
+      label: Additional Information?
 
+  - type: textarea
+    id: dotnetVersion
+    attributes:
+      label: Dotnet Information
+      description: |
+        ```powershell
+        PS C:\> dotnet --info
+        # paste output here
+        ```
+    validations:
+      required: true
 
-## Expected behavior
-<!-- Describe what the desired behavior would be. -->
+  - type: textarea
+    id: sdkVersion
+    attributes:
+      label: SDK Version
+      description: |
+        ```powershell
+        # replace the path with the appropriate path to the Okta.Xamarin.dll on your system
+        PS C:\> [System.Reflection.Assembly]::LoadFrom("C:\Okta.Xamarin.dll").GetName().Version
+        # paste output here
+        ```
+    validations:
+      required: true
 
+  - type: textarea
+    id: osVersion
+    attributes:
+      label: OS version
+      description: |
+        ```console
+        # On Linux:
+        $ cat /etc/os-release
 
-## Minimal reproduction of the problem with instructions
-<!--
-For bug reports please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem.
-You could use one of our sample applications to build a reproduction demo: https://github.com/okta?q=samples-aspnet
--->
+        # On Mac:
+        $ uname -a
 
-
-## Environment
-
-- OS:
-- Browser: 
-<!-- if applicable, specify browser name and version -->
-- .Net Framework: 
-<!-- i.e., .Net Core 3.1 -->
-- Other:
-<!-- Provide any other relevant environment details, if applicable. -->
+        # On Windows:
+        C:\> wmic os get Caption, Version, BuildNumber, OSArchitecture
+        
+        # paste output here
+        ```
