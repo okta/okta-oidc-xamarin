@@ -1,6 +1,12 @@
 # Changelog
 Running changelog of releases since `1.0.0-beta01`
 
+## v3.0.1
+
+## Fixes
+
+- Use scope from configuration on OidcClient.RenewAsync.
+
 ## v3.0.0
 
 Update/correct handling of authorization server Id.  Conveniences added and internal structure changes made to support future additions and extensions.
