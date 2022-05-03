@@ -3,6 +3,7 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -518,6 +519,38 @@ namespace Okta.Xamarin.Test
             testOidcClient.CallExchangeCodeForTokenAsync("test code").Wait();
             Assert.True(requestReceived);
             Assert.True(eventWasRaised);
+        }
+
+        [Fact]
+        public void UseScopeFromConfigOnRenew()
+        {
+            string testClientId = "test client id";
+            string guid = System.Guid.NewGuid().ToString();
+            string testScope = $"test scope {guid}";
+            RenewResponse testRenewResponse = new RenewResponse { Scope = testScope };
+
+            OktaConfig testConfig = new OktaConfig
+            {
+                OktaDomain = "https://fake.cxm/",
+                RedirectUri = "https://fake.cxm/redirect",
+                PostLogoutRedirectUri = "https://fake.cxm/logoutRedirect",
+                ClientId = testClientId,
+                Scope = testScope,
+            };
+
+            bool? requestReceived = false;
+            HttpMessageHandlerMock mockHttpMessageHandler = new HttpMessageHandlerMock();
+            mockHttpMessageHandler.GetTestResponse = (request, cancellationToken) =>
+            {
+                string content = request.Content.ReadAsStringAsync().Result;
+                Assert.True(content.Equals($"grant_type=refresh_token&redirect_uri=https%3A%2F%2Ffake.cxm%2Fredirect&scope=test+scope+{guid}&refresh_token=test+refresh+token"));
+                requestReceived = true;
+                return new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.OK, Content = new StringContent(JsonConvert.SerializeObject(testRenewResponse)) };
+            };
+            TestOidcClient testOidcClient = new TestOidcClient(testConfig);
+            testOidcClient.SetMockHttpMessageHandler(mockHttpMessageHandler);
+            testOidcClient.RenewAsync<RenewResponse>("test refresh token").Wait();
+            Assert.True(requestReceived);
         }
     }
 }
