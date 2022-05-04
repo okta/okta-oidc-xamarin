@@ -1,11 +1,22 @@
 # Changelog
 Running changelog of releases since `1.0.0-beta01`
 
-## v3.0.1
+## v3.0.2
 
-## Fixes
+### Fixes
 
 - Use scope from configuration on OidcClient.RenewAsync.
+
+##v3.0.1
+
+### Fixes
+
+- iOS - Ensure CloseBrowser is called on main thread on SignOutComplete
+- OktaStateManager.IsAuthenticated - only checks for presence of AccessToken
+- OktaStateManager.IsAccessTokenExpired - added
+
+### New Contributors
+* @kensykora made their first contribution in https://github.com/okta/okta-oidc-xamarin/pull/73
 
 ## v3.0.0
 
