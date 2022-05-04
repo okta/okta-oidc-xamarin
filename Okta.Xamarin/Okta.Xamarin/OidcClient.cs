@@ -240,7 +240,7 @@ namespace Okta.Xamarin
         /// </summary>
         /// <typeparam name="T">The type to deserialize the response as.</typeparam>
         /// <param name="refreshToken">The refresh token</param>
-        /// <param name="refreshIdToken">A value indicating whether the id token should be refreshed.</param>
+        /// <param name="refreshIdToken">A value indicating whether the id token should be refreshed.  Argument is ignored if Config.Scope is defined.</param>
         /// <param name="authorizationServerId">The authorization server id.</param>
         /// <returns>T.</returns>
         public async Task<T> RenewAsync<T>(string refreshToken, bool refreshIdToken = false)
@@ -252,10 +252,14 @@ namespace Okta.Xamarin
         protected async Task<string> GetRenewJsonAsync(string refreshToken, bool refreshIdToken = false)
         {
             // for details see: https://developer.okta.com/docs/guides/refresh-tokens/use-refresh-token/
-            string scope = "offline_access";
-            if (refreshIdToken)
+            string scope = this.Config.Scope;
+            if (string.IsNullOrEmpty(scope))
             {
-                scope += " openid";
+                scope = "offline_access";
+                if (refreshIdToken)
+                {
+                    scope += " openid";
+                }
             }
 
             return await PerformAuthorizationServerRequestAsync(HttpMethod.Post, $"/token?client_id={Config.ClientId}", new Dictionary<string, string>(), new Dictionary<string, string>()
