@@ -5,18 +5,57 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+  build-nuget-packages:
+    macos:
+      xcode: 13.3.1
     steps:
       - checkout
+      - run: 
+          name: Create artifacts directory
+          command: mkdir -p ./artifacts
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Install Dotnet Sdk
+          command: brew install --cask dotnet-sdk
+      - run:
+          name: Install Xamarin
+          command: brew install --cask xamarin-mac
+      - run: 
+          name: Nuget restore
+          command: |
+            nuget restore ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj &&
+            nuget restore ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj &&
+            nuget restore ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj &&
+            nuget restore ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
+      - run:
+          name: Run Unit Tests
+          command: dotnet test ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
+      - run:
+          name: Build Okta.Xamarin nuget package
+          command: nuget pack ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj -Build
+      - run:
+          name: Build Okta.Xamarin.iOS nuget package
+          command: nuget pack ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj -Build
+      - run:
+          name: Build Okta.Xamarin.Android nuget package
+          command: nuget pack ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj -Build
+      - run:
+          name: Copy nuget artifacts
+          command: mv *.nupkg `pwd`/artifacts
+
+      
+  
+  #say-hello:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    #docker:
+      #- image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    #steps:
+      #- checkout
+      #- run:
+          #name: "Say hello"
+          #command: "echo Hello, World!"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
