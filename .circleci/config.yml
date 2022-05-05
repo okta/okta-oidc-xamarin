@@ -36,11 +36,11 @@ jobs:
           name: Build Okta.Xamarin nuget package
           command: nuget pack ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj -Build
       - run:
-          name: Build Okta.Xamarin.iOS nuget package
-          command: nuget pack ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj -Build
-      - run:
           name: Build Okta.Xamarin.Android nuget package
           command: nuget pack ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj -Build
+      - run:
+          name: Build Okta.Xamarin.iOS nuget package
+          command: nuget pack ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj -Build
       - run:
           name: Copy nuget artifacts
           command: mv *.nupkg `pwd`/artifacts
