@@ -41,6 +41,9 @@ jobs:
       - run:
           name: Copy nuget artifacts
           command: mv *.nupkg `pwd`/artifacts
+      - store_artifacts:
+          path: ./artifacts
+          destination: OKta.Xamarin-ARTIFACTS
 
       
   
