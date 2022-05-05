@@ -17,6 +17,9 @@ jobs:
           name: Install Dotnet Sdk
           command: brew install --cask dotnet-sdk
       - run:
+          name: Install Dotnet Mono
+          command: brew install mono
+      - run:
           name: Install Xamarin
           command: brew install --cask xamarin-mac
       - run: 
