@@ -21,7 +21,7 @@ jobs:
           command: curl https://download.mono-project.com/archive/6.12.0/macos-10-universal/MonoFramework-MDK-6.12.0.122.macos10.xamarin.universal.pkg --output MonoFramework-MDK-6.12.0.122.macos10.xamarin.universal.pkg
       - run: 
           name: Install Mono
-          command: sudo installer -pkg ./MonoFramework-MDK-6.12.0.122.macos10.xamarin.universal.pkg
+          command: sudo installer -pkg ./MonoFramework-MDK-6.12.0.122.macos10.xamarin.universal.pkg -target /Library/Frameworks/Mono.framework/
       - run:
           name: Install Xamarin
           command: brew install --cask xamarin-mac
