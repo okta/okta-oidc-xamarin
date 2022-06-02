@@ -93,6 +93,7 @@
     <Compile Include="AndroidOidcClient.cs" />
     <Compile Include="AndroidOktaConfig.cs" />
     <Compile Include="OktaLoginCallbackInterceptorActivity.cs" />
+    <Compile Include="OktaPlatform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

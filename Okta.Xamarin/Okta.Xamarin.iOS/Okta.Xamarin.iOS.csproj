@@ -84,6 +84,7 @@
     <Compile Include="iOSOidcClient.cs" />
     <Compile Include="OktaAppDelegate.cs" />
     <Compile Include="iOSOktaConfig.cs" />
+    <Compile Include="OktaPlatform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

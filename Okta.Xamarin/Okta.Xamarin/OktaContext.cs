@@ -472,14 +472,24 @@ namespace Okta.Xamarin
         }
 
         /// <summary>
-        /// Register default implementations of Okta services into the specified container.
+        /// Register default implementations of Okta services into the specified container.  Assigns the container to OktaContext.Current.
         /// </summary>
         /// <param name="container">The container.</param>
         public static void RegisterOktaDefaults(TinyIoCContainer container)
         {
+            RegisterOktaDefaults(container, Current);
+        }
+
+        /// <summary>
+        /// Register default implementations of Okta services into the specified container.  Assigns the container to the specified context.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        /// <param name="oktaContext">The context.</param>
+        public static void RegisterOktaDefaults(TinyIoCContainer container, OktaContext oktaContext)
+        {
             // additional future service registrations go here
             container.Register<SecureKeyValueStore, OktaSecureKeyValueStore>();
-            Current.IoCContainer = container;
+            oktaContext.IoCContainer = container;
         }
 
         /// <summary>
