@@ -11,6 +11,7 @@ using Android.OS;
 
 namespace Okta.Xamarin.Android
 {
+	[Obsolete("Use OktaPlatform.HandleCallback() instead.")]
 	[Activity(Label = "OktaLogoutCallbackInterceptorActivity", NoHistory = true, LaunchMode = LaunchMode.SingleInstance)]
 	public class OktaLogoutCallbackInterceptorActivity<TMain> : Activity
 	{

@@ -9,9 +9,11 @@ using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
 using Okta.Xamarin.TinyIoC;
+using System;
 
 namespace Okta.Xamarin.Android
 {
+	[Obsolete("Use OktaPlatform.InitAsync() instead.")]
 	[Activity(Label = "Okta.Xamarin")]
 	public class OktaMainActivity<TApp> : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity where TApp : global::Xamarin.Forms.Application, new()
 	{
