@@ -4,10 +4,9 @@
 // </copyright>
 
 
-
 using Foundation;
-using Okta.Xamarin.Services;
 using Okta.Xamarin.TinyIoC;
+using System;
 using UIKit;
 
 namespace Okta.Xamarin.iOS
@@ -16,6 +15,7 @@ namespace Okta.Xamarin.iOS
 	/// Okta specific app delegate that loads an instance of the specified generic application type TApp and initializes OktaContext when finished launching.
 	/// </summary>
 	/// <typeparam name="TApp"></typeparam>
+	[Obsolete("Use OktaPlatform.InitAsync() instead.")]
 	public class OktaAppDelegate<TApp> : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate where TApp: global::Xamarin.Forms.Application, new()
 	{
 		public OktaAppDelegate()
@@ -133,6 +133,7 @@ namespace Okta.Xamarin.iOS
 	/// <summary>
 	/// Okta specific app delegate that initializes OktaContext when finished launching.
 	/// </summary>
+	[Obsolete("Use OktaPlatform.InitAsync() instead.")]
 	public class OktaAppDelegate: global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate // The use case is not clear for this class, should deprecate in a later release.  
 	{        
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F296D02-8540-4D13-A8CA-F5EC57EFCD40}"
 	ProjectSection(SolutionItems) = preProject
@@ -40,11 +40,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Okta.Xamarin.Demo", "Samples\xamarin\Okta.Xamarin.Demo\Okta.Xamarin.Demo.csproj", "{D82B6C59-231E-4D06-97C0-38CF6CAE0540}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Tests\Okta.Xamarin.UITest.Shared\Okta.Xamarin.UITest.Shared.projitems*{353226ea-cfb4-4cc1-bbf7-046f22c81838}*SharedItemsImports = 4
-		Tests\Okta.Xamarin.UITest.Shared\Okta.Xamarin.UITest.Shared.projitems*{b1b20cde-b8d7-4303-bec5-867e29d19f70}*SharedItemsImports = 13
-		Tests\Okta.Xamarin.UITest.Shared\Okta.Xamarin.UITest.Shared.projitems*{d4f16703-5abb-48d0-a2ed-9043f32850f6}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Android = Debug|Android
 		Debug|Any CPU = Debug|Any CPU
@@ -228,5 +223,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8D258CC3-33D9-4055-9627-BB4B404A2682}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tests\Okta.Xamarin.UITest.Shared\Okta.Xamarin.UITest.Shared.projitems*{353226ea-cfb4-4cc1-bbf7-046f22c81838}*SharedItemsImports = 4
+		Tests\Okta.Xamarin.UITest.Shared\Okta.Xamarin.UITest.Shared.projitems*{b1b20cde-b8d7-4303-bec5-867e29d19f70}*SharedItemsImports = 13
+		Tests\Okta.Xamarin.UITest.Shared\Okta.Xamarin.UITest.Shared.projitems*{d4f16703-5abb-48d0-a2ed-9043f32850f6}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
