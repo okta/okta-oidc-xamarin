@@ -7,7 +7,6 @@ using Foundation;
 using SafariServices;
 using System;
 using System.Reflection;
-using System.Security.Policy;
 using UIKit;
 using Xamarin.Forms;
 
