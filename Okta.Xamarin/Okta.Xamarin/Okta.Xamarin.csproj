@@ -5,7 +5,7 @@
     <Company>Okta</Company>
     <Authors>Okta, Inc.</Authors>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>3.0.2</Version>
+    <Version>3.1.1</Version>
     <PackageTags>okta,token,authentication,authorization</PackageTags>
     <RepositoryUrl>https://github.com/okta/okta-oidc-xamarin/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/okta/okta-oidc-xamarin/</PackageProjectUrl>
