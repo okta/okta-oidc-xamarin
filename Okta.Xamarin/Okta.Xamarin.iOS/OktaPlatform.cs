@@ -4,6 +4,7 @@
 // </copyright>
 
 using Foundation;
+using System;
 using System.Threading.Tasks;
 using UIKit;
 
@@ -17,11 +18,23 @@ namespace Okta.Xamarin.iOS
 			return iOsOidcClient.IsOktaCallback(application, url, sourceApplication, annotation);
 		}
 
+		public static async Task<OktaContext> InitAsync(UIWindow iOSWindow)
+		{
+			return await InitAsync(iOSWindow, iOsOktaConfig.LoadFromPList("OktaConfig.plist"));
+		}
+
+		public static async Task<OktaContext> InitAsync(UIWindow iOSWindow, IOktaConfig config)
+		{
+			return await InitAsync(new iOsOidcClient(iOSWindow, config));
+		}
+
+		[Obsolete("Use InitAsync(UIWindow iOSWindow) instead.")]
 		public static async Task<OktaContext> InitAsync(UIViewController iOSViewController)
 		{
 			return await InitAsync(iOSViewController, iOsOktaConfig.LoadFromPList("OktaConfig.plist"));
 		}
 
+		[Obsolete("Use InitAsync(UIWindow iOSWindow, IOktaConfig config) instead.")]
 		public static async Task<OktaContext> InitAsync(UIViewController iOSViewController, IOktaConfig config)
 		{
 			return await InitAsync(new iOsOidcClient(iOSViewController, config));
