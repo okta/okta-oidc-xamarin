@@ -7,7 +7,7 @@ Running changelog of releases since `1.0.0-beta01`
 
 - Update Xamarin.Forms dependency to version 5.0.0.2515
 - Add `OktaPlatform.InitAsync(...)` overloads that accept `UIWindow` instead of `UIViewController` to prevent potential `ObjectDisposedException` that may occur on `SignOut` if `Window.RootViewController` is disposed after initialization
-- Deprecate OktaPlatform.InitAsync(...) overloads that accept `UIViewController`
+- Deprecate `OktaPlatform.InitAsync(...)` overloads that accept `UIViewController`
 
 ## v3.1.0
 
