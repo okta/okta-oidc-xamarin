@@ -17,10 +17,31 @@ namespace Okta.Xamarin.iOS
 		private static Lazy<string> userAgent = new Lazy<string>(() => $"Okta-Xamarin-Sdk/iOS-{Assembly.GetExecutingAssembly().GetName().Version}");
 
 #pragma warning disable IDE1006 // Naming Styles
+		UIViewController _iOsViewController;
 		/// <summary>
 		/// Stores a reference to the current iOS <see cref="UIKit.UIViewController"/>, for use in launching the browser for login
 		/// </summary>
-		private UIKit.UIViewController iOSViewController { get; set; }
+		private UIKit.UIViewController iOSViewController 
+		{
+			get
+			{
+				if (iOSWindow != null)
+				{
+					return iOSWindow.RootViewController;
+				}
+				return _iOsViewController;
+			}
+			set
+			{
+				if (iOSWindow != null)
+				{
+					iOSWindow.RootViewController = value;
+				}
+				_iOsViewController = value;
+			}
+		}
+
+		private UIKit.UIWindow iOSWindow { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
 
 		/// <summary>
@@ -39,10 +60,23 @@ namespace Okta.Xamarin.iOS
 		}
 
 		/// <summary>
+		/// Creates a new iOS Okta OidcClient, attached to the provided <see cref="UIKit.UIWindow"/> and based on the specified <see cref="OktaConfig"/>.
+		/// </summary>
+		/// <param name="window">A reference to the current iOS <see cref="UIKit.UIWindow"/>, for use in launching the browser for login and logout.</param>
+		/// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
+		public iOsOidcClient(UIWindow window, IOktaConfig config)
+		{
+			this.iOSWindow = window;			
+			this.Config = config;
+			validator.Validate(Config);
+		}
+
+		/// <summary>
 		/// Creates a new iOS Okta OidcClient, attached to the provided <see cref="UIKit.UIViewController"/> and based on the specified <see cref="OktaConfig"/>
 		/// </summary>
 		/// <param name="iOSViewController">A reference to the current iOS <see cref="UIKit.UIViewController"/>, for use in launching the browser for login</param>
 		/// <param name="config">The <see cref="OktaConfig"/> to use for this client.  The config must be valid at the time this is called.</param>
+		[Obsolete("Use iOsOidcClient(UIWindow window, IOktaConfig config) instead.")]
 		public iOsOidcClient(UIKit.UIViewController iOSViewController, IOktaConfig config)
 		{
 			while (iOSViewController?.PresentedViewController != null)

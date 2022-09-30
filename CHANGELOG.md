@@ -1,6 +1,32 @@
 # Changelog
 Running changelog of releases since `1.0.0-beta01`
 
+## v3.1.1
+
+### Changes 
+
+- Update Xamarin.Forms dependency to version 5.0.0.2515
+- Add `OktaPlatform.InitAsync(...)` overloads that accept `UIWindow` instead of `UIViewController` to prevent potential `ObjectDisposedException` that may occur on `SignOut` if `Window.RootViewController` is disposed after initialization
+- Deprecate `OktaPlatform.InitAsync(...)` overloads that accept `UIViewController`
+
+## v3.1.0
+
+Encapsulated initialization process.
+
+### Changes
+
+- Update Xamarin.Forms dependency to version 5.0.0.2478
+- Update Xamarin.Essentials dependency to version 1.7.3
+- Deprecate Okta specific AppDelegate in iOS
+- Deprecate Okta specific Activity in Android
+
+### Features
+
+- OktaPlatform class - encapsulates initialization process
+- OktaPlatform.InitAsync(...)
+- iOS - OktaPlatform.IsOktaCallback(...)
+- Android - OktaPlatform.HandleCallback(...)
+
 ## v3.0.2
 
 ### Fixes
