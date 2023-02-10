@@ -398,7 +398,7 @@ Since access tokens are traditionally short-lived, you can renew expired tokens 
 See [Refresh Tokens](#refresh-tokens) to ensure your app is configured properly for this flow.  See also, [RenewStarted event](#renewstarted-event) and [RenewCompleted event](#renewcompleted-event).
 
 ```csharp
-OktaContext.Current.RenewAsync(TokenKind.AccessToken);
+OktaContext.Current.RenewAsync("<YOUR-ACCESS-TOKEN>");
 ```
 
 #### RevokeAccessToken
