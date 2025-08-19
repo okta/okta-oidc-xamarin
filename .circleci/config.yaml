@@ -1,12 +1,25 @@
+version: 2.1
+
 orbs:
   python: circleci/python@2.0.3
   aws-cli: circleci/aws-cli@5.1
+  general-platform-helpers: okta/general-platform-helpers@1.9
 
 jobs:
-  reversing-labs:
+  build:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
-      - checkout
-  
+      - run:
+          name: Manual HTTPS checkout (avoid SSH)
+          command: |
+            git --version
+            rm -rf .git || true
+            git init .
+            git remote add origin https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git
+            git fetch --depth=1 origin $CIRCLE_SHA1
+            git checkout --force $CIRCLE_SHA1
+
       - run: dotnet --version
 
       - run: 
@@ -16,39 +29,78 @@ jobs:
             nuget restore ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj &&
             nuget restore ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj &&
             nuget restore ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
+
+      - run:
+          name: build Binary to scan
+          command: dotnet build ./Okta.Xamarin/Okta.Xamarin.sln
+
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+            - .git
+
+  reversing-labs:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - run:
+          name: Manual HTTPS checkout (avoid SSH)
+          command: |
+            git --version
+            rm -rf .git || true
+            git init .
+            git remote add origin https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git
+            git fetch --depth=1 origin $CIRCLE_SHA1
+            git checkout --force $CIRCLE_SHA1
+
+      - run: dotnet --version
+
+      - run: 
+          name: get packages to scan
+          command: |
+            nuget restore ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj &&
+            nuget restore ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj &&
+            nuget restore ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj &&
+            nuget restore ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
+
+      - run:
+          name: build Binary to scan
+          command: dotnet build ./Okta.Xamarin/Okta.Xamarin.sln
        
-      // Necessary to Install rl wrapper   
+      # Necessary to Install rl wrapper   
       - run:
           name: Install Python
           command: |
-            sudo apt-get update
-            sudo apt-get install -y python3 python3-pip
-            sudo pip install --upgrade pip
+            apt-get update
+            apt-get install -y curl python3 python3-pip unzip
+            pip3 install --upgrade pip
   
-      // Download the scanner from Okta Security
+      # Download the scanner from Okta Security
       - run:
           name: Download Reverse Labs Scanner
           command: |
             curl https://dso-resources.oktasecurity.com/scanner \
               -H "x-api-key: $DSO_RLSECURE_TOKEN" \
               --output rl_wrapper-0.0.2+35ababa-py3-none-any.whl
-      // Install the wrapper that was downloaded
+
+      # Install the wrapper that was downloaded
       - run:
           name: Install RL Wrapper
           command: |
-            pip install ./rl_wrapper-0.0.2+35ababa-py3-none-any.whl
+            pip3 install ./rl_wrapper-0.0.2+35ababa-py3-none-any.whl
   
-      // Setup the AWS profile
+      # Setup the AWS profile
       - aws-cli/setup:
           profile_name: default
           role_arn: $AWS_ARN
           region: us-east-1
   
-      // Get the credentials and save to env
+      # Get the credentials and save to env
       - run: >-
           eval "$(aws configure export-credentials --profile default --format env)" 2> /dev/null
   
-      // Run the wrapper, do not change anything here
+      # Run the wrapper, do not change anything here
       - run:
           name: Run Reversing Labs Wrapper Scanner
           command: |
@@ -61,8 +113,30 @@ jobs:
               --build-env "circleci" \
               --suppress_output
 
+  snyk-scan:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - general-platform-helpers/step-load-dependencies
+      - general-platform-helpers/step-run-snyk-monitor:
+          scan-all-projects: true
+          skip-unresolved: false
+          run-on-non-main: true
+          detection-depth: 4
 
 workflows:
+  "Circle CI Build & Snyk Scan":
+    jobs:
+      - build
+      - snyk-scan:
+          name: execute-snyk
+          context:
+            - static-analysis
+          requires:
+            - build
+
   "Malware Scanner":
     jobs:
       - reversing-labs:
