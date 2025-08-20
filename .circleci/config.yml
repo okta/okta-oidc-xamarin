@@ -81,29 +81,28 @@ jobs:
               --suppress_output
 
   snyk-scan:
-    executor: dotnet-executor
+    docker:
+      - image: cimg/python:3.10
     steps:
       - attach_workspace:
           at: .
-      - general-platform-helpers/step-setup-artifactory-bazel:
-          jfrog_token: ARTIFACTORY_TOKEN
-      - general-platform-helpers/step-snyk-dotnet-scan:
-          artifact_dir: Okta.Xamarin/Okta.Xamarin
+      - general-platform-helpers/step-load-dependencies
+      - general-platform-helpers/step-run-snyk-monitor:
+          scan-all-projects: true
+          skip-unresolved: false
+          run-on-non-main: true
+          detection-depth: 4
 
 workflows:
-  build-and-snyk:
+  "Circle CI Build & Snyk Scan":
     jobs:
       - build
       - snyk-scan:
-          requires:
-            - build
+          name: execute-snyk
           context:
             - static-analysis
-          filters:
-            branches:
-              only:
-                - master
-                - /^OKTA-.*/
+          requires:
+            - build
 
   "Malware Scanner":
     jobs:
