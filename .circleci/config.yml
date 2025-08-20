@@ -9,9 +9,21 @@ executors:
   dotnet-executor:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
+  
+  android-executor:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    environment:
+      ANDROID_HOME: /opt/android-sdk-linux
+      ANDROID_SDK_ROOT: /opt/android-sdk-linux
+      PATH: /opt/android-sdk-linux/tools:/opt/android-sdk-linux/platform-tools:$PATH
+
+  macos-executor:
+    macos:
+      xcode: 14.3.0
 
 jobs:
-  build:
+  build-core:
     executor: dotnet-executor
     steps:
       - run:
@@ -41,8 +53,8 @@ jobs:
           paths:
             - "*"
 
-  reversing-labs:
-    executor: dotnet-executor
+  build-android:
+    executor: android-executor
     steps:
       - run:
           name: Manual HTTPS checkout (avoid SSH)
@@ -53,12 +65,75 @@ jobs:
             git remote add origin https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git
             git fetch --depth=1 origin $CIRCLE_SHA1
             git checkout --force $CIRCLE_SHA1
-      - run: dotnet --version
       - run:
-          name: build Binary to scan
+          name: Install Android SDK and tools
           command: |
-            dotnet build ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj
-            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
+            apt-get update
+            apt-get install -y wget unzip openjdk-11-jdk
+            
+            # Install Android SDK
+            mkdir -p /opt/android-sdk-linux
+            cd /opt/android-sdk-linux
+            wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+            unzip commandlinetools-linux-8512546_latest.zip
+            mkdir -p cmdline-tools/latest
+            mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+            
+            # Install required SDK components
+            yes | cmdline-tools/latest/bin/sdkmanager --licenses
+            cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
+            
+            # Install Xamarin.Android workload
+            dotnet workload install android
+      - run:
+          name: Build Android projects
+          command: |
+            dotnet build ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj
+            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.UITest.Android/Okta.Xamarin.UITest.Android.csproj
+            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.UITest.Shared/Okta.Xamarin.UITest.Shared.csproj
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "*"
+
+  build-ios:
+    executor: macos-executor
+    steps:
+      - run:
+          name: Manual HTTPS checkout (avoid SSH)
+          command: |
+            git --version
+            rm -rf .git || true
+            git init .
+            git remote add origin https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git
+            git fetch --depth=1 origin $CIRCLE_SHA1
+            git checkout --force $CIRCLE_SHA1
+      - run:
+          name: Install .NET and Xamarin workload
+          command: |
+            # Install .NET 6
+            curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version 6.0.428
+            echo 'export PATH="$HOME/.dotnet:$PATH"' >> ~/.bashrc
+            export PATH="$HOME/.dotnet:$PATH"
+            
+            # Install Xamarin.iOS workload
+            dotnet workload install ios
+      - run:
+          name: Build iOS projects
+          command: |
+            export PATH="$HOME/.dotnet:$PATH"
+            dotnet build ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj
+            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.UITest.iOS/Okta.Xamarin.UITest.iOS.csproj
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "*"
+
+  reversing-labs:
+    executor: dotnet-executor
+    steps:
+      - attach_workspace:
+          at: .
       # Necessary to Install rl wrapper   
       - run:
           name: Install Python
@@ -113,21 +188,37 @@ jobs:
           detection-depth: 4
 
 workflows:
-  "Circle CI Build & Snyk Scan":
+  "Complete Build & Security Scan":
     jobs:
-      - build
+      - build-core
+      - build-android:
+          requires:
+            - build-core
+      - build-ios:
+          requires:
+            - build-core
       - snyk-scan:
           name: execute-snyk
           context:
             - static-analysis
           requires:
-            - build
+            - build-core
+            - build-android
+            - build-ios
 
   "Malware Scanner":
     jobs:
-      - build
+      - build-core
+      - build-android:
+          requires:
+            - build-core
+      - build-ios:
+          requires:
+            - build-core
       - reversing-labs:
           requires:
-            - build
+            - build-core
+            - build-android
+            - build-ios
           context:
             - static-analysis
