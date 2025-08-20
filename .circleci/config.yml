@@ -34,8 +34,12 @@ jobs:
             dotnet restore ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj
             dotnet restore ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
       - run:
-          name: Build solution
-          command: dotnet build ./Okta.Xamarin/Okta.Xamarin.sln
+          name: Build core projects
+          command: |
+            dotnet build ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj
+            dotnet build ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj
+            dotnet build ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj
+            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
       - persist_to_workspace:
           root: .
           paths:
@@ -56,7 +60,11 @@ jobs:
       - run: dotnet --version
       - run:
           name: build Binary to scan
-          command: dotnet build ./Okta.Xamarin/Okta.Xamarin.sln
+          command: |
+            dotnet build ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj
+            dotnet build ./Okta.Xamarin/Okta.Xamarin.iOS/Okta.Xamarin.iOS.csproj
+            dotnet build ./Okta.Xamarin/Okta.Xamarin.Android/Okta.Xamarin.Android.csproj
+            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
       # Necessary to Install rl wrapper   
       - run:
           name: Install Python
