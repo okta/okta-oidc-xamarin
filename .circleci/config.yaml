@@ -35,10 +35,9 @@ jobs:
           command: dotnet build ./Okta.Xamarin/Okta.Xamarin.sln
 
       - persist_to_workspace:
-          root: ~/project
+          root: .
           paths:
             - .
-            - .git
 
   reversing-labs:
     docker:
@@ -118,7 +117,7 @@ jobs:
       - image: cimg/python:3.10
     steps:
       - attach_workspace:
-          at: ~/project
+          at: .
       - general-platform-helpers/step-load-dependencies
       - general-platform-helpers/step-run-snyk-monitor:
           scan-all-projects: true
@@ -127,7 +126,8 @@ jobs:
           detection-depth: 4
 
 workflows:
-  "Circle CI Build & Snyk Scan":
+  version: 2
+  build-and-scan:
     jobs:
       - build
       - snyk-scan:
@@ -136,9 +136,7 @@ workflows:
             - static-analysis
           requires:
             - build
-
-  "Malware Scanner":
-    jobs:
       - reversing-labs:
+          name: malware-scan
           context:
             - static-analysis
