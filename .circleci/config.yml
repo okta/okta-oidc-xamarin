@@ -1,0 +1,147 @@
+version: 2.1
+
+orbs:
+  general-platform-helpers: okta/general-platform-helpers@1.9
+  platform-helpers: okta/platform-helpers@1
+  python: circleci/python@2.0.3
+  aws-cli: circleci/aws-cli@5.1
+
+jobs:
+  reversing-labs:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - run:
+          name: Manual HTTPS checkout (avoid SSH)
+          command: |
+            git --version
+            rm -rf .git || true
+            git init .
+            git remote add origin https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git
+            git fetch --depth=1 origin $CIRCLE_SHA1
+            git checkout --force $CIRCLE_SHA1
+
+      - run: dotnet --version
+
+      - run:
+          name: Build Binary to scan
+          command: |
+            dotnet build ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj --configuration Release
+            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj --configuration Release
+
+      # Necessary to Install rl wrapper
+      - run:
+          name: Install Python
+          command: |
+            apt-get update
+            apt-get install -y curl python3 python3-pip unzip
+            pip3 install --upgrade pip
+
+      # Download the scanner from Okta Security
+      - run:
+          name: Download Reverse Labs Scanner
+          command: |
+            curl https://dso-resources.oktasecurity.com/scanner \
+              -H "x-api-key: $DSO_RLSECURE_TOKEN" \
+              --output rl_wrapper-0.0.2+35ababa-py3-none-any.whl
+
+      # Install the wrapper that was downloaded
+      - run:
+          name: Install RL Wrapper
+          command: |
+            pip3 install ./rl_wrapper-0.0.2+35ababa-py3-none-any.whl
+
+      # Setup the AWS profile
+      - aws-cli/setup:
+          profile_name: default
+          role_arn: $AWS_ARN
+          region: us-east-1
+
+      # Get the credentials and save to env
+      - run:
+          name: Export AWS credentials to environment
+          command: >-
+            eval "$(aws configure export-credentials --profile default --format env)" 2> /dev/null
+
+      # Run the wrapper, do not change anything here
+      - run:
+          name: Run Reversing Labs Wrapper Scanner
+          command: |
+            rl-wrapper \
+              --artifact ${CIRCLE_WORKING_DIRECTORY/#\~/$HOME} \
+              --name $CIRCLE_PROJECT_REPONAME\
+              --version $CIRCLE_SHA1\
+              --repository $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME \
+              --commit $CIRCLE_SHA1 \
+              --build-env "circleci" \
+              --suppress_output
+
+  build:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    environment:
+      CIRCLE_CI: true
+    steps:
+      - run:
+          name: Manual HTTPS checkout (avoid SSH)
+          command: |
+            set -e
+            git --version || (apt-get update -y && apt-get install -y --no-install-recommends git ca-certificates curl && rm -rf /var/lib/apt/lists/*)
+            rm -rf .git || true
+            git init .
+            git remote add origin https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git
+            git fetch --depth=1 origin $CIRCLE_SHA1
+            git checkout --force $CIRCLE_SHA1
+            git config --global --add safe.directory "$(pwd)"
+      - run:
+          name: Restore solutions
+          command: |
+            dotnet restore ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj
+            dotnet restore ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj
+
+      - run:
+          name: Build solutions
+          command: |
+            dotnet build ./Okta.Xamarin/Okta.Xamarin/Okta.Xamarin.csproj --configuration Release --no-restore
+            dotnet build ./Okta.Xamarin/Tests/Okta.Xamarin.Test/Okta.Xamarin.Test.csproj --configuration Release --no-restore
+
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
+  snyk-scan:
+    docker:
+      - image: cimg/python:3.10
+    working_directory: ~/project
+    steps:
+      - attach_workspace: 
+          at: ~/project
+      - general-platform-helpers/step-load-dependencies
+      - general-platform-helpers/step-run-snyk-monitor:
+          scan-all-projects: true
+          skip-unresolved: false
+          run-on-non-main: true
+          detection-depth: 4   
+
+workflows:
+  "Malware Scanner":
+    jobs:
+      - reversing-labs:
+          context:
+            - static-analysis
+  "Circle CI Build & Snyk Scan":
+    jobs:
+      - build
+      - snyk-scan:
+          name: execute-snyk
+          context:
+            - static-analysis
+          requires:
+            - build
+  "Semgrep":
+    jobs:
+      - platform-helpers/job-semgrep-scan:
+          context:
+            - static-analysis
+          name: "Scan with Semgrep"
