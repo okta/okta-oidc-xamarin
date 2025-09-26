@@ -27,6 +27,19 @@ namespace Okta.Xamarin.Test
                              new OktaConfig("testoktaid", "https://okta.okta.com", "appid:/redirect", "appid:/logout")
                              { ClockSkew = TimeSpan.FromSeconds(100), Scope = "test1 test2" });
 
+            // Test new TLD support
+            validator.Validate(
+                new OktaConfig("testoktaid", "https://dev-00000.trex-govcloud.com", "com.test:/redirect", "com.test:/logout"));
+
+            validator.Validate(
+                new OktaConfig("testoktaid", "https://dev-00000.okta-gov.com", "com.test:/redirect", "com.test:/logout"));
+
+            validator.Validate(
+                new OktaConfig("testoktaid", "https://dev-00000.okta.mil", "com.test:/redirect", "com.test:/logout"));
+
+            validator.Validate(
+                new OktaConfig("testoktaid", "https://dev-00000.okta-miltest.com", "com.test:/redirect", "com.test:/logout"));
+
             // The validator throws an exception when the config is invalid, so if we got here without an exception then the configs are valid.
         }
 
@@ -66,6 +79,19 @@ namespace Okta.Xamarin.Test
 
             Assert.Throws<ArgumentException>(() =>
                 validator.Validate(new OktaConfig("testoktaid", "https://dev-00000-admin.oktapreview.com", "com.test:/redirect", "com.test:/logout")));
+
+            // Test that admin domains are caught for new TLDs
+            Assert.Throws<ArgumentException>(() =>
+                validator.Validate(new OktaConfig("testoktaid", "https://dev-00000-admin.trex-govcloud.com", "com.test:/redirect", "com.test:/logout")));
+
+            Assert.Throws<ArgumentException>(() =>
+                validator.Validate(new OktaConfig("testoktaid", "https://dev-00000-admin.okta-gov.com", "com.test:/redirect", "com.test:/logout")));
+
+            Assert.Throws<ArgumentException>(() =>
+                validator.Validate(new OktaConfig("testoktaid", "https://dev-00000-admin.okta.mil", "com.test:/redirect", "com.test:/logout")));
+
+            Assert.Throws<ArgumentException>(() =>
+                validator.Validate(new OktaConfig("testoktaid", "https://dev-00000-admin.okta-miltest.com", "com.test:/redirect", "com.test:/logout")));
 
             Assert.Throws<ArgumentException>(() =>
                 validator.Validate(new OktaConfig("testoktaid", "https://{yourOktaDomain}", "com.test:/redirect", "com.test:/logout")));
