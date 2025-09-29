@@ -79,7 +79,11 @@ namespace Okta.Xamarin
 
             if (config.OktaDomain.IndexOf("-admin.oktapreview.com", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 config.OktaDomain.IndexOf("-admin.okta.com", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                config.OktaDomain.IndexOf("-admin.okta-emea.com", StringComparison.OrdinalIgnoreCase) >= 0)
+                config.OktaDomain.IndexOf("-admin.okta-emea.com", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                config.OktaDomain.IndexOf("-admin.trex-govcloud.com", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                config.OktaDomain.IndexOf("-admin.okta-gov.com", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                config.OktaDomain.IndexOf("-admin.okta.mil", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                config.OktaDomain.IndexOf("-admin.okta-miltest.com", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 throw new ArgumentException(
                     $"Your Okta domain should not contain -admin. Current value: {config.OktaDomain}. You can copy your domain from the Okta Developer Console. Follow these instructions to find it: https://bit.ly/finding-okta-domain", nameof(config.OktaDomain));
